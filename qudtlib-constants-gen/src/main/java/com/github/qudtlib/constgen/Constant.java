@@ -1,9 +1,15 @@
 package com.github.qudtlib.constgen;
 
+/**
+ * Class representing constant names/labels/local names in IRIs for generating RDF vocabularies.
+ *
+ * @author Florian Kleedorfer
+ * @since 1.0
+ */
 public class Constant {
-    private String javaName;
-    private String localName;
-    private String label;
+    private final String javaName;
+    private final String localName;
+    private final String label;
 
     public Constant(String javaName, String localName, String label) {
         this.javaName = javaName;

@@ -1,0 +1,30 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX prefix: <http://qudt.org/vocab/prefix/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+    ?unit a qudt:Unit ;
+        rdfs:label ?unitLocalName;
+        rdfs:comment  "This unit was added while generating qudt:factorUnit information as a missing factor unit"@en .
+}
+#SELECT distinct ?unit WHERE
+#select count(*) where
+{
+    {
+        ?x qudt:factorUnit/qudt:unit ?unit .
+    } UNION {
+        ?unit qudt:factorUnit/qudt:unit ?x .
+    } UNION  {
+        ?x qudt:isScalingOf ?unit .
+    } UNION {
+        ?unit qudt:isScalingOf ?x .
+    }
+    FILTER NOT EXISTS {
+        ?unit a qudt:Unit
+    }
+    BIND(REPLACE(STR(?unit), "^.+/", "") as ?unitLocalName)
+}
+order by ?unit

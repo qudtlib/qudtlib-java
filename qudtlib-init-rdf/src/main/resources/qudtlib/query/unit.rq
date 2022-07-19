@@ -1,0 +1,31 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT * where
+{
+    ?unit a qudt:Unit;
+       rdfs:label ?label .
+    optional {
+       ?unit qudt:hasQuantityKind ?quantityKind
+    }
+    optional {
+       ?unit qudt:conversionMultiplier ?conversionMultiplier
+    }
+    optional {
+           ?unit qudt:conversionOffset ?conversionOffset
+        }
+    optional {
+       ?unit qudt:symbol ?symbol
+    }
+    optional {
+        ?unit qudt:prefix ?prefix
+    }
+    optional {
+        ?unit qudt:isScalingOf ?scalingOf
+    }
+    optional {
+        ?unit qudt:hasDimensionVector ?dimensionVector
+    }
+} order by ?unit
