@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.qudtlib</groupId>
+    <artifactId>qudtlib-java</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>qudtlib</module>
+        <module>qudtlib-model</module>
+        <module>qudtlib-constants-gen</module>
+        <module>qudtlib-ingest-qudt</module>
+        <module>qudtlib-data-gen</module>
+        <module>qudtlib-vocab</module>
+        <module>qudtlib-common</module>
+        <module>qudtlib-data</module>
+        <module>qudtlib-init-rdf</module>
+        <module>qudtlib-main</module>
+        <module>qudtlib-main-rdf</module>
+        <module>qudtlib-hardcoded-model-gen</module>
+        <module>qudtlib-init-hardcoded</module>
+        <module>qudtlib-test</module>
+        <module>qudtlib-example</module>
+    </modules>
+
+
+    <properties>
+        <maven.compiler.source>14</maven.compiler.source>
+        <maven.compiler.target>14</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <qudt.release.version>v2.1.18</qudt.release.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.8.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.7.32</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-bom</artifactId>
+                <type>pom</type>
+                <version>4.0.4</version>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>be.belgif</groupId>
+                <artifactId>VocGen</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.31</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.1.0</version>
+                <configuration>
+                    <formats>
+                        <!-- you can define as many formats as you want, each is independent -->
+                        <format>
+                            <!-- define the files to apply to -->
+                            <includes>
+                                <include>*.md</include>
+                                <include>.gitignore</include>
+                            </includes>
+                            <!-- define the steps to apply to those files -->
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                            <indent>
+                                <tabs>true</tabs>
+                                <spacesPerTab>4</spacesPerTab>
+                            </indent>
+                        </format>
+                    </formats>
+                    <!-- define a language-specific format -->
+                    <java>
+                        <!-- no need to specify files, inferred automatically, but you can if you want -->
+                        <!-- apply a specific flavor of google-java-format -->
+                        <googleJavaFormat>
+                            <version>1.9</version>
+                            <style>AOSP</style>
+                        </googleJavaFormat>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-code-format</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/qudtlib/qudtlib-java</url>
+        </repository>
+    </distributionManagement>
+</project>

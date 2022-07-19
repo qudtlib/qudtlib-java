@@ -1,0 +1,24 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT * where
+{
+    ?quantityKind a qudt:QuantityKind;
+        rdfs:label ?label .
+
+    optional {
+        ?quantityKind qudt:applicableUnit ?applicableUnit
+    }
+    optional {
+        ?quantityKind qudt:hasDimensionVector ?dimensionVector
+    }
+    optional {
+       ?quantityKind qudt:symbol ?symbol
+    }
+    optional {
+       ?quantityKind skos:broader ?broaderQuantityKind
+    }
+} order by ?quantityKind
