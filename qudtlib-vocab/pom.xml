@@ -43,7 +43,9 @@
                         <goals>
                             <goal>java</goal>
                         </goals>
-                        <phase>generate-sources</phase>
+                        <!--phase>generate-sources</phase-->
+                        <!-- TODO: disabled while waiting for a release of VocGen -->
+                        <phase>none</phase>
                     </execution>
                 </executions>
                 <configuration>
@@ -63,13 +65,14 @@
                         <argument>--template</argument><argument>rdf4j</argument>
                     </arguments>
                 </configuration>
-                <dependencies>
+                <!--dependencies>
+                TODO: commented out while waiting for a new release. Meanwhile, the vocabulary class is hardcoded
                     <dependency>
                         <groupId>be.belgif</groupId>
                         <artifactId>VocGen</artifactId>
                         <version>1.0.3</version>
                     </dependency>
-                </dependencies>
+                </dependencies-->
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -330,8 +330,6 @@ public class DerivedUnitTests {
     @Test
     public void testScaleToBaseUnit() {
         Map.Entry<Unit, BigDecimal> base = Qudt.scaleToBaseUnit(Qudt.Units.KiloM);
-        System.out.println(base.getKey());
-        System.out.println(base.getValue());
         assertEquals(Qudt.Units.M, base.getKey());
         MatcherAssert.assertThat(base.getValue(), Matchers.comparesEqualTo(new BigDecimal("1000")));
     }
