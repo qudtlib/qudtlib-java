@@ -23,7 +23,6 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
-            <version>2.2</version>
         </dependency>
     </dependencies>
     <build>
@@ -31,7 +30,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -40,7 +38,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+                <configuration>
+                    <!--
+                    this module misses the dependencies to QUDTLib initializers, running
+                    the tests without them will fail. The tests in this module are run
+                    in other modules
+                    -->
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
         </plugins>
+
     </build>
 
 </project>
