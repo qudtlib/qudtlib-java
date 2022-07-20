@@ -55,11 +55,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>be.belgif</groupId>
-                <artifactId>VocGen</artifactId>
-                <version>1.0.3</version>
-            </dependency>
-            <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>2.3.31</version>
