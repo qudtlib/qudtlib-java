@@ -76,10 +76,10 @@ public class Unit {
     }
 
     /**
-     * Accepts up to 7 pairs of <Unit, Integer> which are interpreted as factor units and respective
-     * exponents.
+     * Accepts up to 7 pairs of &lt;Unit, Integer&gt; which are interpreted as factor units and
+     * respective exponents.
      *
-     * @param factorUnitSpec array of up to 7 <Unit, Integer> pairs
+     * @param factorUnitSpec array of up to 7 %lt;Unit, Integer%gt; pairs
      * @return true if the specified unit/exponent combination identifies this unit.
      *     (overspecification is counted as a match)
      */

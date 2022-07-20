@@ -3,7 +3,7 @@ package com.github.qudtlib.model;
 import java.util.Map;
 
 /**
- * Initializes the QUDTLib model in {@link Qudt}'s static initializer.
+ * Initializes the QUDTLib model.
  *
  * @author Florian Kleedorfer
  * @version 1.0
