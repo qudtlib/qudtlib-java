@@ -1,4 +1,4 @@
-package com.github.qudtlib.model;
+package io.github.qudtlib.model;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

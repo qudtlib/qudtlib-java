@@ -4,9 +4,9 @@
 package ${package};
 
 
-import static com.github.qudtlib.Qudt.${valueFactory};
+import static io.github.qudtlib.Qudt.${valueFactory};
 
-import com.github.qudtlib.model.${type};
+import io.github.qudtlib.model.${type};
 
 /**
 * Constants for QUDT ${type}s.

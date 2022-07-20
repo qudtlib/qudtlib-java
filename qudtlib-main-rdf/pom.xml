@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>qudtlib-java</artifactId>
-        <groupId>com.github.qudtlib</groupId>
+        <groupId>io.github.qudtlib</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,17 +14,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.qudtlib</groupId>
+            <groupId>io.github.qudtlib</groupId>
             <artifactId>qudtlib-main</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.qudtlib</groupId>
+            <groupId>io.github.qudtlib</groupId>
             <artifactId>qudtlib-init-rdf</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.qudtlib</groupId>
+            <groupId>io.github.qudtlib</groupId>
             <artifactId>qudtlib-test</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
@@ -45,7 +45,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <dependenciesToScan>
-                        <dependency>com.github.qudtlib:qudtlib-test:test-jar:tests</dependency>
+                        <dependency>io.github.qudtlib:qudtlib-test:test-jar:tests</dependency>
                     </dependenciesToScan>
                 </configuration>
             </plugin>
