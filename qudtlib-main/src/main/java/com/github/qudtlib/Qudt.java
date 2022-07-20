@@ -19,24 +19,24 @@ import java.util.stream.Stream;
  *
  * <p>A few examples:
  *
- * <pre>
- *   // Converting 38.5° Celsius into Fahrenheit:
- *   Qudt.convert(new BigDecimal("38.5"), Qudt.Units.DEG_C, Qudt.Units.DEG_F);
+ * <pre>{@code
+ * // Converting 38.5° Celsius into Fahrenheit:
+ * Qudt.convert(new BigDecimal("38.5"), Qudt.Units.DEG_C, Qudt.Units.DEG_F);
  *
- *   // finding unit for factors: m, kg, and s^-2:
- *   Set<Unit> myUnits =
- *              Qudt.derivedUnit(
- *                      Qudt.Units.M, 1,
- *                      Qudt.Units.KiloGM, 1,
- *                      Qudt.Units.SEC, -2);
+ * // finding unit for factors: m, kg, and s^-2:
+ * Set<Unit> myUnits =
+ *            Qudt.derivedUnit(
+ *                    Qudt.Units.M, 1,
+ *                    Qudt.Units.KiloGM, 1,
+ *                    Qudt.Units.SEC, -2);
  *
- *   // finding factors of Newton:
- *   List<FactorUnit> myFactorUnits = Qudt.Units.N.getFactorUnits();
+ * // finding factors of Newton:
+ * List<FactorUnit> myFactorUnits = Qudt.Units.N.getFactorUnits();
  *
- *   // Converting 1N into kN (using QuantityValue):
- *   QuantityValue quantityValue = new QuantityValue(new BigDecimal("1"), Qudt.Units.N);
- *   QuantityValue converted = Qudt.convert(quantityValue, Qudt.Units.KiloN);
- * </pre>
+ * // Converting 1N into kN (using QuantityValue):
+ * QuantityValue quantityValue = new QuantityValue(new BigDecimal("1"), Qudt.Units.N);
+ * QuantityValue converted = Qudt.convert(quantityValue, Qudt.Units.KiloN);
+ * }</pre>
  *
  * @author Florian Kleedorfer
  * @version 1.0
@@ -128,7 +128,7 @@ public class Qudt {
 
     /**
      * Returns the {@link Unit} identified the specified IRI. For example, <code>
-     * unit("http://qudt.org/vocab/unit/N-PER-M2")</code> yields {@link Qudt.Units.N__PER__M2};
+     * unit("http://qudt.org/vocab/unit/N-PER-M2")</code> yields {@code Qudt.Units.N__PER__M2};
      *
      * @param iri the requested unit IRI
      * @return the unit
@@ -227,7 +227,7 @@ public class Qudt {
     /**
      * Returns the list of {@link FactorUnit}s of the specified {@code unit}.
      *
-     * @param unit
+     * @param unit the unit to get factors for
      * @return the factors of the unit or an empty list if the unit is not a derived unit
      */
     public static List<FactorUnit> factorUnits(Unit unit) {
@@ -235,7 +235,8 @@ public class Qudt {
     }
 
     /**
-     * Perform mathematical simplification on factor units. For example, N * M^-1 * M^-1 -> N * M^-2
+     * Perform mathematical simplification on factor units. For example, {@code N per M per M -> N
+     * per M^2 }
      *
      * @param factorUnits the factor units to simplify
      * @return the simplified factor units.
@@ -269,16 +270,17 @@ public class Qudt {
      *
      * <p>For example,
      *
-     * <pre>
-     *     Qudt.derivedUnit(
-     *                         Qudt.Units.M, 1,
-     *                         Qudt.Units.KiloGM, 1,
-     *                         Qudt.Units.SEC, -2);
-     * </pre>
+     * <pre>{@code
+     * Qudt.derivedUnit(
+     *                     Qudt.Units.M, 1,
+     *                     Qudt.Units.KiloGM, 1,
+     *                     Qudt.Units.SEC, -2);
+     * }</pre>
      *
-     * will yield a Set containing the Newton Unit ({@link Qudt.Units.N})
+     * will yield a Set containing the Newton Unit ({@code Qudt.Units.N})
      *
-     * @param factorUnits a map containing unit -> exponent entries.
+     * @param factorUnits a map containing unit to exponent entries.
+     * @return the derived units that match the given factor units
      */
     public static Set<Unit> derivedUnit(List<Map.Entry<Unit, Integer>> factorUnits) {
         Object[] arr = new Object[factorUnits.size() * 2];
@@ -289,7 +291,13 @@ public class Qudt {
                         .toArray(arr));
     }
 
-    /** Obtains a unit from factor units. */
+    /**
+     * Obtains a unit from factor units.
+     *
+     * @see #derivedUnit(List)
+     * @param factorUnits the factor units
+     * @return the derived unit that match the given factor units
+     */
     public static Set<Unit> derivedUnitFromFactorUnits(List<FactorUnit> factorUnits) {
         Object[] arr = new Object[factorUnits.size() * 2];
         return derivedUnitFromFactors(
@@ -388,7 +396,7 @@ public class Qudt {
     /**
      * Find the {@link Unit} derived from the specified {@code baseUnitIri} and {@code exponent}.
      *
-     * @param baseUnit the base unit
+     * @param baseUnitIri the base unit
      * @param exponent the exponent
      * @return the unit
      * @throws NotFoundException if no such unit is found in the model or the baseUnitIri does not
@@ -565,7 +573,7 @@ public class Qudt {
 
     /**
      * Returns the {@link QuantityKind} identified the specified IRI. For example, <code>
-     * quantityKind("http://qudt.org/vocab/quantitykind/Width")</code> yields {@link
+     * quantityKind("http://qudt.org/vocab/quantitykind/Width")</code> yields {@code
      * Qudt.QuantityKinds.Width};
      *
      * @param iri the requested quantityKind IRI
@@ -650,7 +658,7 @@ public class Qudt {
 
     /**
      * Returns the {@link Prefix} identified the specified IRI. For example, <code>
-     * prefix("http://qudt.org/vocab/prefix/Mega")</code> yields {@link Qudt.Prefixes.Mega};
+     * prefix("http://qudt.org/vocab/prefix/Mega")</code> yields {@code Qudt.Prefixes.Mega};
      *
      * @param iri the requested prefix IRI
      * @return the prefix

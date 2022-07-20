@@ -1,6 +1,7 @@
 package com.github.qudtlib.constgen;
 
 import com.github.qudlib.common.RdfOps;
+import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -8,6 +9,7 @@ import freemarker.template.TemplateExceptionHandler;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -139,7 +141,10 @@ public class ConstantsGenerator {
                 "valueFactory",
                 type.substring(0, 1).toLowerCase() + type.substring(1) + "FromLocalname");
         Template template = config.getTemplate(TEMPLATE_FILE);
-        FileWriter out = new FileWriter(new File(packageFile, typePlural + ".java"));
-        template.process(templateVars, out);
+        FileWriter out =
+                new FileWriter(new File(packageFile, typePlural + ".java"), StandardCharsets.UTF_8);
+        Environment env = template.createProcessingEnvironment(templateVars, out);
+        env.setOutputEncoding(StandardCharsets.UTF_8.toString());
+        env.process();
     }
 }
