@@ -14,12 +14,12 @@ The library offers
 
 ## Usage
 
-The module clients will want to use is `com.github.qudtlib:qudtlib`. The other modules are merely needed to generate that one from the latest [QUDT release zip](https://github.com/qudt/qudt-public-repo/tags).
+The module clients will want to use is `io.github.qudtlib:qudtlib`. The other modules are merely needed to generate that one from the latest [QUDT release zip](https://github.com/qudt/qudt-public-repo/tags).
 
 Maven dependency:
 ```
 <dependency>
-	<groupId>com.github.qudtlib</groupId>
+	<groupId>io.github.qudtlib</groupId>
 	<artifactId>qudtlib</artifactId>
 	<version>${project.version}</version> <!-- remember to use the latest version -->
 </dependency>

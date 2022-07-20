@@ -1,9 +1,9 @@
 package org.example.qudlib;
 
-import com.github.qudtlib.Qudt;
-import com.github.qudtlib.model.FactorUnit;
-import com.github.qudtlib.model.QuantityValue;
-import com.github.qudtlib.model.Unit;
+import io.github.qudtlib.Qudt;
+import io.github.qudtlib.model.FactorUnit;
+import io.github.qudtlib.model.QuantityValue;
+import io.github.qudtlib.model.Unit;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
