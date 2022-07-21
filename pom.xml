@@ -51,8 +51,8 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git://github.com/qudtlib/qudtlib-java.git</connection>
-        <developerConnection>scm:git:ssh://github.com:qudtlib/qudtlib-java.git</developerConnection>
+        <connection>scm:git:https://github.com/qudtlib/qudtlib-java.git</connection>
+        <developerConnection>scm:git:https://github.com/qudtlib/qudtlib-java.git</developerConnection>
         <url>https://github.com/qudtlib/qudtlib-java/tree/master</url>
     </scm>
 
