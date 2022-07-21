@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.qudtlib</groupId>
     <artifactId>qudtlib-java</artifactId>
     <packaging>pom</packaging>
     <name>qudtlib-java</name>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0</version>
     <url>https://github.com/qudtlib/qudtlib-java</url>
     <description>Unit conversion and related functionality for Java based on the QUDT ontology.</description>
     <developers>
@@ -54,7 +53,7 @@
         <connection>scm:git:https://github.com/qudtlib/qudtlib-java.git</connection>
         <developerConnection>scm:git:https://github.com/qudtlib/qudtlib-java.git</developerConnection>
         <url>https://github.com/qudtlib/qudtlib-java/tree/master</url>
-        <tag>HEAD</tag>
+        <tag>qudtlib-java-1.0</tag>
     </scm>
 
     <dependencyManagement>
@@ -184,8 +183,8 @@
                                 <include>.gitignore</include>
                             </includes>
                             <!-- define the steps to apply to those files -->
-                            <trimTrailingWhitespace/>
-                            <endWithNewline/>
+                            <trimTrailingWhitespace />
+                            <endWithNewline />
                             <indent>
                                 <tabs>true</tabs>
                                 <spacesPerTab>4</spacesPerTab>
