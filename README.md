@@ -26,13 +26,13 @@ Maven dependency:
 ```
 ## API
 
-`io.github.qudtlib.Qudt` is your friend. All functionality is accessed through static methods of that class. 
-You can explore the API from that starting point. 
+`io.github.qudtlib.Qudt` is your friend. All functionality is accessed through static methods of that class.
+You can explore the API from that starting point.
 
 The main Model classes are:
 * `Unit`: encapsulates IRI, label, [dimension vector](https://github.com/qudt/qudt-public-repo/wiki/User-Guide-for-QUDT#3-introducing-dimension-vectors-for-si-units), [multiplier/offset](https://github.com/qudt/qudt-public-repo/wiki/User-Guide-for-QUDT#4-conversion-multipliers-in-qudt), factor units (if any). Descriptions are omitted (create an issue if you want them.)
 * `QuantityKind`: IRI, label, applicable units, broader quantity kinds
-* `QuantityValue`: value and unit. Values are always `BigDecimal` (using `MathContext.DECIMAL128`) and there are no convenience methods allowing you 
+* `QuantityValue`: value and unit. Values are always `BigDecimal` (using `MathContext.DECIMAL128`) and there are no convenience methods allowing you
 to provide other numeric types. This is intentiaonal so as not to mask any conversion problems. You'll be fine. (If you need a different `MathContext`, make an issue)
 
 All units, quantityKinds and prefixes are avalable as constants:
@@ -43,12 +43,12 @@ All units, quantityKinds and prefixes are avalable as constants:
 The functionality comprises:
 * `Qudt.convert(...)`: Convert a value
 * `Qudt.scale(...)`: Scale a unit (e.g., make `KiloM` from `M` and `kilo`)
-* `Qudt.unscale(..)`: Unscale a unit: 
+* `Qudt.unscale(..)`: Unscale a unit:
 * `Qudt.unit(...)`: Get Unit by IRI
 * `Qudt.quantityKind(...)`: Get QuantityKind by IRI
-* `Qudt.unitFromLocalName(...)`: Get Unit by local name (i.e., last part of IRI) 
+* `Qudt.unitFromLocalName(...)`: Get Unit by local name (i.e., last part of IRI)
 * `Qudt.quantityKindFromLocalName(...)`: Get QuantityKind by local name (i.e., last part of IRI)
-* `Qudt.derivedUnit(...)`: Get Unit 'factor units', e.g. find `N` for factors  `m, kg, and s^-2` 
+* `Qudt.derivedUnit(...)`: Get Unit 'factor units', e.g. find `N` for factors  `m, kg, and s^-2`
 * `Qudt.unitFromLabel(...)`: Get Unit by label
 
 
@@ -57,14 +57,14 @@ The functionality comprises:
 
 ### Unit conversion
 Converting 38.5° Celsius into Fahrenheit:
-```
+```java
 	Qudt.convert(new BigDecimal("38.5"), Qudt.Units.DEG_C, Qudt.Units.DEG_F));
 	-->
 	101.3003929999999551224000000000036unit:DEG_F
 ```
 ### Find unit by factor units
 Finding unit for factors: m, kg, and s^-2:
-```
+```java
 	Set<Unit> myUnits =
 			Qudt.derivedUnit(
 					Qudt.Units.M, 1,
@@ -75,7 +75,7 @@ Finding unit for factors: m, kg, and s^-2:
 ```
 ### Find factor units of a derived unit:
 Finding factors of unit N:
-```
+```java
 	List<FactorUnit> myFactorUnits = Qudt.Units.N.getFactorUnits();
 	-->
 	FU{m^1}
@@ -84,7 +84,7 @@ Finding factors of unit N:
 ```
 ### Scale Conversion
 Converting 1N into kN:
-```
+```java
 	QuantityValue quantityValue = new QuantityValue(new BigDecimal("1"), Qudt.Units.N);
 	QuantityValue converted = Qudt.convert(quantityValue, Qudt.Units.KiloN);
 	-->
@@ -92,7 +92,7 @@ Converting 1N into kN:
 ```
 ### List convertible units
 Which units can we convert to from L?
-```
+```java
 	Unit fromUnit = Qudt.Units.L;
 	for (Unit unit : Qudt.allUnits()) {
 		if (Qudt.isConvertible(fromUnit, unit)) {
@@ -162,7 +162,7 @@ Which units can we convert to from L?
 
 ### List applicable Units for a QuantityKind:
 Which units are applicable for PressureRatio?
-```
+```java
 	for (String unitIri : Qudt.QuantityKinds.PressureRatio.getApplicableUnits()) {
 		Unit unit = Qudt.unit(unitIri);
 		System.out.println("  " + unit + " (" + unit.getIri() + ")");
@@ -178,7 +178,7 @@ Which units are applicable for PressureRatio?
 ```
 ### Instantiate unit by its label
 Instantiating unit by label 'Pint (UK)':
-```
+```java
 	Qudt.unitFromLabel("Pint (UK)"));
 	-->
 	unit:PINT_UK
