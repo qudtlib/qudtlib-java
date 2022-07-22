@@ -24,6 +24,34 @@ Maven dependency:
 	<version>${project.version}</version> <!-- remember to use the latest version -->
 </dependency>
 ```
+## API
+
+`io.github.qudtlib.Qudt` is your friend. All functionality is accessed through static methods of that class. 
+You can explore the API from that starting point. 
+
+The main Model classes are:
+* `Unit`: encapsulates IRI, label, [dimension vector](https://github.com/qudt/qudt-public-repo/wiki/User-Guide-for-QUDT#3-introducing-dimension-vectors-for-si-units), [multiplier/offset](https://github.com/qudt/qudt-public-repo/wiki/User-Guide-for-QUDT#4-conversion-multipliers-in-qudt), factor units (if any). Descriptions are omitted (create an issue if you want them.)
+* `QuantityKind`: IRI, label, applicable units, broader quantity kinds
+* `QuantityValue`: value and unit. Values are always `BigDecimal` (using `MathContext.DECIMAL128`) and there are no convenience methods allowing you 
+to provide other numeric types. This is intentiaonal so as not to mask any conversion problems. You'll be fine. (If you need a different `MathContext`, make an issue)
+
+All units, quantityKinds and prefixes are avalable as constants:
+* `Qudt.Units`: all units, such as `Qudt.Units.KiloM__PER__SEC`
+* `Qudt.QuantityKinds:`: all quantityKinds, such as `Qudt.QuantityKinds.BloodGlucoseLevel`
+* `Qudt.Prefixes`: all prefixes, such as `Qudt.Prefixes.Atto`
+
+The functionality comprises:
+* `Qudt.convert(...)`: Convert a value
+* `Qudt.scale(...)`: Scale a unit (e.g., make `KiloM` from `M` and `kilo`)
+* `Qudt.unscale(..)`: Unscale a unit: 
+* `Qudt.unit(...)`: Get Unit by IRI
+* `Qudt.quantityKind(...)`: Get QuantityKind by IRI
+* `Qudt.unitFromLocalName(...)`: Get Unit by local name (i.e., last part of IRI) 
+* `Qudt.quantityKindFromLocalName(...)`: Get QuantityKind by local name (i.e., last part of IRI)
+* `Qudt.derivedUnit(...)`: Get Unit 'factor units', e.g. find `N` for factors  `m, kg, and s^-2` 
+* `Qudt.unitFromLabel(...)`: Get Unit by label
+
+
 ## Examples
 (see also module qudtlib-example)
 
