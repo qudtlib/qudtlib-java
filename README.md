@@ -1,4 +1,4 @@
-# Executable QUDT Library
+# QUDTLib: Java Unit Conversion Library based on QUDT
 
 Provides unit conversion and related functionality for Java.
 
