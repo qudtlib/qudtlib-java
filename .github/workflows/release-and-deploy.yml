@@ -8,18 +8,18 @@ env:
   GITHUB_PAT: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
   MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
   MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
-  MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}   
+  MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Release version (such as 2.3.13)'     
+        description: 'Release version (such as 2.3.13)'
         required: true
         type: string
       next_snapshot_version:
-        description: 'Next SNAPSHOT version (such as 2.4-SNAPSHOT)'     
+        description: 'Next SNAPSHOT version (such as 2.4-SNAPSHOT)'
         required: true
-        type: string      
+        type: string
       environment:
         description: 'Environment to run tests against'
         type: environment
@@ -31,27 +31,59 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-    - name: Set up Apache Maven Central
-      uses: actions/setup-java@v3
-      with: # running setup-java again overwrites the settings.xml
-        distribution: 'temurin'
-        java-version: '11'
-        server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
-        server-username: MAVEN_USERNAME  # env variable for username in deploy
-        server-password: MAVEN_CENTRAL_TOKEN  # env variable for token in deploy
-        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}  # Value of the GPG private key to import
-        gpg-passphrase: MAVEN_GPG_PASSPHRASE  # env variable for GPG private key passphrase
-    - name: setup git config
-      run: |
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      # fail fast for formatting problems
+      - name: Check source formatting
+        run: mvn -B spotless:check
+      - name: Set up Apache Maven Central
+        uses: actions/setup-java@v3
+        with: # running setup-java again overwrites the settings.xml
+          distribution: 'temurin'
+          java-version: '11'
+          server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_USERNAME  # env variable for username in deploy
+          server-password: MAVEN_CENTRAL_TOKEN  # env variable for token in deploy
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}  # Value of the GPG private key to import
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE  # env variable for GPG private key passphrase
+      - name: setup git config
+        run: |
           git config user.name ${{ github.actor }}
           git config user.email "<>"
-    - name: Build with Maven, deploying to sonatype staging repo
-      run: mvn -B release:clean release:prepare release:perform -Dpassword=$GITHUB_PAT -Dproject.version=${{ inputs.release_version }} -DdevelopmentVersion=${{ inputs.next_snapshot_version }} -Dgpg.passphrase=$MAVEN_GPG_PASSPHRASE
-    - name: Print summary
-      run: echo "Release ${{ inputs.release_version }} deployed to sonatype staging repo. Please go there, close the repo and publish it." >> $GITHUB_STEP_SUMMARY
+
+      # Update changelog unreleased section with new version
+      - name: Update changelog
+        uses: superfaceai/release-changelog-action@v1
+        with:
+          path-to-changelog: CHANGELOG.md
+          version: ${{ inputs.release_version }}
+          operation: release
+
+      # Apply formatting (changelog was touched)
+      - name: Apply format using spotless:apply
+        run: mvn spotless:apply -DspotlessFiles='.*CHANGELOG.md'
+
+      # Commit changes
+      - name: Commit CHANGELOG.md and package.json changes and create tag
+        run: |
+          git add "CHANGELOG.md"
+          git commit -m "Update CHANGELOG.md for release ${{ inputs.release_version }}"
+
+      # Push repository changes
+      - name: Push changes to repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
+        run: |
+          git push origin
+
+      - name: Build with Maven, deploying to sonatype staging repo
+        run: mvn -e -X -B release:clean release:prepare release:perform -DreleaseVersion=${{ inputs.release_version }} -DdevelopmentVersion=${{ inputs.next_snapshot_version }} -Darguments=-Dgpg.passphrase=$MAVEN_GPG_PASSPHRASE
+        env:
+          password: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+      - name: Print summary
+        run: echo "Release ${{ inputs.release_version }} deployed to sonatype staging repo. Please go there, close the repo and publish it." >> $GITHUB_STEP_SUMMARY
