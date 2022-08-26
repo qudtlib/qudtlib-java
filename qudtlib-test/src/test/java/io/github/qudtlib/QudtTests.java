@@ -2,6 +2,7 @@ package io.github.qudtlib;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -312,6 +313,13 @@ public class QudtTests {
     }
 
     @Test
+    public void testInconvertible() {
+        assertThrows(
+                InconvertibleQuantitiesException.class,
+                () -> Qudt.convert(BigDecimal.ONE, Qudt.Units.SEC, Qudt.Units.M));
+    }
+
+    @Test
     public void testConvert_L_to_GAL_US() {
         QuantityValue converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.L, Qudt.Units.GAL_US);
         MatcherAssert.assertThat(
@@ -367,5 +375,8 @@ public class QudtTests {
         MatcherAssert.assertThat(
                 Units.MilliM.getConversionMultiplier(Units.KiloM),
                 Matchers.comparesEqualTo(new BigDecimal("0.000001")));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> Qudt.Units.DEG_F.getConversionMultiplier(Qudt.Units.DEG_C));
     }
 }

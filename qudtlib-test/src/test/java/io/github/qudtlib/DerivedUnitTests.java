@@ -332,5 +332,8 @@ public class DerivedUnitTests {
         Map.Entry<Unit, BigDecimal> base = Qudt.scaleToBaseUnit(Qudt.Units.KiloM);
         assertEquals(Qudt.Units.M, base.getKey());
         MatcherAssert.assertThat(base.getValue(), Matchers.comparesEqualTo(new BigDecimal("1000")));
+        base = Qudt.scaleToBaseUnit(Qudt.Units.M);
+        MatcherAssert.assertThat(base.getValue(), Matchers.comparesEqualTo(BigDecimal.ONE));
+        assertEquals(Qudt.Units.M, base.getKey());
     }
 }

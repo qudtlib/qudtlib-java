@@ -365,18 +365,12 @@ public class Qudt {
      * @return a Map.Entry with the base unit and the required scale factor
      */
     public static Map.Entry<Unit, BigDecimal> scaleToBaseUnit(Unit unit) {
-        if (unit.getScalingOfIri().isPresent() && unit.getPrefixIri().isPresent()) {
-            Unit base = unit(unit.getScalingOfIri().get());
-            Prefix prefx = prefix(unit.getPrefixIri().get());
-            if (Units.GM.getIri().equals(base.getIri())) {
-                return Map.entry(Units.KiloGM, prefx.getMultiplier().multiply(BD_1000));
-            }
-            return Map.entry(base, prefx.getMultiplier());
+        if (!unit.isScaled()) {
+            return Map.entry(unit, BigDecimal.ONE);
         }
-        if (Units.GM.getIri().equals(unit.getIri())) {
-            return Map.entry(Units.KiloGM, BD_1000);
-        }
-        return Map.entry(unit, BigDecimal.ONE);
+        Unit baseUnit = unit.getScalingOf().orElseThrow(() -> new IllegalStateException("Scaled unit has null isScalingOf() unit - that's a bug!"));
+        BigDecimal multiplier = unit.getConversionMultiplier(baseUnit);
+        return Map.entry(baseUnit, multiplier);
     }
 
     /**

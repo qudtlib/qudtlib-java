@@ -85,8 +85,7 @@ public class Unit {
         if (isUnitless(this) || isUnitless(toUnit)) {
             return value;
         }
-        boolean isConvertible = isConvertible(toUnit);
-        if (!isConvertible) {
+        if (!isConvertible(toUnit)) {
             throw new InconvertibleQuantitiesException(
                     String.format(
                             "Cannot convert from %s to %s: dimension vectors differ",
