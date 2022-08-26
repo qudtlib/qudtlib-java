@@ -1,6 +1,8 @@
 package io.github.qudtlib.model;
 
+import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,6 +66,68 @@ public class Unit {
         this.quantityKindIris = new HashSet<>();
         this.symbol = symbol;
         this.labels = new HashSet<>();
+    }
+
+    static boolean isUnitless(Unit unit) {
+        return unit.getIri().equals("http://qudt.org/vocab/unit/UNITLESS");
+    }
+
+    public QuantityValue convertToQuantityValue(BigDecimal value, Unit toUnit) {
+        return new QuantityValue(convert(value, toUnit), toUnit);
+    }
+
+    public BigDecimal convert(BigDecimal value, Unit toUnit) {
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(toUnit);
+        if (this.equals(toUnit)) {
+            return value;
+        }
+        if (isUnitless(this) || isUnitless(toUnit)) {
+            return value;
+        }
+        boolean isConvertible = isConvertible(toUnit);
+        if (!isConvertible) {
+            throw new InconvertibleQuantitiesException(
+                    String.format(
+                            "Cannot convert from %s to %s: dimension vectors differ",
+                            this.getIri(), toUnit.getIri()));
+        }
+        BigDecimal fromOffset = this.getConversionOffset().orElse(BigDecimal.ZERO);
+        BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(BigDecimal.ONE);
+        BigDecimal toOffset = toUnit.getConversionOffset().orElse(BigDecimal.ZERO);
+        BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
+        return value.add(fromOffset)
+                .multiply(fromMultiplier, MathContext.DECIMAL128)
+                .divide(toMultiplier, MathContext.DECIMAL128)
+                .subtract(toOffset);
+    }
+
+    /**
+     * Returns the multiplier required to convert from this unit into <code>toUnit</code>.
+     *
+     * @param toUnit the unit the resulting multiplier converts to
+     * @return the multiplier
+     * @throws IllegalArgumentException if either of this or <code>toUnit</code> has a non-null
+     *     <code>conversionOffset</code>.
+     */
+    public BigDecimal getConversionMultiplier(Unit toUnit) {
+        if (this.equals(toUnit)) {
+            return BigDecimal.ONE;
+        }
+        if (this.conversionOffset != null || toUnit.conversionOffset != null) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Cannot convert from %s to %s just by multiplication, one of them has a conversion offset!",
+                            this, toUnit));
+        }
+        BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(BigDecimal.ONE);
+        BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
+        return fromMultiplier.divide(toMultiplier, MathContext.DECIMAL128);
+    }
+
+    public boolean isConvertible(Unit toUnit) {
+        Objects.requireNonNull(toUnit);
+        return this.dimensionVectorIri.equals(toUnit.dimensionVectorIri);
     }
 
     public boolean matches(Collection<Map.Entry<String, Integer>> factorUnitSpec) {
