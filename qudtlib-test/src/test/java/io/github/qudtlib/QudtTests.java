@@ -358,4 +358,14 @@ public class QudtTests {
                 Qudt.convert(new BigDecimal("1"), Units.MegaBYTE, Units.BYTE).getValue(),
                 Matchers.comparesEqualTo(new BigDecimal("1048575.999999999999999999999999997")));
     }
+
+    @Test
+    public void testGetConversionMultiplier() {
+        MatcherAssert.assertThat(
+                Units.CentiM.getConversionMultiplier(Units.MilliM),
+                Matchers.comparesEqualTo(new BigDecimal("10")));
+        MatcherAssert.assertThat(
+                Units.MilliM.getConversionMultiplier(Units.KiloM),
+                Matchers.comparesEqualTo(new BigDecimal("0.000001")));
+    }
 }

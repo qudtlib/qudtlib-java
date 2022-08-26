@@ -1,14 +1,12 @@
 package io.github.qudtlib;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.exception.NotFoundException;
 import io.github.qudtlib.model.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -753,29 +751,7 @@ public class Qudt {
      * @throws InconvertibleQuantitiesException if the conversion is not possible
      */
     public static QuantityValue convert(BigDecimal fromValue, Unit fromUnit, Unit toUnit) {
-        if (fromUnit.equals(toUnit)) {
-            return new QuantityValue(fromValue, toUnit);
-        }
-        if (Qudt.Units.UNITLESS.equals(fromUnit) || Qudt.Units.UNITLESS.equals(toUnit)) {
-            return new QuantityValue(fromValue, toUnit);
-        }
-        boolean isConvertible = isConvertible(fromUnit, toUnit);
-        if (!isConvertible) {
-            throw new InconvertibleQuantitiesException(
-                    String.format(
-                            "Cannot convert from %s to %s", fromUnit.getIri(), toUnit.getIri()));
-        }
-        BigDecimal fromOffset = fromUnit.getConversionOffset().orElse(BigDecimal.ZERO);
-        BigDecimal fromMultiplier = fromUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
-        BigDecimal toOffset = toUnit.getConversionOffset().orElse(BigDecimal.ZERO);
-        BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
-        BigDecimal converted =
-                fromValue
-                        .add(fromOffset)
-                        .multiply(fromMultiplier, MathContext.DECIMAL128)
-                        .divide(toMultiplier, MathContext.DECIMAL128)
-                        .subtract(toOffset);
-        return new QuantityValue(converted, toUnit);
+        return fromUnit.convertToQuantityValue(fromValue, toUnit);
     }
 
     /**
@@ -786,21 +762,7 @@ public class Qudt {
      * @return <code>true</code> if the units are convertible.
      */
     public static boolean isConvertible(Unit fromUnit, Unit toUnit) {
-        Set<String> fromDimensionVectors =
-                fromUnit.getQuantityKindIris().stream()
-                        .map(Qudt::quantityKind)
-                        .map(QuantityKind::getDimensionVector)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(toSet());
-        Set<String> toDimensionVectors =
-                toUnit.getQuantityKindIris().stream()
-                        .map(Qudt::quantityKind)
-                        .map(QuantityKind::getDimensionVector)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(toSet());
-        return fromDimensionVectors.stream().anyMatch(toDimensionVectors::contains);
+        return fromUnit.isConvertible(toUnit);
     }
 
     /**
