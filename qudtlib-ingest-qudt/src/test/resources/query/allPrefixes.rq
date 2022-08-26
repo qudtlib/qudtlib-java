@@ -1,0 +1,16 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT  where
+{
+    ?prefix a qudt:Prefix ;
+        rdfs:label ?label ;
+        qudt:symbol ?symbol ;
+        qudt:prefixMultiplier ?prefixMultiplier .
+    optional {
+        ?prefix qudt:ucumCode ?ucumCode .
+    }
+} order by ?prefix

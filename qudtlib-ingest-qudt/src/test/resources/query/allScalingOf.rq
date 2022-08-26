@@ -1,0 +1,17 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+
+SELECT * where
+{
+    ?unit a qudt:Unit.
+    optional {
+        ?unit qudt:isScalingOf ?base .
+    }
+    optional {
+        ?unit qudt:prefix ?prefix .
+    }
+    optional {
+        ?unit qudt:conversionMultiplier ?conversionMultiplier .
+    }
+
+
+} order by ?prefix ?base ?unit ?conversionMultiplier

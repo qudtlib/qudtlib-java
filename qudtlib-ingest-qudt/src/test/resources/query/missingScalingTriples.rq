@@ -1,0 +1,18 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+
+SELECT * where
+{
+    ?unit a qudt:Unit.
+    optional {
+        ?unit qudt:isScalingOf ?base .
+    }
+    optional {
+        ?unit qudt:prefix ?prefix .
+    }
+    optional {
+        ?unit qudt:conversionMultiplier ?conversionMultiplier .
+    }
+    filter(!contains(str(?unit), "-"))
+    filter(regex(str(?unit), "(.+/Atto.+|.+/Centi.+|.+/Deca.+|.+/Deci.+|.+/Deka.+|.+/Exa.+|.+/Exbi.+|.+/Femto.+|.+/Gibi.+|.+/Giga.+|.+/Hecto.+|.+/Kibi.+|.+/Kilo.+|.+/Mebi.+|.+/Mega.+|.+/Micro.+|.+/Milli.+|.+/Nano.+|.+/Pebi.+|.+/Peta.+|.+/Pico.+|.+/Tebi.+|.+/Tera.+|.+/Yobi.+|.+/Yocto.+|.+/Yotta.+|.+/Zebi.+|.+/Zepto.+|.+/Zetta.+)"))
+    filter(!bound(?base) || !bound (?prefix) || ! bound (?conversionMultiplier))
+} order by ?prefix ?base ?unit ?conversionMultiplier
