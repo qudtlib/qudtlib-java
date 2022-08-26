@@ -32,10 +32,15 @@ public class FactorUnitSelection {
         return this.selectors.stream()
                 .anyMatch(
                         s ->
-                                factorUnit.equals(s.getMatchedFactorUnit())
+                                s.getFactorUnitMatch().isPresent()
+                                        && factorUnit.equals(
+                                                s.getFactorUnitMatch().get().getMatchedFactorUnit())
                                         && Arrays.equals(
                                                 checkedPath.toArray(),
-                                                s.getMatchedPath().toArray()));
+                                                s.getFactorUnitMatch()
+                                                        .get()
+                                                        .getMatchedPath()
+                                                        .toArray()));
     }
 
     public boolean isCompleteMatch() {
@@ -44,14 +49,18 @@ public class FactorUnitSelection {
         }
 
         Set<ScaleFactor> scaleFactors =
-                selectors.stream().map(FactorUnitSelector::getScaleFactor).collect(toSet());
+                selectors.stream()
+                        .filter(s -> s.getFactorUnitMatch().isPresent())
+                        .map(s -> s.getFactorUnitMatch().get().getScaleFactor())
+                        .collect(toSet());
         BigDecimal accumulatedScaleFactors =
                 scaleFactors.stream()
                         .map(ScaleFactor::getValue)
                         .reduce(BigDecimal.ONE, BigDecimal::multiply);
         BigDecimal acccumulatedMatchedMultipliers =
                 selectors.stream()
-                        .map(FactorUnitSelector::getMatchedMultiplier)
+                        .filter(s -> s.getFactorUnitMatch().isPresent())
+                        .map(s -> s.getFactorUnitMatch().get().getMatchedMultiplier())
                         .reduce(BigDecimal.ONE, BigDecimal::multiply);
         BigDecimal cumulativeScale =
                 accumulatedScaleFactors.multiply(acccumulatedMatchedMultipliers);
@@ -63,7 +72,13 @@ public class FactorUnitSelection {
                 .allMatch(
                         s ->
                                 factorUnits.stream()
-                                        .anyMatch(u -> u.equals(s.getMatchedFactorUnit())));
+                                        .anyMatch(
+                                                u ->
+                                                        s.getFactorUnitMatch().isPresent()
+                                                                && u.equals(
+                                                                        s.getFactorUnitMatch()
+                                                                                .get()
+                                                                                .getMatchedFactorUnit())));
     }
 
     public boolean isMatchingSelectorAvailable(FactorUnit factorUnit, int cumulativeExponent) {
