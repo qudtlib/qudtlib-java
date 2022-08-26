@@ -1,0 +1,17 @@
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+
+SELECT * where
+{
+    ?unit a qudt:Unit.
+    optional {
+        ?unit qudt:isScalingOf ?base .
+    }
+    optional {
+        ?unit qudt:prefix ?prefix .
+    }
+    optional {
+        ?unit qudt:conversionMultiplier ?conversionMultiplier .
+    }
+    filter(?unit in (unit:GM, unit:DecaGM, unit:LB, unit:Stone_UK, unit:CentiM, unit:MicroIN, unit:IN, unit:A_Ab, unit:PA-PER-MIN, unit:TONNE-PER-MIN, unit:KiloGM-PER-SEC, unit:KiloGM-PER-MIN))
+} order by ?prefix ?base ?unit ?conversionMultiplier
