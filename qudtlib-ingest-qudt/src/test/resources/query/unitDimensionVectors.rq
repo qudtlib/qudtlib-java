@@ -1,10 +1,16 @@
 PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX qkdv: <http://qudt.org/vocab/dimensionvector/>
+PREFIX qk: <http://qudt.org/vocab/quantitykind/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
 
-SELECT * where
+
+SELECT ?unit ?hasDimensionVector ?qkHasDimensionVector ?hasQuantityKind where
 {
     ?unit a qudt:Unit.
+    ?unit qudt:hasQuantityKind ?hasQuantityKind .
+    ?hasQuantityKind qudt:hasDimensionVector ?qkHasDimensionVector .
     optional {
         ?unit qudt:hasDimensionVector ?hasDimensionVector .
     }
-
-} order by ?hasDimensionVector
+    filter(! bound (?hasDimensionVector))
+} order by ?unit ?hasDimensionVector
