@@ -1,0 +1,12 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX qkdv: <http://qudt.org/vocab/dimensionvector/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+
+
+SELECT ?unit ?hasDimensionVector where
+{
+    ?unit a qudt:Unit.
+    optional {
+        ?unit qudt:hasDimensionVector ?hasDimensionVector .
+    }
+} order by ?hasDimensionVector ?unit
