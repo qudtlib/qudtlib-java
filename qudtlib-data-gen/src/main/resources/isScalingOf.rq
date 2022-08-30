@@ -7,36 +7,38 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 CONSTRUCT {
  ?scaledUnit
     qudt:isScalingOf ?baseUnit ;
-    qudt:prefix ?prefix ;
-    qudt:convertsTo ?convertsTo .
+    qudt:conversionMultiplier ?scaledUnitConversionMultiplier ;
+    qudt:conversionOffset ?scaledUnitConversionOffset ;
+    qudt:prefix ?prefix .
 }
-#SELECT ?scaledUnit ?baseUnit ?convertsTo ?prefix
+#SELECT ?scaledUnit ?baseUnit ?prefix ?scaledUnitConversionMultiplier ?scaledUnitConversionOffset
 where
 {
     {
-        {
-
+        { SELECT DISTINCT ?scaledUnit ?scaledUnitLocalName ?prefixRegex
+            WHERE
             {
+
                 # select all base units (not using prefixes)
-                ?scaledUnit a qudt:Unit ;
-                    BIND(REPLACE(STR(?scaledUnit), "^.+/", "") as ?scaledUnitLocalName)
-                    FILTER EXISTS {
+                {
+                    ?scaledUnit a qudt:Unit .
+                } UNION  {
+                    ?factor qudt:unit ?scaledUnit ;
+                    FILTER NOT EXISTS {
+                        ?scaledUnit a qudt:Unit .
+                    }
+                }
+                BIND(REPLACE(STR(?scaledUnit), "^.+/", "") as ?scaledUnitLocalName)
+                FILTER(REPLACE(?scaledUnitLocalName, ?prefixRegex, "") != ?scaledUnitLocalName)
+                {
+                    SELECT (CONCAT("\\b(",GROUP_CONCAT(STR(?prefixLabel); separator ="|"), ")") as ?prefixRegex) where
+                    {
                         ?prefix
                             a qudt:Prefix ;
-                            rdfs:label ?prefixLabel
-                        FILTER(CONTAINS(?scaledUnitLocalName, STR(?prefixLabel)))
-                    }
+                            rdfs:label ?prefixLabel .
+                     }
+                }
             }
-
-            {
-                SELECT (CONCAT("\\b(",GROUP_CONCAT(STR(?prefixLabel); separator ="|"), ")") as ?prefixRegex) where
-                {
-                    ?prefix
-                        a qudt:Prefix ;
-                        rdfs:label ?prefixLabel .
-                 }
-            }
-
         }
 
         # select all base units (not using prefixes)
@@ -57,21 +59,32 @@ where
         )
     }
     OPTIONAL {
+        # if the scaled unit has a prefix, match it so we can add the triple
         ?prefix a qudt:Prefix ;
             rdfs:label ?prefixLabel ;
             FILTER (!CONTAINS(?baseUnitLocalName, "-"))
             FILTER (CONTAINS(?scaledUnitLocalName, STR(?prefixLabel)))
     }
     OPTIONAL {
-        ?scaledUnit qudt:conversionMultiplier ?scaledMultiplier . # require any multiplier
-        ?baseUnit
-            qudt:conversionMultiplier ?cm .
+        # if the scaled unit does not have a conversionMultiplier, generate it
+        FILTER NOT EXISTS {
+            ?scaledUnit qudt:conversionMultiplier ?any .
+        }
+        ?baseUnit qudt:conversionMultiplier ?cm .
         optional {
             ?baseUnit qudt:conversionOffset ?co
         }
-        FILTER( !BOUND(?co) || ?co = 0 )
-        FILTER( ?cm = 1 )
-        BIND(?baseUnit as ?convertsTo)
+        ?prefix a qudt:Prefix ;
+            qudt:prefixMultiplier ?prefixMultiplier ;
+            rdfs:label ?prefixLabel ;
+            FILTER (!CONTAINS(?baseUnitLocalName, "-"))
+            FILTER (CONTAINS(?scaledUnitLocalName, STR(?prefixLabel)))
+        BIND (?cm * ?prefixMultiplier as ?scaledUnitConversionMultiplier )
+        BIND (?co as ?scaledUnitConversionOffset )
+    }
+
+    OPTIONAL {
+        ?baseUnit qudt:dimensionVector ?dv .
     }
     FILTER NOT EXISTS {
         ?scaledUnit qudt:isScalingOf ?baseUnit .
@@ -83,6 +96,3 @@ where
     }
 }
 order by ?baseUnit ?scaledUnit
-
-
-

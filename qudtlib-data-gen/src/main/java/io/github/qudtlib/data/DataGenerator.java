@@ -1,8 +1,9 @@
 package io.github.qudtlib.data;
 
-import com.github.qudlib.common.RdfOps;
+import io.github.qudlib.common.RdfOps;
 import io.github.qudtlib.vocab.QUDT;
 import io.github.qudtlib.vocab.QUDTX;
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -43,6 +44,8 @@ public class DataGenerator {
     // additional data
     private static final String SI_BASE_UNITS_DATA = "si-base-units.ttl";
     private static final String UNITS_EXPECTED_DATA = "tmpExpected/qudt-unit.ttl";
+
+    private static final boolean DEBUG = false;
 
     public DataGenerator(String outputDir) {
 
@@ -102,15 +105,27 @@ public class DataGenerator {
         Repository outputRepo = new SailRepository(new MemoryStore());
         try (RepositoryConnection inputCon = inputRepo.getConnection()) {
             try (RepositoryConnection outputCon = outputRepo.getConnection()) {
+                // start with the original units data in the INPUT repo
                 RdfOps.addStatementsFromFile(inputCon, UNITS_FILE);
+                // deal with kg
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
-                RdfOps.copyData(inputCon, outputCon);
-                RdfOps.addStatementsFromFile(inputCon, PREFIXES_FILE);
+                // add SI base units
                 RdfOps.addStatementsFromFile(outputCon, SI_BASE_UNITS_DATA);
-                RdfOps.addStatementsFromFile(inputCon, SI_BASE_UNITS_DATA);
-                RdfOps.addDataUsingQuery(outputCon, FACTOR_UNITS_QUERY, outputCon);
-                RdfOps.addDataUsingQuery(outputCon, MISSING_UNITS_QUERY, inputCon, outputCon);
-                RdfOps.addDataUsingQuery(inputCon, IS_SCALING_OF_QUERY, outputCon);
+                // put result in OUTPUT repo
+                RdfOps.copyData(inputCon, outputCon);
+                // add prefixes to INPUT repo (cannot be in output, but is required for queries!)
+                RdfOps.addStatementsFromFile(inputCon, PREFIXES_FILE);
+                // find factor units, write result in INPUT and OUTPUT repos
+                RdfOps.addDataUsingQuery(inputCon, FACTOR_UNITS_QUERY, inputCon, outputCon);
+                // find isScalingOf where missing, write result in INPUT and OUTPUT repos
+                if (DEBUG) {
+                    RdfOps.writeTurtleFile(inputCon, new File("/tmp/scaling-data.ttl").toPath());
+                }
+                RdfOps.addDataUsingQuery(inputCon, IS_SCALING_OF_QUERY, inputCon, outputCon);
+                // we generate some units in the above, add basic unit info for those, write to
+                // INPUT and OUTPUT repos
+                RdfOps.addDataUsingQuery(inputCon, MISSING_UNITS_QUERY, inputCon, outputCon);
+                // write units file from OUTPUT repo
                 RdfOps.writeTurtleFile(outputCon, outFile(UNITS_OUTFILE));
                 // comparison with expected is useful during version upgrades, keep it commented out
                 // during normal execution
