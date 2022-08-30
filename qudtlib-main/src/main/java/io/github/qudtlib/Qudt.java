@@ -368,7 +368,12 @@ public class Qudt {
         if (!unit.isScaled()) {
             return Map.entry(unit, BigDecimal.ONE);
         }
-        Unit baseUnit = unit.getScalingOf().orElseThrow(() -> new IllegalStateException("Scaled unit has null isScalingOf() unit - that's a bug!"));
+        Unit baseUnit =
+                unit.getScalingOf()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalStateException(
+                                                "Scaled unit has null isScalingOf() unit - that's a bug!"));
         BigDecimal multiplier = unit.getConversionMultiplier(baseUnit);
         return Map.entry(baseUnit, multiplier);
     }
