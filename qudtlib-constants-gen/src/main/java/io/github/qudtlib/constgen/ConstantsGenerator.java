@@ -1,11 +1,11 @@
 package io.github.qudtlib.constgen;
 
-import com.github.qudlib.common.RdfOps;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import io.github.qudlib.common.RdfOps;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -106,7 +106,9 @@ public class ConstantsGenerator {
                 List<Constant> constants = new ArrayList<>();
                 while (result.hasNext()) {
                     BindingSet bindings = result.next();
-                    String constName = bindings.getValue("constName").stringValue();
+                    String constName =
+                            makeSafeJavaIdentifierFirstChar(
+                                    bindings.getValue("constName").stringValue());
                     String localName = bindings.getValue("localName").stringValue();
                     String label =
                             bindings.getValue("label") == null
@@ -119,6 +121,14 @@ public class ConstantsGenerator {
             }
         }
         return templateVars;
+    }
+
+    private String makeSafeJavaIdentifierFirstChar(String constName) {
+        Pattern startPattern = Pattern.compile("^[$€a-zA-Z_]");
+        if (!startPattern.matcher(constName).lookingAt()) {
+            return "_" + constName;
+        }
+        return constName;
     }
 
     private void generateJavaFile(
