@@ -7,6 +7,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 CONSTRUCT {
     ?unit a qudt:Unit ;
+        qudt:hasDimensionVector ?dimensionVector ;
         rdfs:label ?unitLocalName;
         rdfs:comment  "This unit was added while generating qudt:factorUnit information as a missing factor unit"@en .
 }
@@ -17,13 +18,16 @@ CONSTRUCT {
         ?x qudt:factorUnit/qudt:unit ?unit .
     } UNION {
         ?unit qudt:factorUnit/qudt:unit ?x .
-    } UNION  {
+    } UNION {
         ?x qudt:isScalingOf ?unit .
     } UNION {
         ?unit qudt:isScalingOf ?x .
     }
     FILTER NOT EXISTS {
         ?unit a qudt:Unit
+    }
+    OPTIONAL {
+        ?unit qudt:isScalingOf/qudt:hasDimensionVector ?dimensionVector .
     }
     BIND(REPLACE(STR(?unit), "^.+/", "") as ?unitLocalName)
 }
