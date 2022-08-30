@@ -76,36 +76,9 @@ class FactorUnitSelector {
                 && Integer.signum(this.exponent) == Integer.signum(cumulatedFactorUnitExponent);
     }
 
-    private boolean unitMatches(FactorUnit factorUnit) {
-        if (this.unit.equals(factorUnit.unit)) {
-            return true;
-        }
-        if (this.unit.isScaled()
-                && this.unit
-                        .getScalingOf()
-                        .map(u -> u.equals(factorUnit.getUnit()))
-                        .orElse(false)) {
-            return true;
-        }
-        if (factorUnit.unit.isScaled()
-                && factorUnit
-                        .getUnit()
-                        .getScalingOf()
-                        .map(u -> u.equals(this.unit))
-                        .orElse(false)) {
-            return true;
-        }
-        return factorUnit.getUnit().isScaled()
-                && this.unit.isScaled()
-                && factorUnit
-                        .getUnit()
-                        .getScalingOf()
-                        .map(u -> this.unit.getScalingOf().map(u2 -> u2.equals(u)).orElse(false))
-                        .orElse(false);
-    }
-
     public boolean matches(FactorUnit factorUnit, int cumulativeExponent) {
-        return exponentMatches(factorUnit, cumulativeExponent) && unitMatches(factorUnit);
+        return exponentMatches(factorUnit, cumulativeExponent)
+                && this.unit.isSameScaleAs(factorUnit.getUnit());
     }
 
     public FactorUnitSelector copy() {
@@ -138,7 +111,7 @@ class FactorUnitSelector {
                 + unit
                 + "^"
                 + exponent
-                + ((factorUnitMatch == null) ? "(not matched)" : factorUnitMatch.toString())
+                + ((factorUnitMatch == null) ? ",(not matched)" : "," + factorUnitMatch)
                 + '}';
     }
 

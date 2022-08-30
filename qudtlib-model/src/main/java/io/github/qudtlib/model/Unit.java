@@ -126,6 +126,7 @@ public class Unit {
 
     public boolean isConvertible(Unit toUnit) {
         Objects.requireNonNull(toUnit);
+        Objects.requireNonNull(this.dimensionVectorIri);
         return this.dimensionVectorIri.equals(toUnit.dimensionVectorIri);
     }
 
@@ -348,5 +349,30 @@ public class Unit {
             this.factorUnits = new ArrayList<>();
         }
         this.factorUnits.add(factorUnit);
+    }
+
+    private boolean findInBasesRecursively(Unit toFind) {
+        if (!this.isScaled()) {
+            return this.equals(toFind);
+        }
+        return this.getScalingOf()
+                .orElseThrow(
+                        () ->
+                                new IllegalStateException(
+                                        String.format(
+                                                "No base unit found for %s - this is a bug", this)))
+                .findInBasesRecursively(toFind);
+    }
+
+    public boolean isSameScaleAs(Unit other) {
+        if (this.equals(other)) {
+            return true;
+        }
+        if (this.getScalingOfIri()
+                .map(s -> s.equals(other.getScalingOfIri().orElse(null)))
+                .orElse(false)) {
+            return true;
+        }
+        return this.findInBasesRecursively(other) || other.findInBasesRecursively(this);
     }
 }

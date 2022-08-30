@@ -379,4 +379,23 @@ public class QudtTests {
                 IllegalArgumentException.class,
                 () -> Qudt.Units.DEG_F.getConversionMultiplier(Qudt.Units.DEG_C));
     }
+
+    @Test
+    public void testConvert_FemtoGM_to_KiloGM() {
+        QuantityValue converted =
+                Qudt.convert(BigDecimal.ONE, Qudt.Units.FemtoGM, Qudt.Units.KiloGM);
+        MatcherAssert.assertThat(
+                converted.getValue(),
+                Matchers.comparesEqualTo(new BigDecimal("0.000000000000000001")));
+    }
+
+    @Test
+    public void testConvert_Metric_to_Imperial() {
+        QuantityValue converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.LB, Qudt.Units.KiloGM);
+        MatcherAssert.assertThat(
+                converted.getValue(), Matchers.comparesEqualTo(new BigDecimal("0.45359237")));
+        converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.BTU_IT__PER__LB, Qudt.Units.J__PER__GM);
+        MatcherAssert.assertThat(
+                converted.getValue(), Matchers.comparesEqualTo(new BigDecimal("2.326")));
+    }
 }

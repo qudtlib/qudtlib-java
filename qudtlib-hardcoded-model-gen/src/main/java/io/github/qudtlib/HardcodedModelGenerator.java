@@ -1,10 +1,10 @@
 package io.github.qudtlib;
 
-import com.github.qudlib.common.RdfOps;
 import freemarker.core.Environment;
 import freemarker.core.TemplateNumberFormat;
 import freemarker.core.TemplateNumberFormatFactory;
 import freemarker.template.*;
+import io.github.qudlib.common.RdfOps;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
