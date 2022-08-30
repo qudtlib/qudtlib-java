@@ -1,6 +1,8 @@
-package com.github.qudlib.common;
+package io.github.qudlib.common;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -11,6 +13,7 @@ import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.RDFWriter;
@@ -24,12 +27,32 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
  * @since 1.0
  */
 public class RdfOps {
+
+    private static final boolean DEBUG = false;
+
     public static void writeTurtleFile(RepositoryConnection con, Path outfile) {
         System.out.println("writing RDF data to file " + outfile.toFile().getAbsolutePath());
         try (FileOutputStream out = new FileOutputStream(outfile.toFile())) {
             RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
             writer.startRDF();
-            for (Statement st : con.getStatements(null, null, null, (Resource) null)) {
+            try (RepositoryResult<Statement> statements =
+                    con.getStatements(null, null, null, (Resource) null)) {
+                for (Statement st : statements) {
+                    writer.handleStatement(st);
+                }
+            }
+            writer.endRDF();
+        } catch (Exception e) {
+            throw new IllegalStateException("Error writing RDF file " + outfile, e);
+        }
+    }
+
+    public static void writeTurtleFile(Model model, Path outfile) {
+        System.out.println("writing RDF data to file " + outfile.toFile().getAbsolutePath());
+        try (FileOutputStream out = new FileOutputStream(outfile.toFile())) {
+            RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
+            writer.startRDF();
+            for (Statement st : model.getStatements(null, null, null, (Resource) null)) {
                 writer.handleStatement(st);
             }
             writer.endRDF();
@@ -42,23 +65,40 @@ public class RdfOps {
             RepositoryConnection fromCon, String queryFile, RepositoryConnection... toCon) {
         String query = loadQuery(queryFile);
         try (GraphQueryResult result = fromCon.prepareGraphQuery(query).evaluate()) {
+            Model model = QueryResults.asModel(result);
+            if (DEBUG) {
+                try {
+                    File out =
+                            File.createTempFile(
+                                    "queryresult-" + new File(queryFile).getName(), ".txt");
+                    System.err.println("writing query result to " + out);
+                    writeTurtleFile(model, out.toPath());
+                } catch (IOException e) {
+                    System.err.println("Error writing query result file for debugging purposes");
+                    e.printStackTrace();
+                }
+            }
             for (RepositoryConnection to : toCon) {
-                to.add(QueryResults.asModel(result));
+                to.add(model);
+                to.commit();
             }
         }
     }
 
     public static void copyData(RepositoryConnection fromCon, RepositoryConnection toCon) {
         toCon.add(fromCon.getStatements(null, null, null, (Resource) null));
+        toCon.commit();
     }
 
     public static void updateDataUsingQuery(RepositoryConnection con, String queryFile) {
         String query = loadQuery(queryFile);
         con.prepareUpdate(query).execute();
+        con.commit();
     }
 
     public static void addStatementsFromFile(RepositoryConnection con, String filename) {
         con.add(loadTurtleToModel(filename));
+        con.commit();
     }
 
     public static Model loadTurtleToModel(String classpathTurtleFile) {
