@@ -153,11 +153,10 @@ public class Unit {
         }
         if (factorUnitSpec.length > 14) {
             throw new IllegalArgumentException(
-                    "No more than 10 arguments (7 factor units) supported");
+                    "No more than 14 arguments (7 factor units) supported");
         }
-        boolean abortSearch = false;
         List<FactorUnitSelector> selectors = new ArrayList<>();
-        for (int i = 0; i < factorUnitSpec.length && !abortSearch; i += 2) {
+        for (int i = 0; i < factorUnitSpec.length; i += 2) {
             Unit requestedUnit;
             requestedUnit = ((Unit) factorUnitSpec[i]);
             Integer requestedExponent = (Integer) factorUnitSpec[i + 1];
