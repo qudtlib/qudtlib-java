@@ -1,0 +1,4 @@
+[submodule "qudtlib-js"]
+	path = qudtlib-js
+	url = https://github.com/qudtlib/qudtlib-js.git
+	branch = main
