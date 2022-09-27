@@ -26,7 +26,7 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
  * @author Florian Kleedorfer
  * @since 1.0
  */
-public class RdfOps {
+public abstract class RdfOps {
 
     private static final boolean DEBUG = false;
 

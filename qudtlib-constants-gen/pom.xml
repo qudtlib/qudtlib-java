@@ -17,12 +17,13 @@
         </dependency>
         <dependency>
             <groupId>io.github.qudtlib</groupId>
-            <artifactId>qudtlib-data</artifactId>
+            <artifactId>qudtlib-common-codegen</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
+            <groupId>io.github.qudtlib</groupId>
+            <artifactId>qudtlib-data</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <build>

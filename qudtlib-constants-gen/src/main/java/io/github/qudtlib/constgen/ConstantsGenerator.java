@@ -1,17 +1,17 @@
 package io.github.qudtlib.constgen;
 
-import freemarker.core.Environment;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import io.github.qudlib.common.CodeGen;
 import io.github.qudlib.common.RdfOps;
+import io.github.qudlib.common.safenames.SafeStringMapper;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -41,6 +41,8 @@ public class ConstantsGenerator {
     // template
     private static final String TEMPLATE_FILE = "template/constants.ftl";
 
+    private final SafeStringMapper javaConstantNameMapper = CodeGen.javaConstantMapper();
+
     public ConstantsGenerator(Path outputDir) {
         this.outputDir = outputDir;
     }
@@ -64,18 +66,10 @@ public class ConstantsGenerator {
     }
 
     public void generate() throws IOException, TemplateException {
-        Configuration cfg = getFreemarkerConfiguration();
+        Configuration cfg = CodeGen.getFreemarkerConfiguration();
         generateUnitConstants(cfg);
         generateQuantityKindConstants(cfg);
         generatePrefixConstants(cfg);
-    }
-
-    private Configuration getFreemarkerConfiguration() {
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
-        cfg.setClassLoaderForTemplateLoading(ConstantsGenerator.class.getClassLoader(), "/");
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        return cfg;
     }
 
     private void generatePrefixConstants(Configuration config)
@@ -107,7 +101,7 @@ public class ConstantsGenerator {
                 while (result.hasNext()) {
                     BindingSet bindings = result.next();
                     String constName =
-                            makeSafeJavaIdentifierFirstChar(
+                            javaConstantNameMapper.applyMapping(
                                     bindings.getValue("constName").stringValue());
                     String localName = bindings.getValue("localName").stringValue();
                     String label =
@@ -121,14 +115,6 @@ public class ConstantsGenerator {
             }
         }
         return templateVars;
-    }
-
-    private String makeSafeJavaIdentifierFirstChar(String constName) {
-        Pattern startPattern = Pattern.compile("^[$€a-zA-Z_]");
-        if (!startPattern.matcher(constName).lookingAt()) {
-            return "_" + constName;
-        }
-        return constName;
     }
 
     private void generateJavaFile(
@@ -150,11 +136,7 @@ public class ConstantsGenerator {
         templateVars.put(
                 "valueFactory",
                 type.substring(0, 1).toLowerCase() + type.substring(1) + "FromLocalname");
-        Template template = config.getTemplate(TEMPLATE_FILE);
-        FileWriter out =
-                new FileWriter(new File(packageFile, typePlural + ".java"), StandardCharsets.UTF_8);
-        Environment env = template.createProcessingEnvironment(templateVars, out);
-        env.setOutputEncoding(StandardCharsets.UTF_8.toString());
-        env.process();
+        File outFile = new File(packageFile, typePlural + ".java");
+        CodeGen.generateFileFromTemplate(config, TEMPLATE_FILE, templateVars, outFile);
     }
 }

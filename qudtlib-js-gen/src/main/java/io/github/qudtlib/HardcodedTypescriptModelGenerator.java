@@ -3,7 +3,7 @@ package io.github.qudtlib;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import io.github.qudlib.common.CodeGen;
-import io.github.qudlib.common.RdfOps;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,26 +13,22 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 /**
- * Generates a Java class that instantiates all QUDT individuals and relationships needed for
+ * Generates a Typescript package that instantiates all QUDT individuals and relationships needed for
  * QUDTLib from hardcoded data, i.e. without the need to process RDF.
  *
- * <p>This generator uses a functioning QUDTLib implementation that instantiates all individuals
- * from RDF (module <code>qudtlib-main-rdf</code>) to generate the 'hardcoded' class, which can
- * subsequently be used to initialize the internal model (as is done in module <code>qudtlib</code>
- * ).
+ * <p>This generator accesses the QUDT model through the 'hardcoded' QUDTLib implementation.</p>
  *
  * @author Florian Kleedorfer
  * @version 1.0
  */
-public class HardcodedModelGenerator {
+public class HardcodedTypescriptModelGenerator {
     private final Path outputDir;
     // output
-    private static final String DESTINATION_PACKAGE = "io.github.qudtlib.model";
-    private static final String FILENAME = "InitializerImpl.java";
+    private static final String FILENAME = "allQudtUnits.ts";
     // template
-    private static final String TEMPLATE_FILE = "template/InitializerImpl.ftl";
+    private static final String TEMPLATE_FILE = "template/allQudtUnits.ts.ftl";
 
-    public HardcodedModelGenerator(Path outputDir) {
+    public HardcodedTypescriptModelGenerator(Path outputDir) {
         this.outputDir = outputDir;
     }
 
@@ -45,10 +41,10 @@ public class HardcodedModelGenerator {
                 throw new IllegalArgumentException(" too many arguments");
             }
             String outputDir = args[0];
-            HardcodedModelGenerator generator = new HardcodedModelGenerator(Path.of(outputDir));
+            HardcodedTypescriptModelGenerator generator = new HardcodedTypescriptModelGenerator(Path.of(outputDir));
             generator.generate();
         } catch (Exception e) {
-            System.err.println("\n\n\tusage: HardcodedModelGenerator [output-dir]\n\n");
+            System.err.println("\n\n\tusage: HardcodedTypescriptModelGenerator [output-dir]\n\n");
             e.printStackTrace();
             System.exit(1);
         }
@@ -56,30 +52,28 @@ public class HardcodedModelGenerator {
 
     public void generate() throws IOException, TemplateException {
         Configuration cfg = CodeGen.getFreemarkerConfiguration();
-        generateInitializer(cfg);
+        generate(cfg);
     }
 
-    private void generateInitializer(Configuration config) throws IOException, TemplateException {
+    private void generate(Configuration config) throws IOException, TemplateException {
         Map<String, Object> templateVars = new HashMap<>();
         templateVars.put("prefixes", new TreeMap<>(Qudt.getPrefixesMap()));
         templateVars.put("quantityKinds", new TreeMap<>(Qudt.getQuantityKindsMap()));
         templateVars.put("units", new TreeMap<>(Qudt.getUnitsMap()));
-        generateJavaFile(config, templateVars);
+        generateTypescriptFile(config, templateVars);
     }
 
-    private void generateJavaFile(Configuration config, Map<String, Object> templateVars)
+    private void generateTypescriptFile(Configuration config, Map<String, Object> templateVars)
             throws IOException, TemplateException {
-        RdfOps.message("Generating " + FILENAME);
-        File packageFile =
-                new File(outputDir + "/" + DESTINATION_PACKAGE.replaceAll(Pattern.quote("."), "/"));
+        System.out.println("Generating " + FILENAME);
+        File packageFile = outputDir.toFile();
         if (!packageFile.exists()) {
             if (!packageFile.mkdirs()) {
                 throw new IOException(
                         "Could not create output dir " + packageFile.getAbsolutePath());
             }
         }
-        RdfOps.message("output dir: " + packageFile.getAbsolutePath());
-        templateVars.put("package", DESTINATION_PACKAGE);
+        System.out.println("output dir: " + packageFile.getAbsolutePath());
         File outFile = new File(packageFile, FILENAME);
         CodeGen.generateFileFromTemplate(config, TEMPLATE_FILE, templateVars, outFile);
     }

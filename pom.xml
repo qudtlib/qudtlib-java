@@ -30,7 +30,8 @@
         <module>qudtlib-ingest-qudt</module>
         <module>qudtlib-data-gen</module>
         <module>qudtlib-vocab</module>
-        <module>qudtlib-common</module>
+        <module>qudtlib-common-rdf</module>
+        <module>qudtlib-common-codegen</module>
         <module>qudtlib-data</module>
         <module>qudtlib-init-rdf</module>
         <module>qudtlib-main</module>
@@ -39,6 +40,7 @@
         <module>qudtlib-init-hardcoded</module>
         <module>qudtlib-test</module>
         <module>qudtlib-example</module>
+        <module>qudtlib-js-gen</module>
     </modules>
 
 
