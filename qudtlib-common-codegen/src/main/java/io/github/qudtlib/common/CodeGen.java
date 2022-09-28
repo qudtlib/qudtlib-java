@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -43,6 +44,14 @@ public abstract class CodeGen {
         env.process();
     }
 
+    public static Constant makeConstant(
+            Set<LangString> labels, String iri, SafeStringMapper constantNameMapper) {
+        String label = labels.stream().findFirst().map(LangString::getString).orElse("[no label]");
+        String iriLocalName = iri.replaceAll("^.+[/|#]", "");
+        String codeConstantName = constantNameMapper.applyMapping(iriLocalName);
+        return new Constant(codeConstantName, iriLocalName, label);
+    }
+
     public static SafeStringMapper javaConstantMapper() {
         return new SafeStringMapper(javaConstantNameMapper);
     }
@@ -51,8 +60,9 @@ public abstract class CodeGen {
             constName -> {
                 Pattern startPattern = Pattern.compile("^[$€a-zA-Z_]");
                 if (!startPattern.matcher(constName).lookingAt()) {
-                    return "_" + constName;
+                    constName = "_" + constName;
                 }
+                constName = constName.replaceAll("-", "__");
                 return constName;
             };
 }

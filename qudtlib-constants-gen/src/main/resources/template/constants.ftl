@@ -15,7 +15,7 @@ public abstract class ${typePlural} {
 
 <#list constants as constant>
     /** ${constant.label} */
-    public static final ${type} ${constant.javaName} = ${valueFactory}("${constant.localName}");
+    public static final ${type} ${constant.codeConstantName} = ${valueFactory}("${constant.iriLocalname}");
 
 </#list>
 

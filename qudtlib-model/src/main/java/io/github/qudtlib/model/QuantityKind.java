@@ -52,7 +52,7 @@ public class QuantityKind {
         return Collections.unmodifiableSet(broaderQuantityKinds);
     }
 
-    public Optional<String> getDimensionVector() {
+    public Optional<String> getDimensionVectorIri() {
         return Optional.ofNullable(dimensionVector);
     }
 

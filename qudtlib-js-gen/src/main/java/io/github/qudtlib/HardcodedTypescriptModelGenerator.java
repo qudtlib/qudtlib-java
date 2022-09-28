@@ -8,16 +8,14 @@ import io.github.qudtlib.constgen.Constant;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * Generates a Typescript package that instantiates all QUDT individuals and relationships needed for
- * QUDTLib from hardcoded data, i.e. without the need to process RDF.
+ * Generates a Typescript package that instantiates all QUDT individuals and relationships needed
+ * for QUDTLib from hardcoded data, i.e. without the need to process RDF.
  *
- * <p>This generator accesses the QUDT model through the 'hardcoded' QUDTLib implementation.</p>
+ * <p>This generator accesses the QUDT model through the 'hardcoded' QUDTLib implementation.
  *
  * @author Florian Kleedorfer
  * @version 1.0
@@ -25,13 +23,15 @@ import java.util.regex.Pattern;
 public class HardcodedTypescriptModelGenerator {
     private final Path outputDir;
     // output
-    private static final String FILENAME = "allQudtUnits.ts";
+    private static final String FILENAME = "units.ts";
     // template
-    private static final String TEMPLATE_FILE = "template/allQudtUnits.ts.ftl";
+    private static final String TEMPLATE_FILE = "template/units.ts.ftl";
 
     public HardcodedTypescriptModelGenerator(Path outputDir) {
         this.outputDir = outputDir;
     }
+
+    private final SafeStringMapper constantNameMapper = CodeGen.javaConstantMapper();
 
     public static void main(String[] args) {
         try {
@@ -42,7 +42,8 @@ public class HardcodedTypescriptModelGenerator {
                 throw new IllegalArgumentException(" too many arguments");
             }
             String outputDir = args[0];
-            HardcodedTypescriptModelGenerator generator = new HardcodedTypescriptModelGenerator(Path.of(outputDir));
+            HardcodedTypescriptModelGenerator generator =
+                    new HardcodedTypescriptModelGenerator(Path.of(outputDir));
             generator.generate();
         } catch (Exception e) {
             System.err.println("\n\n\tusage: HardcodedTypescriptModelGenerator [output-dir]\n\n");
@@ -61,6 +62,30 @@ public class HardcodedTypescriptModelGenerator {
         templateVars.put("prefixes", new TreeMap<>(Qudt.getPrefixesMap()));
         templateVars.put("quantityKinds", new TreeMap<>(Qudt.getQuantityKindsMap()));
         templateVars.put("units", new TreeMap<>(Qudt.getUnitsMap()));
+        Set<Constant> unitConstants =
+                Qudt.getUnitsMap().values().stream()
+                        .map(
+                                u ->
+                                        CodeGen.makeConstant(
+                                                u.getLabels(), u.getIri(), this.constantNameMapper))
+                        .collect(Collectors.toSet());
+        Set<Constant> quantityKindConstants =
+                Qudt.getQuantityKindsMap().values().stream()
+                        .map(
+                                q ->
+                                        CodeGen.makeConstant(
+                                                q.getLabels(), q.getIri(), this.constantNameMapper))
+                        .collect(Collectors.toSet());
+        Set<Constant> prefixConstants =
+                Qudt.getPrefixesMap().values().stream()
+                        .map(
+                                p ->
+                                        CodeGen.makeConstant(
+                                                p.getLabels(), p.getIri(), this.constantNameMapper))
+                        .collect(Collectors.toSet());
+        templateVars.put("unitConstants", unitConstants);
+        templateVars.put("quantityKindConstants", quantityKindConstants);
+        templateVars.put("prefixConstants", prefixConstants);
         generateTypescriptFile(config, templateVars);
     }
 

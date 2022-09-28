@@ -47,8 +47,8 @@ public class Prefix {
         return symbol;
     }
 
-    public String getUcumCode() {
-        return ucumCode;
+    public Optional<String> getUcumCode() {
+        return Optional.ofNullable(ucumCode);
     }
 
     public void addLabel(LangString langString) {
