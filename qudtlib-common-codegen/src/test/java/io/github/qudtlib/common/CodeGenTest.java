@@ -3,9 +3,8 @@ package io.github.qudtlib.common;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.qudlib.common.CodeGen;
-import io.github.qudlib.common.safenames.NameCollisionException;
-import io.github.qudlib.common.safenames.SafeStringMapper;
+import io.github.qudtlib.common.safenames.NameCollisionException;
+import io.github.qudtlib.common.safenames.SafeStringMapper;
 import org.junit.jupiter.api.Test;
 
 public class CodeGenTest {

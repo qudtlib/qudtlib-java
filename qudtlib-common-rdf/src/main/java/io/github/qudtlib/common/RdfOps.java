@@ -1,4 +1,4 @@
-package io.github.qudlib.common;
+package io.github.qudtlib.common;
 
 import java.io.File;
 import java.io.FileOutputStream;

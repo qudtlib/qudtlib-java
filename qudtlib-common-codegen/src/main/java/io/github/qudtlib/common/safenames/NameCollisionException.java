@@ -1,4 +1,4 @@
-package io.github.qudlib.common.safenames;
+package io.github.qudtlib.common.safenames;
 
 public class NameCollisionException extends RuntimeException {
     public NameCollisionException(String collidingInput, String input, String mappedOutput) {

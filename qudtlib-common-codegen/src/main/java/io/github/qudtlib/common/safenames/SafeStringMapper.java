@@ -1,4 +1,4 @@
-package io.github.qudlib.common.safenames;
+package io.github.qudtlib.common.safenames;
 
 import java.util.Map;
 import java.util.Objects;

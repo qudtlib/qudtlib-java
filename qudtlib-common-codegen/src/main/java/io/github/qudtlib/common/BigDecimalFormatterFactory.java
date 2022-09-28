@@ -1,4 +1,4 @@
-package io.github.qudlib.common;
+package io.github.qudtlib.common;
 
 import freemarker.core.Environment;
 import freemarker.core.TemplateNumberFormat;

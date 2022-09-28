@@ -1,8 +1,10 @@
-package io.github.qudlib.common;
+package io.github.qudtlib.common;
 
 import freemarker.core.Environment;
 import freemarker.template.*;
-import io.github.qudlib.common.safenames.SafeStringMapper;
+import io.github.qudtlib.common.safenames.SafeStringMapper;
+import io.github.qudtlib.constgen.Constant;
+import io.github.qudtlib.model.LangString;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
