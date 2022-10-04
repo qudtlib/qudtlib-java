@@ -3,6 +3,7 @@ package io.github.qudtlib;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
+import io.github.qudtlib.exception.NotFoundException;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -65,13 +66,12 @@ public class QudtTests {
     @Test
     public void testDerivedUnitFromMap() {
         Assertions.assertTrue(
-                Qudt.derivedUnit(List.of(Map.entry(Qudt.Units.M, -3)))
-                        .contains(Qudt.Units.PER__M3));
+                Qudt.derivedUnits(Map.of(Qudt.Units.M, -3)).contains(Qudt.Units.PER__M3));
         Assertions.assertTrue(
-                Qudt.derivedUnit(Qudt.Units.MilliA, 1, Qudt.Units.IN, -1)
+                Qudt.derivedUnits(Qudt.Units.MilliA, 1, Qudt.Units.IN, -1)
                         .contains(Qudt.Units.MilliA__PER__IN));
         Assertions.assertTrue(
-                Qudt.derivedUnit(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1)
+                Qudt.derivedUnits(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1)
                         .contains(Qudt.Units.MOL__PER__M2__SEC));
     }
 
@@ -108,10 +108,10 @@ public class QudtTests {
         Assertions.assertTrue(units.contains(Qudt.Units.M3));
         units = Qudt.derivedUnitFromFactors(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
         Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
-        units = Qudt.derivedUnit(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1);
+        units = Qudt.derivedUnits(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1);
         Assertions.assertTrue(units.contains(Qudt.Units.MOL__PER__M2__SEC));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.K,
                         1,
                         Qudt.Units.M,
@@ -122,7 +122,7 @@ public class QudtTests {
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.K__M2__PER__KiloGM__SEC));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.BTU_IT,
                         1,
                         Qudt.Units.FT,
@@ -134,52 +134,64 @@ public class QudtTests {
                         Qudt.Units.DEG_F,
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.BTU_IT__FT__PER__FT2__HR__DEG_F));
+        units = Qudt.derivedUnitFromFactors(Qudt.Units.M, 1);
+        Assertions.assertTrue(units.contains(Qudt.Units.M));
+        Assertions.assertTrue(units.contains(Qudt.Units.RAD));
     }
 
     @Test
     public void testDerivedUnit1() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.M, 3);
+        Set<Unit> units = Qudt.derivedUnits(Qudt.Units.M, 3);
         Assertions.assertTrue(units.contains(Qudt.Units.M3));
-        units = Qudt.derivedUnit(Qudt.Units.M, 2);
+        units = Qudt.derivedUnits(Qudt.Units.M, 2);
         Assertions.assertTrue(units.contains(Qudt.Units.M2));
-        units = Qudt.derivedUnit(Qudt.Units.K, -1);
+        units = Qudt.derivedUnits(Qudt.Units.K, -1);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__K));
-        units = Qudt.derivedUnit(Qudt.Units.M, -2);
+        units = Qudt.derivedUnits(Qudt.Units.M, -2);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__M2));
     }
 
     @Test
     public void testDerivedUnitByIri1() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.M.getIri(), 3);
+        Set<Unit> units = Qudt.derivedUnits(Qudt.Units.M.getIri(), 3);
         Assertions.assertTrue(units.contains(Qudt.Units.M3));
-        units = Qudt.derivedUnit(Qudt.Units.M.getIri(), 2);
+        units = Qudt.derivedUnits(Qudt.Units.M.getIri(), 2);
         Assertions.assertTrue(units.contains(Qudt.Units.M2));
-        units = Qudt.derivedUnit(Qudt.Units.K.getIri(), -1);
+        units = Qudt.derivedUnits(Qudt.Units.K.getIri(), -1);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__K));
-        units = Qudt.derivedUnit(Qudt.Units.M.getIri(), -2);
+        units = Qudt.derivedUnits(Qudt.Units.M.getIri(), -2);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__M2));
     }
 
     @Test
     public void testDerivedUnit2() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
+        Set<Unit> units = Qudt.derivedUnits(Qudt.Units.M, 1, Qudt.Units.N, 1);
+        Assertions.assertTrue(units.contains(Qudt.Units.N__M));
+        Assertions.assertTrue(units.contains(Qudt.Units.J));
+        units = Qudt.derivedUnits(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
         Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
-        units = Qudt.derivedUnit(Qudt.scaledUnit("Kilo", "Gram"), 1, Qudt.Units.M, -3);
+        units = Qudt.derivedUnits(Qudt.scaledUnit("Kilo", "Gram"), 1, Qudt.Units.M, -3);
         Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
-        units = Qudt.derivedUnit(Qudt.Units.N, 1, Qudt.Units.M, -2);
+        units = Qudt.derivedUnits(Qudt.Units.N, 1, Qudt.Units.M, -2);
         Assertions.assertTrue(units.contains(Qudt.Units.N__PER__M2));
     }
 
     @Test
     public void testDerivedUnit3() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1);
+        // test making sure overspecifying factors are rejected
+        Assertions.assertThrows(
+                NotFoundException.class,
+                () -> Qudt.derivedUnits(Qudt.Units.M, 1, Qudt.Units.N, 1, Qudt.Units.SEC, -2));
+
+        Set<Unit> units =
+                Qudt.derivedUnits(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1);
         Assertions.assertTrue(units.contains(Qudt.Units.MOL__PER__M2__SEC));
     }
 
     @Test
     public void testDerivedUnit4() {
         Set<Unit> units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.K,
                         1,
                         Qudt.Units.M,
@@ -190,7 +202,7 @@ public class QudtTests {
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.K__M2__PER__KiloGM__SEC));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.M,
                         1,
                         Qudt.Units.KiloGM,
@@ -205,7 +217,7 @@ public class QudtTests {
     @Test
     public void testDerivedUnit5() {
         Set<Unit> units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.BTU_IT,
                         1,
                         Qudt.Units.FT,
@@ -218,7 +230,7 @@ public class QudtTests {
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.BTU_IT__FT__PER__FT2__HR__DEG_F));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.M,
                         1,
                         Qudt.Units.KiloGM,
@@ -231,7 +243,7 @@ public class QudtTests {
                         1);
         Assertions.assertTrue(units.contains(Qudt.Units.N__M__PER__M2));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.M,
                         2,
                         Qudt.Units.KiloGM,
@@ -285,7 +297,7 @@ public class QudtTests {
         List<FactorUnit> unitFactors = Qudt.factorUnits(unit);
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloN, 1)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
-        unitFactors = Qudt.unscaleFactorUnits(unitFactors);
+        unitFactors = Qudt.unscaledFactorUnits(unitFactors);
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.N, 1)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
     }

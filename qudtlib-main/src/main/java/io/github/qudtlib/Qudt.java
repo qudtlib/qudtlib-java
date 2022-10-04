@@ -204,7 +204,7 @@ public class Qudt {
      * @param unit the scaled unit
      * @return the base unit
      */
-    public static Unit unscale(Unit unit) {
+    public static Unit unscaledUnit(Unit unit) {
         if (unit.getScalingOfIri().isEmpty()) {
             return unit;
         }
@@ -257,9 +257,9 @@ public class Qudt {
      * @param factorUnits the factor units to unscale
      * @return the unscaled factor units
      */
-    public static List<FactorUnit> unscaleFactorUnits(List<FactorUnit> factorUnits) {
+    public static List<FactorUnit> unscaledFactorUnits(List<FactorUnit> factorUnits) {
         return factorUnits.stream()
-                .map(uf -> new FactorUnit(unscale(uf.getUnit()), uf.getExponent()))
+                .map(uf -> new FactorUnit(unscaledUnit(uf.getUnit()), uf.getExponent()))
                 .collect(toList());
     }
 
@@ -280,10 +280,10 @@ public class Qudt {
      * @param factorUnits a map containing unit to exponent entries.
      * @return the derived units that match the given factor units
      */
-    public static Set<Unit> derivedUnit(List<Map.Entry<Unit, Integer>> factorUnits) {
+    public static Set<Unit> derivedUnits(Map<Unit, Integer> factorUnits) {
         Object[] arr = new Object[factorUnits.size() * 2];
         return derivedUnitFromFactors(
-                factorUnits.stream()
+                factorUnits.entrySet().stream()
                         .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
                         .collect(Collectors.toList())
                         .toArray(arr));
@@ -292,7 +292,7 @@ public class Qudt {
     /**
      * Obtains a unit from factor units.
      *
-     * @see #derivedUnit(List)
+     * @see #derivedUnits(Map)
      * @param factorUnits the factor units
      * @return the derived unit that match the given factor units
      */
@@ -309,52 +309,23 @@ public class Qudt {
      * Vararg method, must be an even number of arguments, always alternating types of Unit|String
      * and Integer.
      *
-     * @param factorUnitSpecs alternating Unit|String (representing a unit IRI) and Integer (the
-     *     exponent)
+     * @param factorUnitSpec alternating Unit and Integer (the exponent)
      * @return the units that match
      */
-    static Set<Unit> derivedUnitFromFactors(final Object... factorUnitSpecs) {
-        if (factorUnitSpecs.length % 2 != 0) {
-            throw new IllegalArgumentException("An even number of arguments is required");
-        }
-        if (factorUnitSpecs.length > 14) {
-            throw new IllegalArgumentException(
-                    "No more than 14 arguments (7 factor units) supported");
-        }
+    static Set<Unit> derivedUnitFromFactors(final Object... factorUnitSpec) {
         List<Unit> matchingUnits =
                 units.values().stream()
-                        .filter(d -> d.matches(factorUnitSpecs))
+                        .filter(
+                                d ->
+                                        d.matches(
+                                                FactorUnitSelection.fromFactorUnitSpec(
+                                                        factorUnitSpec)))
                         .collect(Collectors.toList());
         if (matchingUnits.isEmpty()) {
             throw new NotFoundException(
-                    "No derived unit found for factors " + Arrays.toString(factorUnitSpecs));
+                    "No derived unit found for factors " + Arrays.toString(factorUnitSpec));
         }
         return new HashSet<>(matchingUnits);
-    }
-
-    /**
-     * Returns the specifed {@code unit} scaled with the specified {@code prefix}.
-     *
-     * @param unit the unit to scale
-     * @param prefix the prefix to scale by
-     * @return the scaled unit
-     * @throws NotFoundException if the result is not found in the model
-     */
-    public static Unit scale(Unit unit, Prefix prefix) {
-        Optional<Unit> scaled =
-                units.values().stream()
-                        .filter(
-                                u ->
-                                        unit.getIri().equals(u.getScalingOfIri().orElse(null))
-                                                && prefix.getIri()
-                                                        .equals(u.getPrefixIri().orElse(null)))
-                        .findFirst();
-        return scaled.orElseThrow(
-                () ->
-                        new NotFoundException(
-                                String.format(
-                                        "Qudt does not contain the unit %s, scaled with prefix %s",
-                                        unit, prefix)));
     }
 
     /**
@@ -386,7 +357,7 @@ public class Qudt {
      * @return the unit
      * @throws NotFoundException if no such unit is found in the model
      */
-    public static Set<Unit> derivedUnit(Unit baseUnit, int exponent) {
+    public static Set<Unit> derivedUnits(Unit baseUnit, int exponent) {
         return derivedUnitFromFactors(baseUnit, exponent);
     }
 
@@ -399,16 +370,16 @@ public class Qudt {
      * @throws NotFoundException if no such unit is found in the model or the baseUnitIri does not
      *     identify a unit
      */
-    public static Set<Unit> derivedUnit(String baseUnitIri, int exponent) {
+    public static Set<Unit> derivedUnits(String baseUnitIri, int exponent) {
         return derivedUnitFromFactors(unit(baseUnitIri), exponent);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             Unit baseUnit1, int exponent1, Unit baseUnit2, int exponent2) {
         return derivedUnitFromFactors(baseUnit1, exponent1, baseUnit2, exponent2);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             Unit baseUnit1,
             int exponent1,
             Unit baseUnit2,
@@ -419,7 +390,7 @@ public class Qudt {
                 baseUnit1, exponent1, baseUnit2, exponent2, baseUnit3, exponent3);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             String baseUnitIri1,
             int exponent1,
             String baseUnitIri2,
@@ -435,7 +406,7 @@ public class Qudt {
                 exponent3);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             Unit baseUnit1,
             int exponent1,
             Unit baseUnit2,
@@ -449,7 +420,7 @@ public class Qudt {
                 exponent4);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             String baseUnitIri1,
             int exponent1,
             String baseUnitIri2,
@@ -469,7 +440,7 @@ public class Qudt {
                 exponent4);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             Unit baseUnit1,
             int exponent1,
             Unit baseUnit2,
@@ -485,7 +456,7 @@ public class Qudt {
                 exponent4, baseUnit5, exponent5);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             String baseUnitIri1,
             int exponent1,
             String baseUnitIri2,
@@ -509,7 +480,7 @@ public class Qudt {
                 exponent5);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             Unit baseUnit1,
             int exponent1,
             Unit baseUnit2,
@@ -527,7 +498,7 @@ public class Qudt {
                 exponent4, baseUnit5, exponent5, baseUnit6, exponent6);
     }
 
-    public static Set<Unit> derivedUnit(
+    public static Set<Unit> derivedUnits(
             String baseUnitIri1,
             int exponent1,
             String baseUnitIri2,
@@ -610,7 +581,7 @@ public class Qudt {
         while (!current.isEmpty()) {
             current =
                     current.stream()
-                            .flatMap(qk -> qk.getBroaderQuantityKinds().stream())
+                            .flatMap(qk -> qk.getBroaderQuantityKindIris().stream())
                             .map(Qudt::quantityKind)
                             .collect(Collectors.toSet());
             result.addAll(current);

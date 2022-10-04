@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Represents a QUDT Unit.
@@ -131,12 +130,7 @@ public class Unit {
     }
 
     public boolean matches(Collection<Map.Entry<String, Integer>> factorUnitSpec) {
-        Object[] arr = new Object[factorUnitSpec.size() * 2];
-        return matches(
-                factorUnitSpec.stream()
-                        .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
-                        .collect(Collectors.toList())
-                        .toArray(arr));
+        return matches(FactorUnitSelection.fromFactorUnitSpec((factorUnitSpec)));
     }
 
     /**
@@ -148,21 +142,21 @@ public class Unit {
      *     (overspecification is counted as a match)
      */
     public boolean matches(Object... factorUnitSpec) {
-        if (factorUnitSpec.length % 2 != 0) {
-            throw new IllegalArgumentException("An even number of arguments is required");
-        }
-        if (factorUnitSpec.length > 14) {
-            throw new IllegalArgumentException(
-                    "No more than 14 arguments (7 factor units) supported");
-        }
-        List<FactorUnitSelector> selectors = new ArrayList<>();
-        for (int i = 0; i < factorUnitSpec.length; i += 2) {
-            Unit requestedUnit;
-            requestedUnit = ((Unit) factorUnitSpec[i]);
-            Integer requestedExponent = (Integer) factorUnitSpec[i + 1];
-            selectors.add(new FactorUnitSelector(requestedUnit, requestedExponent));
-        }
-        Set<FactorUnitSelection> selections = Set.of(new FactorUnitSelection(selectors));
+        return matches(FactorUnitSelection.fromFactorUnitSpec(factorUnitSpec));
+    }
+
+    /**
+     * Checks if this unit matches the specified FactorUnitSelection, i.e. if it is made up of the
+     * specified factor units.
+     *
+     * <p>For example, the unit Nm (Newton Meter) would match a factor Unit selection containing
+     * only the still unmatched selectors of (N^1? m^1?), as well as the selection containing
+     *
+     * @param initialSelection the selection criteria
+     * @return true if the unit matches the criteria
+     */
+    public boolean matches(FactorUnitSelection initialSelection) {
+        Set<FactorUnitSelection> selections = Set.of(initialSelection);
         selections = match(selections, 1, new ArrayDeque<>(), new ScaleFactor());
         if (selections == null || selections.isEmpty()) return false;
         return selections.stream()
@@ -176,6 +170,10 @@ public class Unit {
         if (hasFactorUnits()) {
             match = getFactorUnits().stream().allMatch(fu -> fu.isMatched(selection, checkedPath));
         }
+        if (!match) {
+            match = new FactorUnit(this, 1).isMatchedNoRecursingIntoUnit(selection, checkedPath);
+        }
+        // handle scaled/unscaled matching
         if (!match && isScaled()) {
             match = getScalingOf().map(u -> u.isMatched(selection, checkedPath)).orElse(false);
         }
@@ -188,26 +186,33 @@ public class Unit {
             int cumulativeExponent,
             Deque<Unit> matchedPath,
             ScaleFactor scaleFactor) {
-        Set<FactorUnitSelection> results = new HashSet<>();
+        Set<FactorUnitSelection> results = new HashSet<>(selections);
         matchedPath.push(this);
+        // try to match the unscaled version of the unit, if any
         if (this.getScalingOf().isPresent() && getPrefix().isPresent()) {
             results.addAll(
                     this.getScalingOf()
                             .get()
                             .match(
-                                    selections,
+                                    results,
                                     cumulativeExponent,
                                     matchedPath,
                                     scaleFactor.multiplyBy(
                                             this.getPrefix().get().getMultiplier())));
         }
+        // match this unit
         if (hasFactorUnits()) {
             for (FactorUnit factorUnit : factorUnits) {
-                selections =
-                        factorUnit.match(selections, cumulativeExponent, matchedPath, scaleFactor);
+                results = factorUnit.match(results, cumulativeExponent, matchedPath, scaleFactor);
             }
+        } else {
+            // simple unit (no factor units, but possibly scaled)
+            FactorUnit fu = new FactorUnit(this, 1);
+            results =
+                    fu.matchNotRecursingIntoUnit(
+                            results, cumulativeExponent, matchedPath, scaleFactor);
         }
-        results.addAll(selections);
+        results = FactorUnitSelection.removeOverspecifiedMatches(results);
         matchedPath.pop();
         return results;
     }

@@ -24,7 +24,7 @@ public class QudtlibExample {
         System.out.println("---");
         System.out.println("finding unit for factors: m, kg, and s^-2:");
         Set<Unit> myUnits =
-                Qudt.derivedUnit(
+                Qudt.derivedUnits(
                         Qudt.Units.M, 1,
                         Qudt.Units.KiloGM, 1,
                         Qudt.Units.SEC, -2);
@@ -58,7 +58,7 @@ public class QudtlibExample {
         System.out.println("---");
         System.out.println(
                 "Which units are applicable for " + Qudt.QuantityKinds.PressureRatio + "?");
-        for (String unitIri : Qudt.QuantityKinds.PressureRatio.getApplicableUnits()) {
+        for (String unitIri : Qudt.QuantityKinds.PressureRatio.getApplicableUnitIris()) {
             Unit unit = Qudt.unit(unitIri);
             System.out.println("  " + unit + " (" + unit.getIri() + ")");
         }

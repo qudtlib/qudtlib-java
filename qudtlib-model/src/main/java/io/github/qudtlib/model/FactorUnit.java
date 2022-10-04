@@ -62,12 +62,20 @@ public class FactorUnit {
                         getExponentCumulated(cumulativeExponent),
                         matchedPath,
                         scaleFactor);
+        return matchNotRecursingIntoUnit(mySelection, cumulativeExponent, matchedPath, scaleFactor);
+    }
+
+    public Set<FactorUnitSelection> matchNotRecursingIntoUnit(
+            Set<FactorUnitSelection> selection,
+            int cumulativeExponent,
+            Deque<Unit> matchedPath,
+            ScaleFactor scaleFactor) {
         // now match this one
         Set<FactorUnitSelection> ret = new HashSet<>();
-        for (FactorUnitSelection factorUnitSelection : mySelection) {
+        for (FactorUnitSelection factorUnitSelection : selection) {
             // add one solution where this node is matched
             FactorUnitSelection processedSelection =
-                    factorUnitSelection.forMatch(
+                    factorUnitSelection.forPotentialMatch(
                             this, cumulativeExponent, matchedPath, scaleFactor);
             if (!processedSelection.equals(factorUnitSelection)) {
                 // if there was a match, (i.e, we modified the selection),
@@ -82,15 +90,20 @@ public class FactorUnit {
     }
 
     boolean isMatched(FactorUnitSelection selection, Deque<Unit> checkedPath) {
-        if (selection.isSelected(this, checkedPath)) {
+        if (isMatchedNoRecursingIntoUnit(selection, checkedPath)) {
             return true;
         }
         return unit.isMatched(selection, checkedPath);
     }
 
+    public boolean isMatchedNoRecursingIntoUnit(
+            FactorUnitSelection selection, Deque<Unit> checkedPath) {
+        return selection.isSelected(this, checkedPath);
+    }
+
     @Override
     public String toString() {
-        return "FU{" + unit + "^" + exponent + "}";
+        return unit + "^" + exponent;
     }
 
     @Override
