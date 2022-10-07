@@ -60,13 +60,6 @@ public class FactorUnit {
                 mySelection, getExponentCumulated(cumulativeExponent), matchedPath, scaleFactor);
     }
 
-    boolean isMatched(FactorUnitSelection selection, Deque<Unit> checkedPath) {
-        if (selection.isSelected(this, checkedPath)) {
-            return true;
-        }
-        return unit.isMatched(selection, checkedPath);
-    }
-
     @Override
     public String toString() {
         return unit + "^" + exponent;

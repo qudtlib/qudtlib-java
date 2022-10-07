@@ -159,26 +159,7 @@ public class Unit {
         Set<FactorUnitSelection> selections = Set.of(initialSelection);
         selections = match(selections, 1, new ArrayDeque<>(), new ScaleFactor());
         if (selections == null || selections.isEmpty()) return false;
-        return selections.stream()
-                .filter(FactorUnitSelection::isCompleteMatch)
-                .anyMatch(sel -> this.isMatched(sel, new ArrayDeque<>()));
-    }
-
-    boolean isMatched(FactorUnitSelection selection, Deque<Unit> checkedPath) {
-        checkedPath.push(this);
-        boolean match = false;
-        if (hasFactorUnits()) {
-            match = getFactorUnits().stream().allMatch(fu -> fu.isMatched(selection, checkedPath));
-        }
-        if (!match) {
-            match = selection.isSelected(new FactorUnit(this, 1), checkedPath);
-        }
-        // handle scaled/unscaled matching
-        if (!match && isScaled()) {
-            match = getScalingOf().map(u -> u.isMatched(selection, checkedPath)).orElse(false);
-        }
-        checkedPath.pop();
-        return match;
+        return selections.stream().anyMatch(FactorUnitSelection::isCompleteMatch);
     }
 
     Set<FactorUnitSelection> match(
