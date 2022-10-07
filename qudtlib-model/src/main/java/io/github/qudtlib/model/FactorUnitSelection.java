@@ -56,21 +56,6 @@ public class FactorUnitSelection {
                         .toArray(arr));
     }
 
-    public boolean isSelected(FactorUnit factorUnit, Deque<Unit> checkedPath) {
-        return this.selectors.stream()
-                .anyMatch(
-                        s ->
-                                s.getFactorUnitMatch().isPresent()
-                                        && factorUnit.equals(
-                                                s.getFactorUnitMatch().get().getMatchedFactorUnit())
-                                        && Arrays.equals(
-                                                checkedPath.toArray(),
-                                                s.getFactorUnitMatch()
-                                                        .get()
-                                                        .getMatchedPath()
-                                                        .toArray()));
-    }
-
     public boolean isCompleteMatch() {
         if (!selectors.stream().allMatch(FactorUnitSelector::isBound)) {
             return false;
