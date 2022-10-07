@@ -171,7 +171,7 @@ public class Unit {
             match = getFactorUnits().stream().allMatch(fu -> fu.isMatched(selection, checkedPath));
         }
         if (!match) {
-            match = new FactorUnit(this, 1).isMatchedNoRecursingIntoUnit(selection, checkedPath);
+            match = selection.isSelected(new FactorUnit(this, 1), checkedPath);
         }
         // handle scaled/unscaled matching
         if (!match && isScaled()) {

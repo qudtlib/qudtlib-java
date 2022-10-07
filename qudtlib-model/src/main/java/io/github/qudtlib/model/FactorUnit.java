@@ -61,15 +61,10 @@ public class FactorUnit {
     }
 
     boolean isMatched(FactorUnitSelection selection, Deque<Unit> checkedPath) {
-        if (isMatchedNoRecursingIntoUnit(selection, checkedPath)) {
+        if (selection.isSelected(this, checkedPath)) {
             return true;
         }
         return unit.isMatched(selection, checkedPath);
-    }
-
-    public boolean isMatchedNoRecursingIntoUnit(
-            FactorUnitSelection selection, Deque<Unit> checkedPath) {
-        return selection.isSelected(this, checkedPath);
     }
 
     @Override
