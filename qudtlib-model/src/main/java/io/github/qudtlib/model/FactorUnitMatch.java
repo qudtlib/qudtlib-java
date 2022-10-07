@@ -82,23 +82,4 @@ public class FactorUnitMatch {
         return Objects.hash(matchedFactorUnit, matchedPath, matchedMultiplier, scaleFactor);
     }
 
-    /**
-     * Returns true if this FactorUnitMatch's matched path is the parent of other one's or vice
-     * versa.
-     *
-     * @param other the FactorUnitMatch to compare with
-     * @return true if there is overspecification happening
-     */
-    public boolean isOverspecificationWith(FactorUnitMatch other) {
-        ListIterator<Unit> pathIt = this.matchedPath.listIterator(this.matchedPath.size());
-        ListIterator<Unit> otherPathIt = other.matchedPath.listIterator(other.matchedPath.size());
-        while (pathIt.hasPrevious() && otherPathIt.hasPrevious()) {
-            Unit unit = pathIt.previous();
-            Unit otherUnit = otherPathIt.previous();
-            if (!unit.equals(otherUnit)) {
-                return false;
-            }
-        }
-        return pathIt.hasPrevious() || otherPathIt.hasPrevious();
-    }
 }
