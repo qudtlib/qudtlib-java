@@ -27,6 +27,7 @@ public class DerivedUnitTests {
         assertFalse(du.matches(Qudt.Units.M, -1, Qudt.Units.KiloGM, 1));
         assertFalse(du.matches(Qudt.Units.KiloGM, -1));
         assertFalse(du.matches(Qudt.Units.SEC, -2));
+        assertTrue(Qudt.Units.M.matches(Qudt.Units.M, 1));
     }
 
     @Test

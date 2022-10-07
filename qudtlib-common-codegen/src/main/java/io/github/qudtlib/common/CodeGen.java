@@ -56,7 +56,7 @@ public abstract class CodeGen {
         return new SafeStringMapper(javaConstantNameMapper);
     }
 
-    static Function<String, String> javaConstantNameMapper =
+    static final Function<String, String> javaConstantNameMapper =
             constName -> {
                 Pattern startPattern = Pattern.compile("^[$€a-zA-Z_]");
                 if (!startPattern.matcher(constName).lookingAt()) {

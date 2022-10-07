@@ -186,7 +186,7 @@ public class Unit {
             int cumulativeExponent,
             Deque<Unit> matchedPath,
             ScaleFactor scaleFactor) {
-        Set<FactorUnitSelection> results = new HashSet<>(selections);
+        Set<FactorUnitSelection> results = new HashSet<>();
         matchedPath.push(this);
         // try to match the unscaled version of the unit, if any
         if (this.getScalingOf().isPresent() && getPrefix().isPresent()) {
@@ -194,27 +194,61 @@ public class Unit {
                     this.getScalingOf()
                             .get()
                             .match(
-                                    results,
+                                    selections,
                                     cumulativeExponent,
                                     matchedPath,
                                     scaleFactor.multiplyBy(
                                             this.getPrefix().get().getMultiplier())));
         }
-        // match this unit
+        // match factor units (if any)
         if (hasFactorUnits()) {
-            for (FactorUnit factorUnit : factorUnits) {
-                results = factorUnit.match(results, cumulativeExponent, matchedPath, scaleFactor);
-            }
-        } else {
-            // simple unit (no factor units, but possibly scaled)
-            FactorUnit fu = new FactorUnit(this, 1);
-            results =
-                    fu.matchNotRecursingIntoUnit(
-                            results, cumulativeExponent, matchedPath, scaleFactor);
+            results.addAll(
+                    matchFactorUnits(selections, cumulativeExponent, matchedPath, scaleFactor));
         }
-        results = FactorUnitSelection.removeOverspecifiedMatches(results);
+        // match this unit
+        results.addAll(matchThisUnit(selections, cumulativeExponent, matchedPath, scaleFactor));
         matchedPath.pop();
         return results;
+    }
+
+    private Set<FactorUnitSelection> matchFactorUnits(
+            Set<FactorUnitSelection> selections,
+            int cumulativeExponent,
+            Deque<Unit> matchedPath,
+            ScaleFactor scaleFactor) {
+        Set<FactorUnitSelection> subResults = new HashSet<>(selections);
+        Set<FactorUnitSelection> lastResults = subResults;
+        for (FactorUnit factorUnit : factorUnits) {
+            subResults =
+                    factorUnit.match(lastResults, cumulativeExponent, matchedPath, scaleFactor);
+            if (lastResults.equals(subResults)) {
+                // no new matches for current factor unit - abort
+                return selections;
+            }
+            lastResults = subResults;
+        }
+        return subResults;
+    }
+
+    private Set<FactorUnitSelection> matchThisUnit(
+            Set<FactorUnitSelection> selection,
+            int cumulativeExponent,
+            Deque<Unit> matchedPath,
+            ScaleFactor scaleFactor) {
+        // now match this one
+        Set<FactorUnitSelection> ret = new HashSet<>();
+        for (FactorUnitSelection factorUnitSelection : selection) {
+            // add one solution where this node is matched
+            FactorUnitSelection processedSelection =
+                    factorUnitSelection.forPotentialMatch(
+                            new FactorUnit(this, 1), cumulativeExponent, matchedPath, scaleFactor);
+            if (!processedSelection.equals(factorUnitSelection)) {
+                // if there was a match, (i.e, we modified the selection),
+                // it's a new partial solution - return it
+                ret.add(processedSelection);
+            }
+        }
+        return ret;
     }
 
     public boolean hasFactorUnits() {

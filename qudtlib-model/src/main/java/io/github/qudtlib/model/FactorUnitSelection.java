@@ -1,6 +1,5 @@
 package io.github.qudtlib.model;
 
-import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 
 import java.math.BigDecimal;
@@ -19,42 +18,6 @@ public class FactorUnitSelection {
 
     public FactorUnitSelection(List<FactorUnitSelector> selectors) {
         this.selectors = selectors;
-    }
-
-    public static Set<FactorUnitSelection> removeOverspecifiedMatches(
-            Set<FactorUnitSelection> selections) {
-        return selections.stream()
-                .filter(not(FactorUnitSelection::hasOverspecifiedMatches))
-                .collect(Collectors.toSet());
-    }
-
-    /**
-     * Returns true if a matched selection's path is the parent of another's path.
-     *
-     * @return true if a matched selection's path is the parent of another's path.
-     */
-    private boolean hasOverspecifiedMatches() {
-        for (int i = 0; i < selectors.size(); i++) {
-            FactorUnitSelector sel1 = selectors.get(i);
-            if (sel1.getFactorUnitMatch().isPresent()) {
-                for (int j = i + 1; j < selectors.size(); j++) {
-                    FactorUnitSelector sel2 = selectors.get(j);
-                    if (sel2.getFactorUnitMatch().isPresent()) {
-                        if (sel1.getFactorUnitMatch()
-                                .get()
-                                .isOverspecificationWith(sel2.getFactorUnitMatch().get())) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public FactorUnitSelection copy() {
-        return new FactorUnitSelection(
-                this.selectors.stream().map(FactorUnitSelector::copy).collect(Collectors.toList()));
     }
 
     /**
@@ -91,10 +54,6 @@ public class FactorUnitSelection {
                         .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
                         .collect(Collectors.toList())
                         .toArray(arr));
-    }
-
-    public List<FactorUnitSelector> getSelectors() {
-        return selectors;
     }
 
     public boolean isSelected(FactorUnit factorUnit, Deque<Unit> checkedPath) {
@@ -136,25 +95,6 @@ public class FactorUnitSelection {
         return cumulativeScale.compareTo(BigDecimal.ONE) == 0;
     }
 
-    public boolean allMarked(Collection<FactorUnit> factorUnits) {
-        return this.selectors.stream()
-                .allMatch(
-                        s ->
-                                factorUnits.stream()
-                                        .anyMatch(
-                                                u ->
-                                                        s.getFactorUnitMatch().isPresent()
-                                                                && u.equals(
-                                                                        s.getFactorUnitMatch()
-                                                                                .get()
-                                                                                .getMatchedFactorUnit())));
-    }
-
-    public boolean isMatchingSelectorAvailable(FactorUnit factorUnit, int cumulativeExponent) {
-        return selectors.stream()
-                .anyMatch(s -> s.isAvailable() && s.matches(factorUnit, cumulativeExponent));
-    }
-
     public FactorUnitSelection forPotentialMatch(
             FactorUnit factorUnit,
             int cumulativeExponent,
@@ -172,10 +112,6 @@ public class FactorUnitSelection {
             }
         }
         return new FactorUnitSelection(newSelectors);
-    }
-
-    public boolean allBound() {
-        return selectors.stream().allMatch(FactorUnitSelector::isBound);
     }
 
     @Override

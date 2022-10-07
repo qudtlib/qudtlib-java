@@ -55,38 +55,9 @@ public class FactorUnit {
             Deque<Unit> matchedPath,
             ScaleFactor scaleFactor) {
         Set<FactorUnitSelection> mySelection = new HashSet<>(selection);
-        // descend into unit
-        mySelection =
-                this.unit.match(
-                        mySelection,
-                        getExponentCumulated(cumulativeExponent),
-                        matchedPath,
-                        scaleFactor);
-        return matchNotRecursingIntoUnit(mySelection, cumulativeExponent, matchedPath, scaleFactor);
-    }
-
-    public Set<FactorUnitSelection> matchNotRecursingIntoUnit(
-            Set<FactorUnitSelection> selection,
-            int cumulativeExponent,
-            Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
-        // now match this one
-        Set<FactorUnitSelection> ret = new HashSet<>();
-        for (FactorUnitSelection factorUnitSelection : selection) {
-            // add one solution where this node is matched
-            FactorUnitSelection processedSelection =
-                    factorUnitSelection.forPotentialMatch(
-                            this, cumulativeExponent, matchedPath, scaleFactor);
-            if (!processedSelection.equals(factorUnitSelection)) {
-                // if there was a match, (i.e, we modified the selection),
-                // it's a new partial solution - return it
-                ret.add(processedSelection);
-            }
-            // also regard the selection without the match as a possible partial solution
-            ret.add(factorUnitSelection);
-        }
-        // lower level
-        return ret;
+        // descend into unit, with cumulated exponent
+        return this.unit.match(
+                mySelection, getExponentCumulated(cumulativeExponent), matchedPath, scaleFactor);
     }
 
     boolean isMatched(FactorUnitSelection selection, Deque<Unit> checkedPath) {

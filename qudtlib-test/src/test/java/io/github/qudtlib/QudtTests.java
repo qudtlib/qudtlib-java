@@ -136,7 +136,7 @@ public class QudtTests {
         Assertions.assertTrue(units.contains(Qudt.Units.BTU_IT__FT__PER__FT2__HR__DEG_F));
         units = Qudt.derivedUnitFromFactors(Qudt.Units.M, 1);
         Assertions.assertTrue(units.contains(Qudt.Units.M));
-        Assertions.assertTrue(units.contains(Qudt.Units.RAD));
+        Assertions.assertFalse(units.contains(Qudt.Units.RAD)); // m per m should not match here!
     }
 
     @Test
@@ -262,6 +262,8 @@ public class QudtTests {
         unit = Qudt.scaledUnit("Giga", "Hertz");
         Assertions.assertEquals(Qudt.Units.GigaHZ, unit);
         unit = Qudt.scaledUnit("Kilo", "Gram");
+        Assertions.assertEquals(Qudt.Units.KiloGM, unit);
+        unit = Qudt.scaledUnit("KILO", "GRAM");
         Assertions.assertEquals(Qudt.Units.KiloGM, unit);
         unit = Qudt.scaledUnit(Qudt.Prefixes.Nano, Qudt.Units.M);
         Assertions.assertEquals(Qudt.Units.NanoM, unit);
