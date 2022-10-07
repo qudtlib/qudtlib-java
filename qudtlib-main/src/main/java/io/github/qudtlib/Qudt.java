@@ -313,13 +313,10 @@ public class Qudt {
      * @return the units that match
      */
     static Set<Unit> derivedUnitFromFactors(final Object... factorUnitSpec) {
+        FactorUnitSelection selection = FactorUnitSelection.fromFactorUnitSpec(factorUnitSpec);
         List<Unit> matchingUnits =
                 units.values().stream()
-                        .filter(
-                                d ->
-                                        d.matches(
-                                                FactorUnitSelection.fromFactorUnitSpec(
-                                                        factorUnitSpec)))
+                        .filter(d -> d.matches(selection))
                         .collect(Collectors.toList());
         if (matchingUnits.isEmpty()) {
             throw new NotFoundException(

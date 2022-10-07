@@ -84,11 +84,12 @@ public class FactorUnitSelection {
             FactorUnit factorUnit,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            ScaleFactor scaleFactor,
+            FactorUnitMatchingMode mode) {
         List<FactorUnitSelector> newSelectors = new ArrayList<>();
         boolean matched = false;
         for (FactorUnitSelector s : this.selectors) {
-            if (!matched && s.isAvailable() && s.matches(factorUnit, cumulativeExponent)) {
+            if (!matched && s.isAvailable() && s.matches(factorUnit, cumulativeExponent, mode)) {
                 matched = true;
                 newSelectors.addAll(
                         s.forMatch(factorUnit, cumulativeExponent, matchedPath, scaleFactor));

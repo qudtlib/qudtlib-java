@@ -108,6 +108,10 @@ public class QudtTests {
         Assertions.assertTrue(units.contains(Qudt.Units.M3));
         units = Qudt.derivedUnitFromFactors(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
         Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
+        Assertions.assertEquals(1, units.size());
+        units = Qudt.derivedUnitFromFactors(Qudt.Units.GM, 1, Qudt.Units.M, -3);
+        Assertions.assertTrue(units.contains(Qudt.Units.GM__PER__M3));
+        Assertions.assertEquals(1, units.size());
         units = Qudt.derivedUnits(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1);
         Assertions.assertTrue(units.contains(Qudt.Units.MOL__PER__M2__SEC));
         units =

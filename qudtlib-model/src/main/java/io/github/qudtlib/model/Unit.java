@@ -156,8 +156,12 @@ public class Unit {
      * @return true if the unit matches the criteria
      */
     public boolean matches(FactorUnitSelection initialSelection) {
+        return matches(initialSelection, FactorUnitMatchingMode.EXACT);
+    }
+
+    public boolean matches(FactorUnitSelection initialSelection, FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> selections = Set.of(initialSelection);
-        selections = match(selections, 1, new ArrayDeque<>(), new ScaleFactor());
+        selections = match(selections, 1, new ArrayDeque<>(), new ScaleFactor(), mode);
         if (selections == null || selections.isEmpty()) return false;
         return selections.stream().anyMatch(FactorUnitSelection::isCompleteMatch);
     }
@@ -166,11 +170,19 @@ public class Unit {
             Set<FactorUnitSelection> selections,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            ScaleFactor scaleFactor,
+            FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> results = new HashSet<>();
         matchedPath.push(this);
-        // try to match the unscaled version of the unit, if any
-        if (this.getScalingOf().isPresent() && getPrefix().isPresent()) {
+        // match factor units (if any)
+        if (hasFactorUnits()) {
+            results.addAll(
+                    matchFactorUnits(
+                            selections, cumulativeExponent, matchedPath, scaleFactor, mode));
+        } else // try to match the unscaled version of the unit, if any
+        if (this.getScalingOf().isPresent()
+                && getPrefix().isPresent()
+                && getScalingOf().get().hasFactorUnits()) {
             results.addAll(
                     this.getScalingOf()
                             .get()
@@ -178,16 +190,12 @@ public class Unit {
                                     selections,
                                     cumulativeExponent,
                                     matchedPath,
-                                    scaleFactor.multiplyBy(
-                                            this.getPrefix().get().getMultiplier())));
-        }
-        // match factor units (if any)
-        if (hasFactorUnits()) {
-            results.addAll(
-                    matchFactorUnits(selections, cumulativeExponent, matchedPath, scaleFactor));
+                                    scaleFactor.multiplyBy(this.getPrefix().get().getMultiplier()),
+                                    mode));
         }
         // match this unit
-        results.addAll(matchThisUnit(selections, cumulativeExponent, matchedPath, scaleFactor));
+        results.addAll(
+                matchThisUnit(selections, cumulativeExponent, matchedPath, scaleFactor, mode));
         matchedPath.pop();
         return results;
     }
@@ -196,12 +204,14 @@ public class Unit {
             Set<FactorUnitSelection> selections,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            ScaleFactor scaleFactor,
+            FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> subResults = new HashSet<>(selections);
         Set<FactorUnitSelection> lastResults = subResults;
         for (FactorUnit factorUnit : factorUnits) {
             subResults =
-                    factorUnit.match(lastResults, cumulativeExponent, matchedPath, scaleFactor);
+                    factorUnit.match(
+                            lastResults, cumulativeExponent, matchedPath, scaleFactor, mode);
             if (lastResults.equals(subResults)) {
                 // no new matches for current factor unit - abort
                 return selections;
@@ -215,14 +225,19 @@ public class Unit {
             Set<FactorUnitSelection> selection,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            ScaleFactor scaleFactor,
+            FactorUnitMatchingMode mode) {
         // now match this one
         Set<FactorUnitSelection> ret = new HashSet<>();
         for (FactorUnitSelection factorUnitSelection : selection) {
             // add one solution where this node is matched
             FactorUnitSelection processedSelection =
                     factorUnitSelection.forPotentialMatch(
-                            new FactorUnit(this, 1), cumulativeExponent, matchedPath, scaleFactor);
+                            new FactorUnit(this, 1),
+                            cumulativeExponent,
+                            matchedPath,
+                            scaleFactor,
+                            mode);
             if (!processedSelection.equals(factorUnitSelection)) {
                 // if there was a match, (i.e, we modified the selection),
                 // it's a new partial solution - return it

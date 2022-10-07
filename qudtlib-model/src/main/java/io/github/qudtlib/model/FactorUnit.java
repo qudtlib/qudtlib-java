@@ -53,11 +53,16 @@ public class FactorUnit {
             Set<FactorUnitSelection> selection,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            ScaleFactor scaleFactor,
+            FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> mySelection = new HashSet<>(selection);
         // descend into unit, with cumulated exponent
         return this.unit.match(
-                mySelection, getExponentCumulated(cumulativeExponent), matchedPath, scaleFactor);
+                mySelection,
+                getExponentCumulated(cumulativeExponent),
+                matchedPath,
+                scaleFactor,
+                mode);
     }
 
     @Override

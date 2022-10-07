@@ -111,9 +111,18 @@ class FactorUnitSelector {
                 && Integer.signum(this.exponent) == Integer.signum(cumulatedFactorUnitExponent);
     }
 
-    public boolean matches(FactorUnit factorUnit, int cumulativeExponent) {
-        return exponentMatches(factorUnit, cumulativeExponent)
-                && this.unit.isSameScaleAs(factorUnit.getUnit());
+    public boolean matches(
+            FactorUnit factorUnit, int cumulativeExponent, FactorUnitMatchingMode mode) {
+        switch (mode) {
+            case EXACT:
+                return unit.equals(factorUnit.getUnit())
+                        && exponentMatches(factorUnit, cumulativeExponent);
+            case ALLOW_SCALED:
+                return this.unit.isSameScaleAs(factorUnit.getUnit())
+                        && exponentMatches(factorUnit, cumulativeExponent);
+            default:
+                throw new IllegalStateException("Cannot handle mode: " + mode);
+        }
     }
 
     public FactorUnitSelector copy() {
