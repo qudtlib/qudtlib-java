@@ -81,5 +81,4 @@ public class FactorUnitMatch {
     public int hashCode() {
         return Objects.hash(matchedFactorUnit, matchedPath, matchedMultiplier, scaleFactor);
     }
-
 }
