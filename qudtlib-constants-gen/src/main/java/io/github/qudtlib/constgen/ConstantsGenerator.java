@@ -135,7 +135,7 @@ public class ConstantsGenerator {
         templateVars.put("package", DESTINATION_PACKAGE);
         templateVars.put(
                 "valueFactory",
-                type.substring(0, 1).toLowerCase() + type.substring(1) + "FromLocalname");
+                type.substring(0, 1).toLowerCase() + type.substring(1) + "FromLocalnameRequired");
         File outFile = new File(packageFile, typePlural + ".java");
         CodeGen.generateFileFromTemplate(config, TEMPLATE_FILE, templateVars, outFile);
     }

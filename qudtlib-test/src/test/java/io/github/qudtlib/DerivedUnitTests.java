@@ -2,10 +2,7 @@ package io.github.qudtlib;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.github.qudtlib.model.FactorUnit;
-import io.github.qudtlib.model.FactorUnitMatchingMode;
-import io.github.qudtlib.model.FactorUnitSelection;
-import io.github.qudtlib.model.Unit;
+import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Stream;
@@ -88,9 +85,65 @@ public class DerivedUnitTests {
     }
 
     @Test
-    public void testDifferentButEquivalentUnits() {
+    public void testMatchingModeAllowScaled() {
+        assertTrue(
+                Qudt.Units.GM__PER__DeciM3.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(
+                                Qudt.Units.KiloGM, 1, Qudt.Units.M, -3),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.KiloGM__PER__M3.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(Qudt.Units.GM, 1, Qudt.Units.M, -3),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+    }
+
+    @Test
+    public void testMatchingModeExact() {
         assertFalse(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3));
         assertFalse(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.GM, 1, Qudt.Units.M, -3));
+    }
+
+    @Test
+    public void testSearchModeExactOnlyOne() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT_ONLY_ONE, Qudt.Units.N, 1, Qudt.Units.M, 1);
+        assertEquals(1, units.size());
+        assertTrue(units.contains(Qudt.Units.J));
+    }
+
+    @Test
+    public void testSearchModeExact_2Results() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.N, 1, Qudt.Units.M, 1);
+        assertEquals(2, units.size());
+        assertTrue(units.contains(Qudt.Units.J));
+        assertTrue(units.contains(Qudt.Units.N__M));
+    }
+
+    @Test
+    public void testSearchModeBestEffortOnlyOne() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.BEST_EFFORT_ONLY_ONE, "KiloGM", 1, "M", -3);
+        assertEquals(1, units.size());
+        assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.BEST_EFFORT_ONLY_ONE, "KiloN", 1, "MilliM", 1);
+        assertEquals(1, units.size());
+        assertTrue(units.contains(Qudt.Units.J));
+    }
+
+    @Test
+    public void testSearchModeAllowScaled() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.ALLOW_SCALED, "KiloGM", 1, "M", -3);
+        assertEquals(2, units.size());
+        assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
+        assertTrue(units.contains(Qudt.Units.GM__PER__DeciM3));
     }
 
     @Test
@@ -411,8 +464,12 @@ public class DerivedUnitTests {
                                 new FactorUnit(Qudt.Units.M, -1),
                                 new FactorUnit(Qudt.Units.M, -1)));
         assertEquals(2, simplified.size());
-        assertTrue(Qudt.derivedUnitFromFactorUnits(simplified).contains(Qudt.Units.N__PER__M2));
-        assertTrue(Qudt.derivedUnitFromFactorUnits(simplified).contains(Qudt.Units.PA));
+        assertTrue(
+                Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.EXACT, simplified)
+                        .contains(Qudt.Units.N__PER__M2));
+        assertTrue(
+                Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.EXACT, simplified)
+                        .contains(Qudt.Units.PA));
     }
 
     @Test

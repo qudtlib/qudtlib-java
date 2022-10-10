@@ -20,6 +20,13 @@ public class FactorUnitSelection {
         this.selectors = selectors;
     }
 
+    public static FactorUnitSelection fromFactorUnits(List<FactorUnit> factorUnits) {
+        return new FactorUnitSelection(
+                factorUnits.stream()
+                        .map(fu -> new FactorUnitSelector(fu.getUnit(), fu.getExponent()))
+                        .collect(Collectors.toList()));
+    }
+
     /**
      * Accepts up to 7 pairs of &lt;Unit, Integer&gt; which are interpreted as factor units and
      * respective exponents.
