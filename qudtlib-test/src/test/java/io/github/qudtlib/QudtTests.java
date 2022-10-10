@@ -175,10 +175,14 @@ public class QudtTests {
                         DerivedUnitSearchMode.EXACT, Qudt.Units.M, 1);
         Assertions.assertTrue(units.contains(Qudt.Units.M));
         Assertions.assertFalse(units.contains(Qudt.Units.RAD)); // m per m should not match here!
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.KiloGM, 1, Qudt.Units.A, -1);
+        Assertions.assertEquals(0, units.size());
     }
 
     @Test
-    public void testDerivedUnit1() {
+    public void testDerivedUnit() {
         Set<Unit> units =
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.EXACT, Qudt.Units.M, 3);
@@ -198,7 +202,7 @@ public class QudtTests {
     }
 
     @Test
-    public void testDerivedUnitByIri1() {
+    public void testDerivedUnitByIri() {
         Set<Unit> units =
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.EXACT, Qudt.Units.M.getIri(), 3);
@@ -266,6 +270,8 @@ public class QudtTests {
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.EXACT, Qudt.Units.N, 1, Qudt.Units.M, -2);
         Assertions.assertTrue(units.contains(Qudt.Units.N__PER__M2));
+        Assertions.assertTrue(units.contains(Qudt.Units.PA));
+        Assertions.assertEquals(2, units.size());
     }
 
     @Test

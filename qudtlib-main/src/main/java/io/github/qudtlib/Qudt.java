@@ -390,12 +390,13 @@ public class Qudt {
                                                         selection,
                                                         FactorUnitMatchingMode.ALLOW_SCALED))
                                 .collect(Collectors.toList());
-                return retainOnlyOne((matchingUnits));
-            } else {
-                return retainOnlyOne(matchingUnits);
             }
+            return retainOnlyOne(matchingUnits);
         }
-        throw new IllegalStateException("Search mode " + searchMode + " was not properly handled");
+        throw new IllegalStateException(
+                "Search mode "
+                        + searchMode
+                        + " was not handled properly, this should never happen - please report as bug.");
     }
 
     private static Set<Unit> retainOnlyOne(List<Unit> matchingUnits) {

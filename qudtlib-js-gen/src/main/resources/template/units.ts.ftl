@@ -74,7 +74,7 @@ export * from "@qudtlib/core";
 export const Units = {
 <#list unitConstants as u>
   // ${u.label}
-  ${u.codeConstantName}: Qudt.unitFromLocalname("${u.iriLocalname}"),
+  ${u.codeConstantName}: Qudt.unitFromLocalnameRequired("${u.iriLocalname}"),
 </#list>
 }
 
@@ -99,7 +99,7 @@ export const Units = {
 export const QuantityKinds = {
 <#list quantityKindConstants as q>
   // ${q.label}
-  ${q.codeConstantName}: Qudt.quantityKindFromLocalname("${q.iriLocalname}"),
+  ${q.codeConstantName}: Qudt.quantityKindFromLocalnameRequired("${q.iriLocalname}"),
 </#list>
 }
 
@@ -118,7 +118,7 @@ export const QuantityKinds = {
 export const Prefixes = {
 <#list prefixConstants as q>
   // ${q.label}
-  ${q.codeConstantName}: Qudt.prefixFromLocalname("${q.iriLocalname}"),
+  ${q.codeConstantName}: Qudt.prefixFromLocalnameRequired("${q.iriLocalname}"),
 </#list>
 }
 
