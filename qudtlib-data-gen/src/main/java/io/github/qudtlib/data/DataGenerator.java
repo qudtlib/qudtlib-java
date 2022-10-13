@@ -43,6 +43,7 @@ public class DataGenerator {
     private static final String REMOVE_KILOGM_SCALINGS_QUERY = "remove-kiloGM-scalings.rq";
     // additional data
     private static final String SI_BASE_UNITS_DATA = "si-base-units.ttl";
+    private static final String ADDITIONAL_SCALINGS_DATA = "additional-scalings.ttl";
     private static final String UNITS_EXPECTED_DATA = "tmpExpected/qudt-unit.ttl";
 
     private static final boolean DEBUG = false;
@@ -111,6 +112,8 @@ public class DataGenerator {
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
                 // add SI base units
                 RdfOps.addStatementsFromFile(outputCon, SI_BASE_UNITS_DATA);
+                // add missing scalings
+                RdfOps.addStatementsFromFile(outputCon, ADDITIONAL_SCALINGS_DATA);
                 // put result in OUTPUT repo
                 RdfOps.copyData(inputCon, outputCon);
                 // add prefixes to INPUT repo (cannot be in output, but is required for queries!)

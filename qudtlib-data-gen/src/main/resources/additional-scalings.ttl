@@ -1,0 +1,5 @@
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+
+unit:TON_Metric qudt:isScalingOf unit:GM.
+unit:TONNE qudt:isScalingOf unit:GM.
