@@ -210,11 +210,11 @@ public class Qudt {
      * @param unit the scaled unit
      * @return the base unit
      */
-    public static Optional<Unit> unscaledUnit(Unit unit) {
+    public static Unit unscaledUnit(Unit unit) {
         if (unit.getScalingOfIri().isEmpty()) {
-            return Optional.of(unit);
+            return unit;
         }
-        return unit(unit.getScalingOfIri().get());
+        return unitRequired(unit.getScalingOfIri().get());
     }
 
     /**
@@ -254,15 +254,7 @@ public class Qudt {
      */
     public static List<FactorUnit> unscaledFactorUnits(List<FactorUnit> factorUnits) {
         return factorUnits.stream()
-                .map(
-                        uf ->
-                                new FactorUnit(
-                                        unscaledUnit(uf.getUnit())
-                                                .orElseThrow(
-                                                        () ->
-                                                                new IllegalStateException(
-                                                                        "No unit present!")),
-                                        uf.getExponent()))
+                .map(uf -> new FactorUnit(unscaledUnit(uf.getUnit()), uf.getExponent()))
                 .collect(toList());
     }
 
