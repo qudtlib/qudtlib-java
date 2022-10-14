@@ -1,4 +1,4 @@
-package io.github.qudlib.common;
+package io.github.qudtlib.common;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +26,7 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
  * @author Florian Kleedorfer
  * @since 1.0
  */
-public class RdfOps {
+public abstract class RdfOps {
 
     private static final boolean DEBUG = false;
 

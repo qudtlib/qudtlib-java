@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 public class Quantity {
-    Set<QuantityValue> quantityValues;
+    final Set<QuantityValue> quantityValues;
 
     public Quantity(Set<QuantityValue> quantityValues) {
         this.quantityValues = quantityValues;

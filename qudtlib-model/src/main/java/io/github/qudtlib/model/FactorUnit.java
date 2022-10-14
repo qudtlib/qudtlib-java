@@ -53,44 +53,21 @@ public class FactorUnit {
             Set<FactorUnitSelection> selection,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            ScaleFactor scaleFactor,
+            FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> mySelection = new HashSet<>(selection);
-        // descend into unit
-        mySelection =
-                this.unit.match(
-                        mySelection,
-                        getExponentCumulated(cumulativeExponent),
-                        matchedPath,
-                        scaleFactor);
-        // now match this one
-        Set<FactorUnitSelection> ret = new HashSet<>();
-        for (FactorUnitSelection factorUnitSelection : mySelection) {
-            // add one solution where this node is matched
-            FactorUnitSelection processedSelection =
-                    factorUnitSelection.forMatch(
-                            this, cumulativeExponent, matchedPath, scaleFactor);
-            if (!processedSelection.equals(factorUnitSelection)) {
-                // if there was a match, (i.e, we modified the selection),
-                // it's a new partial solution - return it
-                ret.add(processedSelection);
-            }
-            // also regard the selection without the match as a possible partial solution
-            ret.add(factorUnitSelection);
-        }
-        // lower level
-        return ret;
-    }
-
-    boolean isMatched(FactorUnitSelection selection, Deque<Unit> checkedPath) {
-        if (selection.isSelected(this, checkedPath)) {
-            return true;
-        }
-        return unit.isMatched(selection, checkedPath);
+        // descend into unit, with cumulated exponent
+        return this.unit.match(
+                mySelection,
+                getExponentCumulated(cumulativeExponent),
+                matchedPath,
+                scaleFactor,
+                mode);
     }
 
     @Override
     public String toString() {
-        return "FU{" + unit + "^" + exponent + "}";
+        return unit + "^" + exponent;
     }
 
     @Override

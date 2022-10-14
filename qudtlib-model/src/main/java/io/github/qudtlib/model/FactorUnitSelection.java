@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toSet;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents a query by factor units while it is being evaluated.
@@ -19,28 +20,47 @@ public class FactorUnitSelection {
         this.selectors = selectors;
     }
 
-    public FactorUnitSelection copy() {
+    public static FactorUnitSelection fromFactorUnits(List<FactorUnit> factorUnits) {
         return new FactorUnitSelection(
-                this.selectors.stream().map(FactorUnitSelector::copy).collect(Collectors.toList()));
+                factorUnits.stream()
+                        .map(fu -> new FactorUnitSelector(fu.getUnit(), fu.getExponent()))
+                        .collect(Collectors.toList()));
     }
 
-    public List<FactorUnitSelector> getSelectors() {
-        return selectors;
+    /**
+     * Accepts up to 7 pairs of &lt;Unit, Integer&gt; which are interpreted as factor units and
+     * respective exponents.
+     *
+     * @param factorUnitSpec array of up to 7 %lt;Unit, Integer%gt; pairs
+     * @return true if the specified unit/exponent combination identifies this unit.
+     *     (overspecification is counted as a match)
+     */
+    public static FactorUnitSelection fromFactorUnitSpec(Object... factorUnitSpec) {
+        if (factorUnitSpec.length % 2 != 0) {
+            throw new IllegalArgumentException("An even number of arguments is required");
+        }
+        if (factorUnitSpec.length > 14) {
+            throw new IllegalArgumentException(
+                    "No more than 14 arguments (7 factor units) supported");
+        }
+        List<FactorUnitSelector> selectors = new ArrayList<>();
+        for (int i = 0; i < factorUnitSpec.length; i += 2) {
+            Unit requestedUnit;
+            requestedUnit = ((Unit) factorUnitSpec[i]);
+            Integer requestedExponent = (Integer) factorUnitSpec[i + 1];
+            selectors.add(new FactorUnitSelector(requestedUnit, requestedExponent));
+        }
+        return new FactorUnitSelection(selectors);
     }
 
-    public boolean isSelected(FactorUnit factorUnit, Deque<Unit> checkedPath) {
-        return this.selectors.stream()
-                .anyMatch(
-                        s ->
-                                s.getFactorUnitMatch().isPresent()
-                                        && factorUnit.equals(
-                                                s.getFactorUnitMatch().get().getMatchedFactorUnit())
-                                        && Arrays.equals(
-                                                checkedPath.toArray(),
-                                                s.getFactorUnitMatch()
-                                                        .get()
-                                                        .getMatchedPath()
-                                                        .toArray()));
+    public static FactorUnitSelection fromFactorUnitSpec(
+            Collection<Map.Entry<String, Integer>> factorUnitSpec) {
+        Object[] arr = new Object[factorUnitSpec.size() * 2];
+        return FactorUnitSelection.fromFactorUnitSpec(
+                factorUnitSpec.stream()
+                        .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
+                        .collect(Collectors.toList())
+                        .toArray(arr));
     }
 
     public boolean isCompleteMatch() {
@@ -67,34 +87,16 @@ public class FactorUnitSelection {
         return cumulativeScale.compareTo(BigDecimal.ONE) == 0;
     }
 
-    public boolean allMarked(Collection<FactorUnit> factorUnits) {
-        return this.selectors.stream()
-                .allMatch(
-                        s ->
-                                factorUnits.stream()
-                                        .anyMatch(
-                                                u ->
-                                                        s.getFactorUnitMatch().isPresent()
-                                                                && u.equals(
-                                                                        s.getFactorUnitMatch()
-                                                                                .get()
-                                                                                .getMatchedFactorUnit())));
-    }
-
-    public boolean isMatchingSelectorAvailable(FactorUnit factorUnit, int cumulativeExponent) {
-        return selectors.stream()
-                .anyMatch(s -> s.isAvailable() && s.matches(factorUnit, cumulativeExponent));
-    }
-
-    public FactorUnitSelection forMatch(
+    public FactorUnitSelection forPotentialMatch(
             FactorUnit factorUnit,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            ScaleFactor scaleFactor,
+            FactorUnitMatchingMode mode) {
         List<FactorUnitSelector> newSelectors = new ArrayList<>();
         boolean matched = false;
         for (FactorUnitSelector s : this.selectors) {
-            if (!matched && s.isAvailable() && s.matches(factorUnit, cumulativeExponent)) {
+            if (!matched && s.isAvailable() && s.matches(factorUnit, cumulativeExponent, mode)) {
                 matched = true;
                 newSelectors.addAll(
                         s.forMatch(factorUnit, cumulativeExponent, matchedPath, scaleFactor));
@@ -105,13 +107,9 @@ public class FactorUnitSelection {
         return new FactorUnitSelection(newSelectors);
     }
 
-    public boolean allBound() {
-        return selectors.stream().allMatch(FactorUnitSelector::isBound);
-    }
-
     @Override
     public String toString() {
-        return "FUSel{" + selectors + '}';
+        return "Select" + selectors;
     }
 
     @Override

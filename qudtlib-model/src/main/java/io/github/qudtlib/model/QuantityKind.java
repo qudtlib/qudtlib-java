@@ -11,32 +11,32 @@ import java.util.*;
 public class QuantityKind {
     private final String iri;
     private final Set<LangString> labels;
-    private final Set<String> applicableUnits;
-    private final Set<String> broaderQuantityKinds;
-    private final String dimensionVector;
+    private final Set<String> applicableUnitIris;
+    private final Set<String> broaderQuantityKindIris;
+    private final String dimensionVectorIri;
     private final String symbol;
 
     public QuantityKind(
             String iri,
             Set<LangString> labels,
-            Set<String> applicableUnits,
-            Set<String> broaderQuantityKinds,
-            String dimensionVector,
+            Set<String> applicableUnitIris,
+            Set<String> broaderQuantityKindIris,
+            String dimensionVectorIri,
             String symbol) {
         this.iri = iri;
         this.labels = labels;
-        this.applicableUnits = new HashSet<>(applicableUnits);
-        this.broaderQuantityKinds = new HashSet<>(broaderQuantityKinds);
-        this.dimensionVector = dimensionVector;
+        this.applicableUnitIris = new HashSet<>(applicableUnitIris);
+        this.broaderQuantityKindIris = new HashSet<>(broaderQuantityKindIris);
+        this.dimensionVectorIri = dimensionVectorIri;
         this.symbol = symbol;
     }
 
-    public QuantityKind(String iri, String dimensionVector, String symbol) {
+    public QuantityKind(String iri, String dimensionVectorIri, String symbol) {
         this.iri = iri;
-        this.dimensionVector = dimensionVector;
+        this.dimensionVectorIri = dimensionVectorIri;
         this.symbol = symbol;
-        this.applicableUnits = new HashSet<>();
-        this.broaderQuantityKinds = new HashSet<>();
+        this.applicableUnitIris = new HashSet<>();
+        this.broaderQuantityKindIris = new HashSet<>();
         this.labels = new HashSet<>();
     }
 
@@ -44,16 +44,16 @@ public class QuantityKind {
         return iri;
     }
 
-    public Set<String> getApplicableUnits() {
-        return Collections.unmodifiableSet(applicableUnits);
+    public Set<String> getApplicableUnitIris() {
+        return Collections.unmodifiableSet(applicableUnitIris);
     }
 
-    public Set<String> getBroaderQuantityKinds() {
-        return Collections.unmodifiableSet(broaderQuantityKinds);
+    public Set<String> getBroaderQuantityKindIris() {
+        return Collections.unmodifiableSet(broaderQuantityKindIris);
     }
 
-    public Optional<String> getDimensionVector() {
-        return Optional.ofNullable(dimensionVector);
+    public Optional<String> getDimensionVectorIri() {
+        return Optional.ofNullable(dimensionVectorIri);
     }
 
     public Optional<String> getSymbol() {
@@ -82,14 +82,14 @@ public class QuantityKind {
         return labels.stream().anyMatch(s -> s.getString().equals(label));
     }
 
-    public void addApplicableUnit(String unit) {
+    public void addApplicableUnitIri(String unit) {
         Objects.requireNonNull(unit);
-        this.applicableUnits.add(unit);
+        this.applicableUnitIris.add(unit);
     }
 
-    public void addBroaderQuantityKind(String quantitkyKind) {
-        Objects.requireNonNull(quantitkyKind);
-        this.broaderQuantityKinds.add(quantitkyKind);
+    public void addBroaderQuantityKindIri(String quantitkyKindIri) {
+        Objects.requireNonNull(quantitkyKindIri);
+        this.broaderQuantityKindIris.add(quantitkyKindIri);
     }
 
     @Override

@@ -1,18 +1,13 @@
 package io.github.qudtlib;
 
-import freemarker.core.Environment;
-import freemarker.core.TemplateNumberFormat;
-import freemarker.core.TemplateNumberFormatFactory;
-import freemarker.template.*;
-import io.github.qudlib.common.RdfOps;
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
+import io.github.qudtlib.common.CodeGen;
+import io.github.qudtlib.common.RdfOps;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -60,17 +55,8 @@ public class HardcodedModelGenerator {
     }
 
     public void generate() throws IOException, TemplateException {
-        Configuration cfg = getFreemarkerConfiguration();
+        Configuration cfg = CodeGen.getFreemarkerConfiguration();
         generateInitializer(cfg);
-    }
-
-    private Configuration getFreemarkerConfiguration() {
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
-        cfg.setClassLoaderForTemplateLoading(HardcodedModelGenerator.class.getClassLoader(), "/");
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        cfg.setCustomNumberFormats(Map.of("toString", new BigDecimalFormatterFactory()));
-        return cfg;
     }
 
     private void generateInitializer(Configuration config) throws IOException, TemplateException {
@@ -94,40 +80,7 @@ public class HardcodedModelGenerator {
         }
         RdfOps.message("output dir: " + packageFile.getAbsolutePath());
         templateVars.put("package", DESTINATION_PACKAGE);
-        Template template = config.getTemplate(TEMPLATE_FILE);
-        FileWriter out = new FileWriter(new File(packageFile, FILENAME), StandardCharsets.UTF_8);
-        Environment env = template.createProcessingEnvironment(templateVars, out);
-        env.setOutputEncoding(StandardCharsets.UTF_8.toString());
-        env.process();
-    }
-
-    private static class BigDecimalFormatterFactory extends TemplateNumberFormatFactory {
-        @Override
-        public TemplateNumberFormat get(String s, Locale locale, Environment environment) {
-            return new TemplateNumberFormat() {
-                @Override
-                public String formatToPlainText(TemplateNumberModel templateNumberModel)
-                        throws TemplateModelException {
-                    Number num = templateNumberModel.getAsNumber();
-                    if (!(num instanceof BigDecimal)) {
-                        throw new IllegalArgumentException(
-                                "This formatter can only be used with BigDecimals but was asked to format a "
-                                        + num.getClass());
-                    }
-                    BigDecimal bd = (BigDecimal) templateNumberModel.getAsNumber();
-                    return bd.toString();
-                }
-
-                @Override
-                public boolean isLocaleBound() {
-                    return false;
-                }
-
-                @Override
-                public String getDescription() {
-                    return "Number format for BigDecimal using BigDecimal.toString()";
-                }
-            };
-        }
+        File outFile = new File(packageFile, FILENAME);
+        CodeGen.generateFileFromTemplate(config, TEMPLATE_FILE, templateVars, outFile);
     }
 }

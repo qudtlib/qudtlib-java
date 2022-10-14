@@ -20,17 +20,14 @@ import java.util.stream.Stream;
  * <pre>{@code
  * // Converting 38.5° Celsius into Fahrenheit:
  * Qudt.convert(new BigDecimal("38.5"), Qudt.Units.DEG_C, Qudt.Units.DEG_F);
- *
  * // finding unit for factors: m, kg, and s^-2:
  * Set<Unit> myUnits =
  *            Qudt.derivedUnit(
  *                    Qudt.Units.M, 1,
  *                    Qudt.Units.KiloGM, 1,
  *                    Qudt.Units.SEC, -2);
- *
  * // finding factors of Newton:
  * List<FactorUnit> myFactorUnits = Qudt.Units.N.getFactorUnits();
- *
  * // Converting 1N into kN (using QuantityValue):
  * QuantityValue quantityValue = new QuantityValue(new BigDecimal("1"), Qudt.Units.N);
  * QuantityValue converted = Qudt.convert(quantityValue, Qudt.Units.KiloN);
@@ -104,8 +101,12 @@ public class Qudt {
      * @return the unit
      * @throws NotFoundException if no such unit is found.
      */
-    public static Unit unitFromLocalname(String localname) {
+    public static Optional<Unit> unitFromLocalname(String localname) {
         return unit(unitIriFromLocalname(localname));
+    }
+
+    public static Unit unitFromLocalnameRequired(String localname) {
+        return unitRequired(unitIriFromLocalname(localname));
     }
 
     /**
@@ -116,12 +117,17 @@ public class Qudt {
      * @param label the matched label
      * @return the first unit found
      */
-    public static Unit unitFromLabel(String label) {
+    public static Optional<Unit> unitFromLabel(String label) {
         LabelMatcher labelMatcher = new LabelMatcher(label);
         return units.values().stream()
                 .filter(u -> u.getLabels().stream().anyMatch(labelMatcher::matches))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("No unit found with label " + label));
+                .findFirst();
+    }
+
+    public static Unit unitFromLabelRequired(String label) {
+        return unitFromLabel(label)
+                .orElseThrow(
+                        () -> new NotFoundException("No unit found for label '" + label + "'"));
     }
 
     /**
@@ -130,14 +136,14 @@ public class Qudt {
      *
      * @param iri the requested unit IRI
      * @return the unit
-     * @throws NotFoundException if no such unit is found.
      */
-    public static Unit unit(String iri) {
-        Unit unit = units.get(iri);
-        if (unit == null) {
-            throw new NotFoundException("Unit not found: " + iri);
-        }
-        return unit;
+    public static Optional<Unit> unit(String iri) {
+        return Optional.ofNullable(units.get(iri));
+    }
+
+    public static Unit unitRequired(String iri) {
+        return Optional.ofNullable(units.get(iri))
+                .orElseThrow(() -> new NotFoundException("No unit found for Iri " + iri));
     }
 
     /**
@@ -204,22 +210,11 @@ public class Qudt {
      * @param unit the scaled unit
      * @return the base unit
      */
-    public static Unit unscale(Unit unit) {
+    public static Unit unscaledUnit(Unit unit) {
         if (unit.getScalingOfIri().isEmpty()) {
             return unit;
         }
-        return unit(unit.getScalingOfIri().get());
-    }
-
-    /**
-     * Returns the list of {@link FactorUnit}s of the unit identified by the specified unit IRI.
-     *
-     * @param unitIri the IRI of the unit
-     * @return the factors of the unit or an empty list if the unit is not a derived unit
-     * @throws NotFoundException if the unit IRI does not identify a unit in the model
-     */
-    public static List<FactorUnit> factorUnits(String unitIri) {
-        return factorUnits(unit(unitIri));
+        return unitRequired(unit.getScalingOfIri().get());
     }
 
     /**
@@ -257,104 +252,157 @@ public class Qudt {
      * @param factorUnits the factor units to unscale
      * @return the unscaled factor units
      */
-    public static List<FactorUnit> unscaleFactorUnits(List<FactorUnit> factorUnits) {
+    public static List<FactorUnit> unscaledFactorUnits(List<FactorUnit> factorUnits) {
         return factorUnits.stream()
-                .map(uf -> new FactorUnit(unscale(uf.getUnit()), uf.getExponent()))
+                .map(uf -> new FactorUnit(unscaledUnit(uf.getUnit()), uf.getExponent()))
                 .collect(toList());
     }
 
     /**
-     * Obtains a unit from factor units.
+     * Obtains units based on factor units, using the specified {@link FactorUnitMatchingMode}.
      *
      * <p>For example,
      *
      * <pre>{@code
-     * Qudt.derivedUnit(
+     * Qudt.derivedUnitsFrom Map(
+     *                     FactorUnitMatchingMode.EXACT,
+     *                     Map.of(
      *                     Qudt.Units.M, 1,
      *                     Qudt.Units.KiloGM, 1,
-     *                     Qudt.Units.SEC, -2);
+     *                     Qudt.Units.SEC, -2));
      * }</pre>
      *
      * will yield a Set containing the Newton Unit ({@code Qudt.Units.N})
      *
+     * @param searchMode the {@link DerivedUnitSearchMode} to use
      * @param factorUnits a map containing unit to exponent entries.
      * @return the derived units that match the given factor units
      */
-    public static Set<Unit> derivedUnit(List<Map.Entry<Unit, Integer>> factorUnits) {
+    public static Set<Unit> derivedUnitsFromMap(
+            DerivedUnitSearchMode searchMode, Map<Unit, Integer> factorUnits) {
         Object[] arr = new Object[factorUnits.size() * 2];
-        return derivedUnitFromFactors(
-                factorUnits.stream()
+        return derivedUnitsFromUnitExponentPairs(
+                searchMode,
+                factorUnits.entrySet().stream()
                         .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
                         .collect(Collectors.toList())
                         .toArray(arr));
     }
 
     /**
-     * Obtains a unit from factor units.
+     * Obtains units based on factor units.
      *
-     * @see #derivedUnit(List)
+     * @param searchMode the {@link DerivedUnitSearchMode} to use
      * @param factorUnits the factor units
      * @return the derived unit that match the given factor units
+     * @see #derivedUnitsFromMap(DerivedUnitSearchMode, Map)
      */
-    public static Set<Unit> derivedUnitFromFactorUnits(List<FactorUnit> factorUnits) {
-        Object[] arr = new Object[factorUnits.size() * 2];
-        return derivedUnitFromFactors(
-                factorUnits.stream()
-                        .flatMap(e -> Stream.of(e.getUnit(), e.getExponent()))
-                        .collect(Collectors.toList())
-                        .toArray(arr));
+    public static Set<Unit> derivedUnitsFromFactorUnits(
+            DerivedUnitSearchMode searchMode, List<FactorUnit> factorUnits) {
+        FactorUnitSelection selection = FactorUnitSelection.fromFactorUnits(factorUnits);
+        return derivedUnitsFromFactorUnitSelection(searchMode, selection);
     }
 
     /**
      * Vararg method, must be an even number of arguments, always alternating types of Unit|String
      * and Integer.
      *
-     * @param factorUnitSpecs alternating Unit|String (representing a unit IRI) and Integer (the
-     *     exponent)
+     * @param searchMode the {@link DerivedUnitSearchMode} to use
+     * @param factorUnitSpec alternating (unit, exponent) pairs. The unit can be specified as {@link
+     *     Unit} or String. In the latter case, it can be a unit IRI, a unit IRI's local name or a
+     *     unit's label. The exponent must be an and Integer.
      * @return the units that match
+     * @see #derivedUnitsFromMap(DerivedUnitSearchMode, Map)
      */
-    static Set<Unit> derivedUnitFromFactors(final Object... factorUnitSpecs) {
-        if (factorUnitSpecs.length % 2 != 0) {
-            throw new IllegalArgumentException("An even number of arguments is required");
+    public static Set<Unit> derivedUnitsFromUnitExponentPairs(
+            DerivedUnitSearchMode searchMode, final Object... factorUnitSpec) {
+        Object[] spec = new Object[factorUnitSpec.length];
+        for (int i = 0; i < factorUnitSpec.length; i++) {
+            if (i % 2 == 0 && factorUnitSpec[i] instanceof Unit) {
+                spec[i] = factorUnitSpec[i];
+            } else if (i % 2 == 0 && factorUnitSpec[i] instanceof String) {
+                String unitString = (String) factorUnitSpec[i];
+                Optional<Unit> unitOpt = unit(unitString);
+                if (unitOpt.isEmpty()) {
+                    unitOpt = unitFromLocalname(unitString);
+                }
+                if (unitOpt.isEmpty()) {
+                    unitOpt = unitFromLabel(unitString);
+                }
+                if (unitOpt.isEmpty()) {
+                    throw new NotFoundException(
+                            String.format(
+                                    "Unable to find unit for string %s, interpreted as iri, label, or localname",
+                                    unitString));
+                }
+                spec[i] = unitOpt.get();
+            } else if (i % 2 == 1 && factorUnitSpec[i] instanceof Integer) {
+                spec[i] = factorUnitSpec[i];
+            } else {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Cannot handle input '%s' at 0-base position %d",
+                                factorUnitSpec[i].toString(), i));
+            }
         }
-        if (factorUnitSpecs.length > 14) {
-            throw new IllegalArgumentException(
-                    "No more than 14 arguments (7 factor units) supported");
-        }
-        List<Unit> matchingUnits =
-                units.values().stream()
-                        .filter(d -> d.matches(factorUnitSpecs))
-                        .collect(Collectors.toList());
-        if (matchingUnits.isEmpty()) {
-            throw new NotFoundException(
-                    "No derived unit found for factors " + Arrays.toString(factorUnitSpecs));
-        }
-        return new HashSet<>(matchingUnits);
+        FactorUnitSelection selection = FactorUnitSelection.fromFactorUnitSpec(spec);
+        return derivedUnitsFromFactorUnitSelection(searchMode, selection);
     }
 
     /**
-     * Returns the specifed {@code unit} scaled with the specified {@code prefix}.
-     *
-     * @param unit the unit to scale
-     * @param prefix the prefix to scale by
-     * @return the scaled unit
-     * @throws NotFoundException if the result is not found in the model
+     * @param searchMode the {@link DerivedUnitSearchMode} to use
+     * @param selection the factor unit selection
+     * @return the units that match
+     * @see #derivedUnitsFromMap(DerivedUnitSearchMode, Map)
      */
-    public static Unit scale(Unit unit, Prefix prefix) {
-        Optional<Unit> scaled =
+    private static Set<Unit> derivedUnitsFromFactorUnitSelection(
+            DerivedUnitSearchMode searchMode, FactorUnitSelection selection) {
+        FactorUnitMatchingMode matchingMode =
+                searchMode.isExactInFirstRound()
+                        ? FactorUnitMatchingMode.EXACT
+                        : FactorUnitMatchingMode.ALLOW_SCALED;
+        List<Unit> matchingUnits =
                 units.values().stream()
-                        .filter(
-                                u ->
-                                        unit.getIri().equals(u.getScalingOfIri().orElse(null))
-                                                && prefix.getIri()
-                                                        .equals(u.getPrefixIri().orElse(null)))
-                        .findFirst();
-        return scaled.orElseThrow(
-                () ->
-                        new NotFoundException(
-                                String.format(
-                                        "Qudt does not contain the unit %s, scaled with prefix %s",
-                                        unit, prefix)));
+                        .filter(d -> d.matches(selection, matchingMode))
+                        .collect(Collectors.toList());
+        if (searchMode == DerivedUnitSearchMode.EXACT
+                || searchMode == DerivedUnitSearchMode.ALLOW_SCALED) {
+            return new HashSet<>(matchingUnits);
+        }
+        if (searchMode == DerivedUnitSearchMode.EXACT_ONLY_ONE) {
+            return retainOnlyOne(matchingUnits);
+        }
+        if (searchMode == DerivedUnitSearchMode.BEST_EFFORT_ONLY_ONE) {
+            if (matchingUnits.isEmpty()) {
+                matchingUnits =
+                        units.values().stream()
+                                .filter(
+                                        d ->
+                                                d.matches(
+                                                        selection,
+                                                        FactorUnitMatchingMode.ALLOW_SCALED))
+                                .collect(Collectors.toList());
+            }
+            return retainOnlyOne(matchingUnits);
+        }
+        throw new IllegalStateException(
+                "Search mode "
+                        + searchMode
+                        + " was not handled properly, this should never happen - please report as bug.");
+    }
+
+    private static Set<Unit> retainOnlyOne(List<Unit> matchingUnits) {
+        if (matchingUnits.isEmpty()) {
+            return Set.of();
+        }
+        return Set.of(
+                matchingUnits.stream()
+                        .reduce(
+                                null,
+                                (p, n) ->
+                                        p == null
+                                                ? n
+                                                : p.getIri().compareTo(n.getIri()) > 0 ? n : p));
     }
 
     /**
@@ -379,183 +427,6 @@ public class Qudt {
     }
 
     /**
-     * Find the {@link Unit} derived from the specified {@code baseUnit} and {@code exponent}.
-     *
-     * @param baseUnit the base unit
-     * @param exponent the exponent
-     * @return the unit
-     * @throws NotFoundException if no such unit is found in the model
-     */
-    public static Set<Unit> derivedUnit(Unit baseUnit, int exponent) {
-        return derivedUnitFromFactors(baseUnit, exponent);
-    }
-
-    /**
-     * Find the {@link Unit} derived from the specified {@code baseUnitIri} and {@code exponent}.
-     *
-     * @param baseUnitIri the base unit
-     * @param exponent the exponent
-     * @return the unit
-     * @throws NotFoundException if no such unit is found in the model or the baseUnitIri does not
-     *     identify a unit
-     */
-    public static Set<Unit> derivedUnit(String baseUnitIri, int exponent) {
-        return derivedUnitFromFactors(unit(baseUnitIri), exponent);
-    }
-
-    public static Set<Unit> derivedUnit(
-            Unit baseUnit1, int exponent1, Unit baseUnit2, int exponent2) {
-        return derivedUnitFromFactors(baseUnit1, exponent1, baseUnit2, exponent2);
-    }
-
-    public static Set<Unit> derivedUnit(
-            Unit baseUnit1,
-            int exponent1,
-            Unit baseUnit2,
-            int exponent2,
-            Unit baseUnit3,
-            int exponent3) {
-        return derivedUnitFromFactors(
-                baseUnit1, exponent1, baseUnit2, exponent2, baseUnit3, exponent3);
-    }
-
-    public static Set<Unit> derivedUnit(
-            String baseUnitIri1,
-            int exponent1,
-            String baseUnitIri2,
-            int exponent2,
-            String baseUnitIri3,
-            int exponent3) {
-        return derivedUnitFromFactors(
-                unit(baseUnitIri1),
-                exponent1,
-                unit(baseUnitIri2),
-                exponent2,
-                unit(baseUnitIri3),
-                exponent3);
-    }
-
-    public static Set<Unit> derivedUnit(
-            Unit baseUnit1,
-            int exponent1,
-            Unit baseUnit2,
-            int exponent2,
-            Unit baseUnit3,
-            int exponent3,
-            Unit baseUnit4,
-            int exponent4) {
-        return derivedUnitFromFactors(
-                baseUnit1, exponent1, baseUnit2, exponent2, baseUnit3, exponent3, baseUnit4,
-                exponent4);
-    }
-
-    public static Set<Unit> derivedUnit(
-            String baseUnitIri1,
-            int exponent1,
-            String baseUnitIri2,
-            int exponent2,
-            String baseUnitIri3,
-            int exponent3,
-            String baseUnitIri4,
-            int exponent4) {
-        return derivedUnitFromFactors(
-                unit(baseUnitIri1),
-                exponent1,
-                unit(baseUnitIri2),
-                exponent2,
-                unit(baseUnitIri3),
-                exponent3,
-                unit(baseUnitIri4),
-                exponent4);
-    }
-
-    public static Set<Unit> derivedUnit(
-            Unit baseUnit1,
-            int exponent1,
-            Unit baseUnit2,
-            int exponent2,
-            Unit baseUnit3,
-            int exponent3,
-            Unit baseUnit4,
-            int exponent4,
-            Unit baseUnit5,
-            int exponent5) {
-        return derivedUnitFromFactors(
-                baseUnit1, exponent1, baseUnit2, exponent2, baseUnit3, exponent3, baseUnit4,
-                exponent4, baseUnit5, exponent5);
-    }
-
-    public static Set<Unit> derivedUnit(
-            String baseUnitIri1,
-            int exponent1,
-            String baseUnitIri2,
-            int exponent2,
-            String baseUnitIri3,
-            int exponent3,
-            String baseUnitIri4,
-            int exponent4,
-            String baseUnitIri5,
-            int exponent5) {
-        return derivedUnitFromFactors(
-                unit(baseUnitIri1),
-                exponent1,
-                unit(baseUnitIri2),
-                exponent2,
-                unit(baseUnitIri3),
-                exponent3,
-                unit(baseUnitIri4),
-                exponent4,
-                unit(baseUnitIri5),
-                exponent5);
-    }
-
-    public static Set<Unit> derivedUnit(
-            Unit baseUnit1,
-            int exponent1,
-            Unit baseUnit2,
-            int exponent2,
-            Unit baseUnit3,
-            int exponent3,
-            Unit baseUnit4,
-            int exponent4,
-            Unit baseUnit5,
-            int exponent5,
-            Unit baseUnit6,
-            int exponent6) {
-        return derivedUnitFromFactors(
-                baseUnit1, exponent1, baseUnit2, exponent2, baseUnit3, exponent3, baseUnit4,
-                exponent4, baseUnit5, exponent5, baseUnit6, exponent6);
-    }
-
-    public static Set<Unit> derivedUnit(
-            String baseUnitIri1,
-            int exponent1,
-            String baseUnitIri2,
-            int exponent2,
-            String baseUnitIri3,
-            int exponent3,
-            String baseUnitIri4,
-            int exponent4,
-            String baseUnitIri5,
-            int exponent5,
-            String baseUnitIri6,
-            int exponent6) {
-        return derivedUnitFromFactors(
-                unit(baseUnitIri1),
-                exponent1,
-                unit(baseUnitIri2),
-                exponent2,
-                unit(baseUnitIri3),
-                exponent3,
-                unit(baseUnitIri4),
-                exponent4,
-                unit(baseUnitIri5),
-                exponent5,
-                unit(baseUnitIri6),
-                exponent6);
-    }
-
-    /**
      * Returns a {@link QuantityKind} for the specified localname (i.e. the last element of the Unit
      * IRI). For example, <code>quantityKindFromLocalName("Width")</code> yields the quantityKind
      * with IRI <code>http://qudt.org/vocab/quantitykind/Width</code>.
@@ -564,8 +435,12 @@ public class Qudt {
      * @return the quantityKind
      * @throws NotFoundException if no such quantityKind is found.
      */
-    public static QuantityKind quantityKindFromLocalname(String localname) {
+    public static Optional<QuantityKind> quantityKindFromLocalname(String localname) {
         return quantityKind(quantityKindIriFromLocalname(localname));
+    }
+
+    public static QuantityKind quantityKindFromLocalnameRequired(String localname) {
+        return quantityKindRequired(quantityKindIriFromLocalname(localname));
     }
 
     /**
@@ -577,12 +452,13 @@ public class Qudt {
      * @return the quantityKind
      * @throws NotFoundException if no such quantityKind is found.
      */
-    public static QuantityKind quantityKind(String iri) {
-        QuantityKind quantityKind = quantityKinds.get(iri);
-        if (quantityKind == null) {
-            throw new NotFoundException("QuantityKind not found: " + iri);
-        }
-        return quantityKind;
+    public static Optional<QuantityKind> quantityKind(String iri) {
+        return Optional.ofNullable(quantityKinds.get(iri));
+    }
+
+    public static QuantityKind quantityKindRequired(String iri) {
+        return quantityKind(iri)
+                .orElseThrow(() -> new NotFoundException("QuantityKind not found: " + iri));
     }
 
     /**
@@ -593,7 +469,7 @@ public class Qudt {
      */
     public static Set<QuantityKind> quantityKinds(Unit unit) {
         return unit.getQuantityKindIris().stream()
-                .map(Qudt::quantityKind)
+                .map(Qudt::quantityKindRequired)
                 .collect(Collectors.toSet());
     }
 
@@ -610,8 +486,8 @@ public class Qudt {
         while (!current.isEmpty()) {
             current =
                     current.stream()
-                            .flatMap(qk -> qk.getBroaderQuantityKinds().stream())
-                            .map(Qudt::quantityKind)
+                            .flatMap(qk -> qk.getBroaderQuantityKindIris().stream())
+                            .map(Qudt::quantityKindRequired)
                             .collect(Collectors.toSet());
             result.addAll(current);
         }
@@ -649,7 +525,11 @@ public class Qudt {
      * @return the prefix
      * @throws NotFoundException if no such prefix is found.
      */
-    public static Prefix prefixFromLocalname(String localname) {
+    public static Prefix prefixFromLocalnameRequired(String localname) {
+        return prefixRequired(prefixIriFromLocalname(localname));
+    }
+
+    public static Optional<Prefix> prefixFromLocalname(String localname) {
         return prefix(prefixIriFromLocalname(localname));
     }
 
@@ -661,12 +541,12 @@ public class Qudt {
      * @return the prefix
      * @throws NotFoundException if no such prefix is found.
      */
-    public static Prefix prefix(String iri) {
-        Prefix prefix = prefixes.get(iri);
-        if (prefix == null) {
-            throw new NotFoundException("Prefix not found: " + iri);
-        }
-        return prefix;
+    public static Optional<Prefix> prefix(String iri) {
+        return Optional.ofNullable(prefixes.get(iri));
+    }
+
+    public static Prefix prefixRequired(String iri) {
+        return prefix(iri).orElseThrow(() -> new NotFoundException("Prefix not found: " + iri));
     }
 
     /**
@@ -678,7 +558,7 @@ public class Qudt {
      * @throws NotFoundException if no unit is found for the specified unitIri
      */
     public static QuantityValue quantityValue(BigDecimal value, String unitIri) {
-        return new QuantityValue(value, unit(unitIri));
+        return new QuantityValue(value, unitRequired(unitIri));
     }
 
     /**
@@ -717,7 +597,7 @@ public class Qudt {
      */
     public static QuantityValue convert(QuantityValue from, String toUnitIri)
             throws InconvertibleQuantitiesException {
-        Unit toUnit = unit(toUnitIri);
+        Unit toUnit = unitRequired(toUnitIri);
         return convert(from.getValue(), from.getUnit(), toUnit);
     }
 
@@ -736,7 +616,7 @@ public class Qudt {
      */
     public static QuantityValue convert(
             BigDecimal fromValue, String fromUnitIri, String toUnitIri) {
-        return convert(fromValue, unit(fromUnitIri), unit(toUnitIri));
+        return convert(fromValue, unitRequired(fromUnitIri), unitRequired(toUnitIri));
     }
 
     /**

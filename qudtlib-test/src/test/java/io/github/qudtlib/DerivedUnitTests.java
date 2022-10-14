@@ -1,16 +1,13 @@
 package io.github.qudtlib;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import io.github.qudtlib.model.FactorUnit;
-import io.github.qudtlib.model.Unit;
+import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
@@ -26,9 +23,10 @@ public class DerivedUnitTests {
     public void testSingleFactorUnit() {
         Unit du = Qudt.Units.PER__M;
         assertTrue(du.matches(Qudt.Units.M, -1));
-        Assertions.assertFalse(du.matches(Qudt.Units.M, -1, Qudt.Units.KiloGM, 1));
-        Assertions.assertFalse(du.matches(Qudt.Units.KiloGM, -1));
-        Assertions.assertFalse(du.matches(Qudt.Units.SEC, -2));
+        assertFalse(du.matches(Qudt.Units.M, -1, Qudt.Units.KiloGM, 1));
+        assertFalse(du.matches(Qudt.Units.KiloGM, -1));
+        assertFalse(du.matches(Qudt.Units.SEC, -2));
+        assertTrue(Qudt.Units.M.matches(Qudt.Units.M, 1));
     }
 
     @Test
@@ -36,9 +34,9 @@ public class DerivedUnitTests {
         Unit du = Qudt.Units.KiloGM__PER__M2;
         assertTrue(du.matches(Qudt.Units.M, -2, Qudt.Units.KiloGM, 1));
         assertTrue(du.matches(Qudt.Units.KiloGM, 1, Qudt.Units.M, -2));
-        Assertions.assertFalse(du.matches(Qudt.Units.M, -2, Qudt.Units.KiloGM, 2));
-        Assertions.assertFalse(du.matches(Qudt.Units.M, -2));
-        Assertions.assertFalse(du.matches(Qudt.Units.KiloGM, 1));
+        assertFalse(du.matches(Qudt.Units.M, -2, Qudt.Units.KiloGM, 2));
+        assertFalse(du.matches(Qudt.Units.M, -2));
+        assertFalse(du.matches(Qudt.Units.KiloGM, 1));
     }
 
     @Test
@@ -55,7 +53,7 @@ public class DerivedUnitTests {
                         Qudt.Units.SEC,
                         -2));
         assertTrue(du.matches(Qudt.Units.N, 1, Qudt.Units.KiloGM, -1));
-        assertTrue(
+        assertFalse(
                 du.matches(
                         Qudt.Units.KiloGM,
                         -1,
@@ -67,7 +65,7 @@ public class DerivedUnitTests {
                         -2,
                         Qudt.Units.N,
                         1));
-        Assertions.assertFalse(
+        assertFalse(
                 du.matches(
                         Qudt.Units.KiloGM,
                         -1,
@@ -81,9 +79,71 @@ public class DerivedUnitTests {
                         1,
                         Qudt.Units.KiloGM,
                         -1));
-        Assertions.assertFalse(du.matches(Qudt.Units.M, -2, Qudt.Units.KiloGM, 2));
-        Assertions.assertFalse(du.matches(Qudt.Units.M, -2));
-        Assertions.assertFalse(du.matches(Qudt.Units.KiloGM, 1));
+        assertFalse(du.matches(Qudt.Units.M, -2, Qudt.Units.KiloGM, 2));
+        assertFalse(du.matches(Qudt.Units.M, -2));
+        assertFalse(du.matches(Qudt.Units.KiloGM, 1));
+    }
+
+    @Test
+    public void testMatchingModeAllowScaled() {
+        assertTrue(
+                Qudt.Units.GM__PER__DeciM3.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(
+                                Qudt.Units.KiloGM, 1, Qudt.Units.M, -3),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.KiloGM__PER__M3.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(Qudt.Units.GM, 1, Qudt.Units.M, -3),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+    }
+
+    @Test
+    public void testMatchingModeExact() {
+        assertFalse(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3));
+        assertFalse(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.GM, 1, Qudt.Units.M, -3));
+    }
+
+    @Test
+    public void testSearchModeExactOnlyOne() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT_ONLY_ONE, Qudt.Units.N, 1, Qudt.Units.M, 1);
+        assertEquals(1, units.size());
+        assertTrue(units.contains(Qudt.Units.J));
+    }
+
+    @Test
+    public void testSearchModeExact_2Results() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.N, 1, Qudt.Units.M, 1);
+        assertEquals(2, units.size());
+        assertTrue(units.contains(Qudt.Units.J));
+        assertTrue(units.contains(Qudt.Units.N__M));
+    }
+
+    @Test
+    public void testSearchModeBestEffortOnlyOne() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.BEST_EFFORT_ONLY_ONE, "KiloGM", 1, "M", -3);
+        assertEquals(1, units.size());
+        assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.BEST_EFFORT_ONLY_ONE, "KiloN", 1, "MilliM", 1);
+        assertEquals(1, units.size());
+        assertTrue(units.contains(Qudt.Units.J));
+    }
+
+    @Test
+    public void testSearchModeAllowScaled() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.ALLOW_SCALED, "KiloGM", 1, "M", -3);
+        assertEquals(2, units.size());
+        assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
+        assertTrue(units.contains(Qudt.Units.GM__PER__DeciM3));
     }
 
     @Test
@@ -91,7 +151,7 @@ public class DerivedUnitTests {
         Unit du = Qudt.Units.N__M__PER__KiloGM;
         boolean matches = du.matches(Qudt.Units.N, 1, Qudt.Units.KiloGM, -1, Qudt.Units.M, 1);
         assertTrue(matches);
-        assertTrue(
+        assertFalse(
                 du.matches(
                         Qudt.Units.KiloGM,
                         -1,
@@ -105,7 +165,7 @@ public class DerivedUnitTests {
                         1,
                         Qudt.Units.N,
                         1));
-        assertTrue(
+        assertFalse(
                 du.matches(
                         Qudt.Units.KiloGM,
                         -1,
@@ -117,7 +177,7 @@ public class DerivedUnitTests {
                         -2,
                         Qudt.Units.N,
                         1));
-        Assertions.assertFalse(
+        assertFalse(
                 du.matches(
                         Qudt.Units.KiloGM,
                         -1,
@@ -138,10 +198,10 @@ public class DerivedUnitTests {
                         Qudt.Units.SEC, -2,
                         Qudt.Units.M, 1,
                         Qudt.Units.KiloGM, -1));
-        Assertions.assertFalse(du.matches(Qudt.Units.M, -2, Qudt.Units.KiloGM, 2));
-        Assertions.assertFalse(du.matches(Qudt.Units.M, -2));
-        Assertions.assertFalse(du.matches(Qudt.Units.KiloGM, 1));
-        Assertions.assertFalse(du.matches(Qudt.Units.N, 1, Qudt.Units.KiloGM, -1));
+        assertFalse(du.matches(Qudt.Units.M, -2, Qudt.Units.KiloGM, 2));
+        assertFalse(du.matches(Qudt.Units.M, -2));
+        assertFalse(du.matches(Qudt.Units.KiloGM, 1));
+        assertFalse(du.matches(Qudt.Units.N, 1, Qudt.Units.KiloGM, -1));
     }
 
     @Test
@@ -157,7 +217,7 @@ public class DerivedUnitTests {
                         Qudt.Units.SEC, -2,
                         Qudt.Units.KiloGM, -1));
         // now simplify: wrongly aggregate the KiloGM^1, KiloGM^-1 to KiloGM^0: should not work
-        Assertions.assertFalse(
+        assertFalse(
                 du.matches(
                         Qudt.Units.M, 2,
                         Qudt.Units.SEC, -2,
@@ -174,19 +234,40 @@ public class DerivedUnitTests {
                 new Object[] {
                     Qudt.Units.SEC, -2, Qudt.Units.KiloGM, 1, Qudt.Units.M, 1, Qudt.Units.KiloM, 1
                 };
-        assertTrue(Qudt.Units.KiloN__M.matches(factors));
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
         factors =
                 new Object[] {
                     Qudt.Units.KiloGM, 1, Qudt.Units.SEC, -2, Qudt.Units.M, 1, Qudt.Units.KiloM, 1
                 };
-        assertTrue(Qudt.Units.KiloN__M.matches(factors));
-        assertTrue(Qudt.Units.KiloJ.matches(factors));
-        Assertions.assertFalse(Qudt.Units.MilliOHM.matches(factors));
-        Assertions.assertFalse(Qudt.Units.MilliS.matches(factors));
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertTrue(
+                Qudt.Units.KiloJ.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.MilliOHM.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.MilliS.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
 
         factors = new Object[] {Qudt.Units.KiloGM, 1, Qudt.Units.K, -1, Qudt.Units.SEC, -3};
-        Assertions.assertFalse(Qudt.Units.W__PER__K.matches(factors));
-        Assertions.assertFalse(Qudt.Units.V__PER__K.matches(factors));
+        assertFalse(
+                Qudt.Units.W__PER__K.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.V__PER__K.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
     }
 
     @Test
@@ -198,20 +279,32 @@ public class DerivedUnitTests {
                 new Object[] {
                     Qudt.Units.SEC, -2, Qudt.Units.KiloGM, 1, Qudt.Units.M, 1, Qudt.Units.KiloM, 1
                 };
-        assertTrue(Qudt.Units.KiloN__M.matches(factors));
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
         factors =
                 new Object[] {
                     Qudt.Units.KiloGM, 1, Qudt.Units.SEC, -2, Qudt.Units.M, 1, Qudt.Units.KiloM, 1
                 };
-        assertTrue(Qudt.Units.KiloN__M.matches(factors));
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
     }
 
     @Test
     public void test_squareInNominator() {
         Object[] factors = new Object[] {Qudt.Units.MilliM, 2, Qudt.Units.SEC, -1};
-        assertTrue(Qudt.Units.MilliM2__PER__SEC.matches(factors));
+        assertTrue(
+                Qudt.Units.MilliM2__PER__SEC.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
         factors = new Object[] {Qudt.Units.KiloGM, 2, Qudt.Units.SEC, -2};
-        assertTrue(Qudt.Units.KiloGM2__PER__SEC2.matches(factors));
+        assertTrue(
+                Qudt.Units.KiloGM2__PER__SEC2.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
     }
 
     @Test
@@ -241,7 +334,11 @@ public class DerivedUnitTests {
                     Qudt.Units.KiloSEC,
                     -2
                 };
-        assertTrue(Qudt.Units.N__PER__M2.matches(factors));
+        assertTrue(
+                Qudt.Units.N__PER__M2.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(Qudt.Units.N__PER__M2.matches(FactorUnitSelection.fromFactorUnitSpec(factors)));
     }
 
     @Test
@@ -257,7 +354,14 @@ public class DerivedUnitTests {
                     Qudt.Units.MilliSEC,
                     -2
                 };
-        assertTrue(Qudt.Units.N__PER__M2.matches(factors));
+        assertTrue(
+                Qudt.Units.N__PER__M2.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.N__PER__M2.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.EXACT));
     }
 
     @Test
@@ -282,7 +386,15 @@ public class DerivedUnitTests {
                         factorUnits.stream()
                                 .flatMap(fu -> Stream.of(fu.getUnit(), fu.getExponent()))
                                 .toArray();
-                assertTrue(Qudt.Units.KiloN__M.matches(factors), () -> "failed for " + factorUnits);
+                assertTrue(
+                        Qudt.Units.KiloN__M.matches(
+                                FactorUnitSelection.fromFactorUnitSpec(factors),
+                                FactorUnitMatchingMode.ALLOW_SCALED),
+                        () -> "failed for " + factorUnits);
+                assertFalse(
+                        Qudt.Units.KiloN__M.matches(
+                                FactorUnitSelection.fromFactorUnitSpec(factors)),
+                        () -> "failed for " + factorUnits);
                 successfulFor.add(new ArrayList<>(factorUnits));
             }
         } catch (AssertionFailedError e) {
@@ -292,15 +404,35 @@ public class DerivedUnitTests {
             System.err.println(factorUnits);
             throw e;
         }
-        assertTrue(Qudt.Units.KiloN__M.matches(factors), () -> "failed for " + factorUnits);
-        assertTrue(Qudt.Units.KiloJ.matches(factors), () -> "failed for " + factorUnits);
-        Assertions.assertFalse(
-                Qudt.Units.MilliOHM.matches(factors), () -> "failed for " + factorUnits);
-        Assertions.assertFalse(
-                Qudt.Units.MilliS.matches(factors), () -> "failed for " + factorUnits);
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED),
+                () -> "failed for " + factorUnits);
+        assertTrue(
+                Qudt.Units.KiloJ.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED),
+                () -> "failed for " + factorUnits);
+        assertFalse(
+                Qudt.Units.MilliOHM.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED),
+                () -> "failed for " + factorUnits);
+        assertFalse(
+                Qudt.Units.MilliS.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED),
+                () -> "failed for " + factorUnits);
         factors = new Object[] {Qudt.Units.KiloGM, 1, Qudt.Units.K, -1, Qudt.Units.SEC, -3};
-        Assertions.assertFalse(Qudt.Units.W__PER__K.matches(factors));
-        Assertions.assertFalse(Qudt.Units.V__PER__K.matches(factors));
+        assertFalse(
+                Qudt.Units.W__PER__K.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.V__PER__K.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
     }
 
     @Test
@@ -309,9 +441,18 @@ public class DerivedUnitTests {
                 new Object[] {
                     Qudt.Units.KiloGM, 1, Qudt.Units.SEC, -2, Qudt.Units.M, 1, Qudt.Units.MilliM, 1
                 };
-        assertTrue(Qudt.Units.MilliN__M.matches(factors));
-        Assertions.assertFalse(Qudt.Units.MilliH__PER__KiloOHM.matches(factors));
-        assertTrue(Qudt.Units.MilliJ.matches(factors));
+        assertTrue(
+                Qudt.Units.MilliN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.MilliH__PER__KiloOHM.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertTrue(
+                Qudt.Units.MilliJ.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
     }
 
     @Test
@@ -323,8 +464,12 @@ public class DerivedUnitTests {
                                 new FactorUnit(Qudt.Units.M, -1),
                                 new FactorUnit(Qudt.Units.M, -1)));
         assertEquals(2, simplified.size());
-        assertTrue(Qudt.derivedUnitFromFactorUnits(simplified).contains(Qudt.Units.N__PER__M2));
-        assertTrue(Qudt.derivedUnitFromFactorUnits(simplified).contains(Qudt.Units.PA));
+        assertTrue(
+                Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.EXACT, simplified)
+                        .contains(Qudt.Units.N__PER__M2));
+        assertTrue(
+                Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.EXACT, simplified)
+                        .contains(Qudt.Units.PA));
     }
 
     @Test

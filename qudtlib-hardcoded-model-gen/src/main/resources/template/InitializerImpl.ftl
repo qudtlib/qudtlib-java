@@ -72,15 +72,15 @@ public class InitializerImpl implements Initializer {
 
     <#list quantityKinds as iri, quantityKind>
     private static void addQuantityKind${iri?index?c}(Map<String, QuantityKind> quantityKinds){
-        QuantityKind quantityKind = new QuantityKind(${q(iri)}, ${optStr(quantityKind.dimensionVector)}, ${optStr(quantityKind.symbol)});
+        QuantityKind quantityKind = new QuantityKind(${q(iri)}, ${optStr(quantityKind.dimensionVectorIri)}, ${optStr(quantityKind.symbol)});
         <#list quantityKind.labels as label>
         quantityKind.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
         </#list>
-        <#list quantityKind.applicableUnits as unitIri>
-        quantityKind.addApplicableUnit(${q(unitIri)});
+        <#list quantityKind.applicableUnitIris as unitIri>
+        quantityKind.addApplicableUnitIri(${q(unitIri)});
         </#list>
-        <#list quantityKind.broaderQuantityKinds as qkIri>
-            quantityKind.addBroaderQuantityKind(${q(qkIri)});
+        <#list quantityKind.broaderQuantityKindIris as qkIri>
+            quantityKind.addBroaderQuantityKindIri(${q(qkIri)});
         </#list>
         quantityKinds.put(${q(iri)}, quantityKind);
     }

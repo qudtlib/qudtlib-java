@@ -27,8 +27,8 @@ public class QudtTests {
         Assertions.assertNotNull(kilo);
         MatcherAssert.assertThat(
                 new BigDecimal("1000"), Matchers.comparesEqualTo(kilo.getMultiplier()));
-        Assertions.assertEquals(Qudt.prefix(kilo.getIri()), kilo);
-        Assertions.assertEquals(Qudt.prefix(kilo.getIri()), kilo);
+        Assertions.assertEquals(Qudt.prefixRequired(kilo.getIri()), kilo);
+        Assertions.assertEquals(Qudt.prefixRequired(kilo.getIri()), kilo);
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
@@ -38,24 +38,25 @@ public class QudtTests {
         Assertions.assertTrue(metre.hasLabel("Metre"));
         Assertions.assertTrue(metre.hasLabel("Meter"));
         Assertions.assertEquals("Metre", metre.getLabelForLanguageTag("en").get().getString());
-        Assertions.assertEquals(Qudt.unit(metre.getIri()), metre);
-        Assertions.assertEquals(Qudt.unit(metre.getIri()), metre);
+        Assertions.assertEquals(Qudt.unitRequired(metre.getIri()), metre);
+        Assertions.assertEquals(Qudt.unitRequired(metre.getIri()), metre);
     }
 
     @Test
     public void testQuantityKind() {
         QuantityKind length = Qudt.QuantityKinds.Length;
         Assertions.assertTrue(length.hasLabel("Length"));
-        Assertions.assertEquals(Qudt.quantityKind(length.getIri()), length);
-        Assertions.assertEquals(Qudt.quantityKind(length.getIri()), length);
+        Assertions.assertEquals(Qudt.quantityKindRequired(length.getIri()), length);
+        Assertions.assertEquals(Qudt.quantityKindRequired(length.getIri()), length);
     }
 
     @Test
     public void testQuantityKindForUnit() {
-        Unit unit = Qudt.unitFromLabel("Newton Meter");
+        Unit unit = Qudt.unitFromLabelRequired("Newton Meter");
         Set<QuantityKind> broad = Qudt.quantityKinds(unit);
-        Assertions.assertTrue(broad.contains(Qudt.quantityKindFromLocalname("Torque")));
-        Assertions.assertTrue(broad.contains(Qudt.quantityKindFromLocalname("MomentOfForce")));
+        Assertions.assertTrue(broad.contains(Qudt.quantityKindFromLocalnameRequired("Torque")));
+        Assertions.assertTrue(
+                broad.contains(Qudt.quantityKindFromLocalnameRequired("MomentOfForce")));
         unit = Qudt.Units.PA__PER__BAR;
         broad = Qudt.quantityKindsBroad(unit);
         Assertions.assertTrue(broad.contains(Qudt.QuantityKinds.PressureRatio));
@@ -65,53 +66,87 @@ public class QudtTests {
     @Test
     public void testDerivedUnitFromMap() {
         Assertions.assertTrue(
-                Qudt.derivedUnit(List.of(Map.entry(Qudt.Units.M, -3)))
+                Qudt.derivedUnitsFromMap(DerivedUnitSearchMode.EXACT, Map.of(Qudt.Units.M, -3))
                         .contains(Qudt.Units.PER__M3));
         Assertions.assertTrue(
-                Qudt.derivedUnit(Qudt.Units.MilliA, 1, Qudt.Units.IN, -1)
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                                DerivedUnitSearchMode.EXACT,
+                                Qudt.Units.MilliA,
+                                1,
+                                Qudt.Units.IN,
+                                -1)
                         .contains(Qudt.Units.MilliA__PER__IN));
         Assertions.assertTrue(
-                Qudt.derivedUnit(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1)
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                                DerivedUnitSearchMode.EXACT,
+                                Qudt.Units.MOL,
+                                1,
+                                Qudt.Units.M,
+                                -2,
+                                Qudt.Units.SEC,
+                                -1)
                         .contains(Qudt.Units.MOL__PER__M2__SEC));
     }
 
     @Test
     public void testUnitFromLabel() {
-        Assertions.assertEquals(Qudt.Units.N, Qudt.unitFromLabel("Newton"));
-        Assertions.assertEquals(Qudt.Units.M, Qudt.unitFromLabel("Metre"));
-        Assertions.assertEquals(Qudt.Units.M2, Qudt.unitFromLabel("SQUARE_METRE"));
-        Assertions.assertEquals(Qudt.Units.M2, Qudt.unitFromLabel("SQUARE METRE"));
-        Assertions.assertEquals(Qudt.Units.M3, Qudt.unitFromLabel("Cubic Metre"));
-        Assertions.assertEquals(Qudt.Units.GM, Qudt.unitFromLabel("Gram"));
-        Assertions.assertEquals(Qudt.Units.SEC, Qudt.unitFromLabel("second"));
-        Assertions.assertEquals(Qudt.Units.HZ, Qudt.unitFromLabel("Hertz"));
-        Assertions.assertEquals(Qudt.Units.DEG_C, Qudt.unitFromLabel("degree celsius"));
-        Assertions.assertEquals(Qudt.Units.DEG_F, Qudt.unitFromLabel("degree fahrenheit"));
-        Assertions.assertEquals(Qudt.Units.A, Qudt.unitFromLabel("ampere"));
-        Assertions.assertEquals(Qudt.Units.V, Qudt.unitFromLabel("volt"));
-        Assertions.assertEquals(Qudt.Units.W, Qudt.unitFromLabel("Watt"));
-        Assertions.assertEquals(Qudt.Units.LUX, Qudt.unitFromLabel("Lux"));
-        Assertions.assertEquals(Qudt.Units.LM, Qudt.unitFromLabel("Lumen"));
-        Assertions.assertEquals(Qudt.Units.CD, Qudt.unitFromLabel("Candela"));
-        Assertions.assertEquals(Qudt.Units.PA, Qudt.unitFromLabel("Pascal"));
-        Assertions.assertEquals(Qudt.Units.RAD, Qudt.unitFromLabel("Radian"));
-        Assertions.assertEquals(Qudt.Units.J, Qudt.unitFromLabel("Joule"));
-        Assertions.assertEquals(Qudt.Units.K, Qudt.unitFromLabel("Kelvin"));
-        Assertions.assertEquals(Qudt.Units.SR, Qudt.unitFromLabel("Steradian"));
+        Assertions.assertEquals(Qudt.Units.N, Qudt.unitFromLabelRequired("Newton"));
+        Assertions.assertEquals(Qudt.Units.M, Qudt.unitFromLabelRequired("Metre"));
+        Assertions.assertEquals(Qudt.Units.M2, Qudt.unitFromLabelRequired("SQUARE_METRE"));
+        Assertions.assertEquals(Qudt.Units.M2, Qudt.unitFromLabelRequired("SQUARE METRE"));
+        Assertions.assertEquals(Qudt.Units.M3, Qudt.unitFromLabelRequired("Cubic Metre"));
+        Assertions.assertEquals(Qudt.Units.GM, Qudt.unitFromLabelRequired("Gram"));
+        Assertions.assertEquals(Qudt.Units.SEC, Qudt.unitFromLabelRequired("second"));
+        Assertions.assertEquals(Qudt.Units.HZ, Qudt.unitFromLabelRequired("Hertz"));
+        Assertions.assertEquals(Qudt.Units.DEG_C, Qudt.unitFromLabelRequired("degree celsius"));
+        Assertions.assertEquals(Qudt.Units.DEG_F, Qudt.unitFromLabelRequired("degree fahrenheit"));
+        Assertions.assertEquals(Qudt.Units.A, Qudt.unitFromLabelRequired("ampere"));
+        Assertions.assertEquals(Qudt.Units.V, Qudt.unitFromLabelRequired("volt"));
+        Assertions.assertEquals(Qudt.Units.W, Qudt.unitFromLabelRequired("Watt"));
+        Assertions.assertEquals(Qudt.Units.LUX, Qudt.unitFromLabelRequired("Lux"));
+        Assertions.assertEquals(Qudt.Units.LM, Qudt.unitFromLabelRequired("Lumen"));
+        Assertions.assertEquals(Qudt.Units.CD, Qudt.unitFromLabelRequired("Candela"));
+        Assertions.assertEquals(Qudt.Units.PA, Qudt.unitFromLabelRequired("Pascal"));
+        Assertions.assertEquals(Qudt.Units.RAD, Qudt.unitFromLabelRequired("Radian"));
+        Assertions.assertEquals(Qudt.Units.J, Qudt.unitFromLabelRequired("Joule"));
+        Assertions.assertEquals(Qudt.Units.K, Qudt.unitFromLabelRequired("Kelvin"));
+        Assertions.assertEquals(Qudt.Units.SR, Qudt.unitFromLabelRequired("Steradian"));
     }
 
     @Test
     public void testUnitFromFactors() {
         Assertions.assertThrows(
-                IllegalArgumentException.class, () -> Qudt.derivedUnitFromFactors(Qudt.Units.M));
-        Set<Unit> units = Qudt.derivedUnitFromFactors(Qudt.Units.M, 3);
+                IllegalArgumentException.class,
+                () ->
+                        Qudt.derivedUnitsFromUnitExponentPairs(
+                                DerivedUnitSearchMode.EXACT, Qudt.Units.M));
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M, 3);
         Assertions.assertTrue(units.contains(Qudt.Units.M3));
-        units = Qudt.derivedUnitFromFactors(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
         Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
-        units = Qudt.derivedUnit(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1);
+        Assertions.assertEquals(1, units.size());
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.GM, 1, Qudt.Units.M, -3);
+        Assertions.assertTrue(units.contains(Qudt.Units.GM__PER__M3));
+        Assertions.assertEquals(1, units.size());
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
+                        Qudt.Units.MOL,
+                        1,
+                        Qudt.Units.M,
+                        -2,
+                        Qudt.Units.SEC,
+                        -1);
         Assertions.assertTrue(units.contains(Qudt.Units.MOL__PER__M2__SEC));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
                         Qudt.Units.K,
                         1,
                         Qudt.Units.M,
@@ -122,7 +157,8 @@ public class QudtTests {
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.K__M2__PER__KiloGM__SEC));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
                         Qudt.Units.BTU_IT,
                         1,
                         Qudt.Units.FT,
@@ -134,52 +170,141 @@ public class QudtTests {
                         Qudt.Units.DEG_F,
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.BTU_IT__FT__PER__FT2__HR__DEG_F));
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M, 1);
+        Assertions.assertTrue(units.contains(Qudt.Units.M));
+        Assertions.assertFalse(units.contains(Qudt.Units.RAD)); // m per m should not match here!
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.KiloGM, 1, Qudt.Units.A, -1);
+        Assertions.assertEquals(0, units.size());
     }
 
     @Test
-    public void testDerivedUnit1() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.M, 3);
+    public void testDerivedUnit() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M, 3);
         Assertions.assertTrue(units.contains(Qudt.Units.M3));
-        units = Qudt.derivedUnit(Qudt.Units.M, 2);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M, 2);
         Assertions.assertTrue(units.contains(Qudt.Units.M2));
-        units = Qudt.derivedUnit(Qudt.Units.K, -1);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.K, -1);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__K));
-        units = Qudt.derivedUnit(Qudt.Units.M, -2);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M, -2);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__M2));
     }
 
     @Test
-    public void testDerivedUnitByIri1() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.M.getIri(), 3);
+    public void testDerivedUnitByIri() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M.getIri(), 3);
         Assertions.assertTrue(units.contains(Qudt.Units.M3));
-        units = Qudt.derivedUnit(Qudt.Units.M.getIri(), 2);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M.getIri(), 2);
         Assertions.assertTrue(units.contains(Qudt.Units.M2));
-        units = Qudt.derivedUnit(Qudt.Units.K.getIri(), -1);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.K.getIri(), -1);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__K));
-        units = Qudt.derivedUnit(Qudt.Units.M.getIri(), -2);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M.getIri(), -2);
         Assertions.assertTrue(units.contains(Qudt.Units.PER__M2));
+    }
+
+    @Test
+    public void testDerivedUnitByLocalname() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "M", 3);
+        Assertions.assertTrue(units.contains(Qudt.Units.M3));
+        units = Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "M", 2);
+        Assertions.assertTrue(units.contains(Qudt.Units.M2));
+        units = Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "K", -1);
+        Assertions.assertTrue(units.contains(Qudt.Units.PER__K));
+        units = Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "M", -2);
+        Assertions.assertTrue(units.contains(Qudt.Units.PER__M2));
+    }
+
+    @Test
+    public void testDerivedUnitByLabel() {
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "Meter", 3);
+        Assertions.assertTrue(units.contains(Qudt.Units.M3));
+        units = Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "Metre", 2);
+        Assertions.assertTrue(units.contains(Qudt.Units.M2));
+        units = Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "Kelvin", -1);
+        Assertions.assertTrue(units.contains(Qudt.Units.PER__K));
+        units = Qudt.derivedUnitsFromUnitExponentPairs(DerivedUnitSearchMode.EXACT, "Bar", -1);
+        Assertions.assertTrue(units.contains(Qudt.Units.PER__BAR));
     }
 
     @Test
     public void testDerivedUnit2() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.M, 1, Qudt.Units.N, 1);
+        Assertions.assertTrue(units.contains(Qudt.Units.N__M));
+        Assertions.assertTrue(units.contains(Qudt.Units.J));
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.KiloGM, 1, Qudt.Units.M, -3);
         Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
-        units = Qudt.derivedUnit(Qudt.scaledUnit("Kilo", "Gram"), 1, Qudt.Units.M, -3);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
+                        Qudt.scaledUnit("Kilo", "Gram"),
+                        1,
+                        Qudt.Units.M,
+                        -3);
         Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
-        units = Qudt.derivedUnit(Qudt.Units.N, 1, Qudt.Units.M, -2);
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT, Qudt.Units.N, 1, Qudt.Units.M, -2);
         Assertions.assertTrue(units.contains(Qudt.Units.N__PER__M2));
+        Assertions.assertTrue(units.contains(Qudt.Units.PA));
+        Assertions.assertEquals(2, units.size());
     }
 
     @Test
     public void testDerivedUnit3() {
-        Set<Unit> units = Qudt.derivedUnit(Qudt.Units.MOL, 1, Qudt.Units.M, -2, Qudt.Units.SEC, -1);
+        // test making sure overspecifying factors are rejected
+        Assertions.assertTrue(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                                DerivedUnitSearchMode.EXACT,
+                                Qudt.Units.M,
+                                1,
+                                Qudt.Units.N,
+                                1,
+                                Qudt.Units.SEC,
+                                -2)
+                        .isEmpty());
+
+        Set<Unit> units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
+                        Qudt.Units.MOL,
+                        1,
+                        Qudt.Units.M,
+                        -2,
+                        Qudt.Units.SEC,
+                        -1);
         Assertions.assertTrue(units.contains(Qudt.Units.MOL__PER__M2__SEC));
     }
 
     @Test
     public void testDerivedUnit4() {
         Set<Unit> units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
                         Qudt.Units.K,
                         1,
                         Qudt.Units.M,
@@ -190,7 +315,8 @@ public class QudtTests {
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.K__M2__PER__KiloGM__SEC));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
                         Qudt.Units.M,
                         1,
                         Qudt.Units.KiloGM,
@@ -205,7 +331,8 @@ public class QudtTests {
     @Test
     public void testDerivedUnit5() {
         Set<Unit> units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
                         Qudt.Units.BTU_IT,
                         1,
                         Qudt.Units.FT,
@@ -218,7 +345,8 @@ public class QudtTests {
                         -1);
         Assertions.assertTrue(units.contains(Qudt.Units.BTU_IT__FT__PER__FT2__HR__DEG_F));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
                         Qudt.Units.M,
                         1,
                         Qudt.Units.KiloGM,
@@ -231,7 +359,8 @@ public class QudtTests {
                         1);
         Assertions.assertTrue(units.contains(Qudt.Units.N__M__PER__M2));
         units =
-                Qudt.derivedUnit(
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.EXACT,
                         Qudt.Units.M,
                         2,
                         Qudt.Units.KiloGM,
@@ -251,28 +380,32 @@ public class QudtTests {
         Assertions.assertEquals(Qudt.Units.GigaHZ, unit);
         unit = Qudt.scaledUnit("Kilo", "Gram");
         Assertions.assertEquals(Qudt.Units.KiloGM, unit);
+        unit = Qudt.scaledUnit("KILO", "GRAM");
+        Assertions.assertEquals(Qudt.Units.KiloGM, unit);
         unit = Qudt.scaledUnit(Qudt.Prefixes.Nano, Qudt.Units.M);
         Assertions.assertEquals(Qudt.Units.NanoM, unit);
     }
 
     @Test
     public void testGetUnitFactors() {
-        Unit unit = Qudt.unitFromLabel("newton meter");
+        Unit unit = Qudt.unitFromLabelRequired("newton meter");
         List<FactorUnit> unitFactors = Qudt.factorUnits(unit);
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.unitFromLabel("meter"), 2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabel("kilogram"), 1)));
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("meter"), 2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabel("second"), -2)));
-        unit = Qudt.unitFromLabel("newton meter per square meter");
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("kilogram"), 1)));
+        Assertions.assertTrue(
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("second"), -2)));
+        unit = Qudt.unitFromLabelRequired("newton meter per square meter");
         unitFactors = Qudt.factorUnits(unit);
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.unitFromLabel("meter"), 2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabel("meter"), -2)));
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("meter"), 2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabel("kilogram"), 1)));
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("meter"), -2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabel("second"), -2)));
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("kilogram"), 1)));
+        Assertions.assertTrue(
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("second"), -2)));
         unit = Qudt.Units.KiloN__M;
         unitFactors = Qudt.factorUnits(unit);
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloN, 1)));
@@ -285,7 +418,7 @@ public class QudtTests {
         List<FactorUnit> unitFactors = Qudt.factorUnits(unit);
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloN, 1)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
-        unitFactors = Qudt.unscaleFactorUnits(unitFactors);
+        unitFactors = Qudt.unscaledFactorUnits(unitFactors);
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.N, 1)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
     }
@@ -330,7 +463,7 @@ public class QudtTests {
     @Test
     public void testConvert_Celsius_to_Fahrenheit() {
         QuantityValue celsius100 =
-                new QuantityValue(new BigDecimal("100"), Qudt.unitFromLocalname("DEG_C"));
+                new QuantityValue(new BigDecimal("100"), Qudt.unitFromLocalnameRequired("DEG_C"));
         QuantityValue fahrenheit = Qudt.convert(celsius100, Qudt.unitIriFromLocalname("DEG_F"));
         Assertions.assertNotNull(fahrenheit);
         MatcherAssert.assertThat(

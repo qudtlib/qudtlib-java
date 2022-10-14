@@ -140,10 +140,10 @@ public class InitializerImpl implements Initializer {
                     }
                     if (bs.hasBinding("broaderQuantityKind")) {
                         String val = bs.getValue("broaderQuantityKind").stringValue();
-                        quantityKind.addBroaderQuantityKind(val);
+                        quantityKind.addBroaderQuantityKindIri(val);
                     }
                     if (bs.hasBinding("applicableUnit")) {
-                        quantityKind.addApplicableUnit(
+                        quantityKind.addApplicableUnitIri(
                                 bs.getBinding("applicableUnit").getValue().stringValue());
                     }
                 }

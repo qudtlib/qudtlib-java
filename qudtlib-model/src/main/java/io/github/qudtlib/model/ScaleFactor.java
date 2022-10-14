@@ -33,6 +33,6 @@ class ScaleFactor {
 
     @Override
     public String toString() {
-        return "SF{" + value + '}';
+        return value.toString();
     }
 }

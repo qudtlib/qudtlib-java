@@ -1,10 +1,9 @@
 package io.github.qudtlib.model;
 
-import static java.util.stream.Collectors.joining;
-
 import java.math.BigDecimal;
 import java.util.*;
 
+/** Represents a unit that has been matched in a FactorUnitSelection. */
 public class FactorUnitMatch {
     private final FactorUnit matchedFactorUnit;
     private final List<Unit> matchedPath;
@@ -44,15 +43,27 @@ public class FactorUnitMatch {
 
     @Override
     public String toString() {
-        return "FUM{at "
-                + Optional.ofNullable(matchedPath).orElse(List.of()).stream()
-                        .map(Object::toString)
-                        .collect(joining("/"))
-                + ", MM{"
-                + this.matchedMultiplier
-                + "}, "
-                + this.scaleFactor
-                + '}';
+        return getPathAsString()
+                + (this.matchedMultiplier.compareTo(BigDecimal.ONE) == 0
+                        ? ""
+                        : "*" + this.matchedMultiplier)
+                + (this.scaleFactor.getValue().compareTo(BigDecimal.ONE) == 0
+                        ? ""
+                        : "*" + this.scaleFactor);
+    }
+
+    private String getPathAsString() {
+        StringBuilder sb = new StringBuilder("/");
+        if (matchedPath != null) {
+            ListIterator<Unit> li = matchedPath.listIterator(matchedPath.size());
+            while (li.hasPrevious()) {
+                sb.append(li.previous());
+                if (li.hasPrevious()) {
+                    sb.append("/");
+                }
+            }
+        }
+        return sb.toString();
     }
 
     @Override
