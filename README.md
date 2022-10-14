@@ -42,13 +42,13 @@ All units, quantityKinds and prefixes are avalable as constants:
 
 The functionality comprises:
 * `Qudt.convert(...)`: Convert a value
-* `Qudt.scale(...)`: Scale a unit (e.g., make `KiloM` from `M` and `kilo`)
-* `Qudt.unscale(..)`: Unscale a unit:
+* `Qudt.scaledUnit(...)`: Scale a unit (e.g., make `KiloM` from `M` and `kilo`)
+* `Qudt.unscaledUnit(..)`: Unscale a unit:
 * `Qudt.unit(...)`: Get Unit by IRI
 * `Qudt.quantityKind(...)`: Get QuantityKind by IRI
 * `Qudt.unitFromLocalName(...)`: Get Unit by local name (i.e., last part of IRI)
 * `Qudt.quantityKindFromLocalName(...)`: Get QuantityKind by local name (i.e., last part of IRI)
-* `Qudt.derivedUnit(...)`: Get Unit 'factor units', e.g. find `N` for factors  `m, kg, and s^-2`
+* `Qudt.derivedUnitsFrom...(...)`: Get Units by 'factor units', e.g. find `N` for factors  `m, kg, and s^-2`. Different matching modes available for broader or narrower matching. 
 * `Qudt.unitFromLabel(...)`: Get Unit by label
 
 
@@ -66,7 +66,7 @@ Converting 38.5° Celsius into Fahrenheit:
 Finding unit for factors: m, kg, and s^-2:
 ```java
 	Set<Unit> myUnits =
-			Qudt.derivedUnit(
+			Qudt.derivedUnitFromUnitExponentPairs(
 					Qudt.Units.M, 1,
 					Qudt.Units.KiloGM, 1,
 					Qudt.Units.SEC, -2);
