@@ -1,6 +1,6 @@
 package io.github.qudtlib.data;
 
-import io.github.qudlib.common.RdfOps;
+import io.github.qudtlib.common.RdfOps;
 import io.github.qudtlib.vocab.QUDT;
 import io.github.qudtlib.vocab.QUDTX;
 import java.io.File;

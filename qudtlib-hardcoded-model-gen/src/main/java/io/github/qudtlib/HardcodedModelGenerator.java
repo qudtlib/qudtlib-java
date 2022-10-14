@@ -2,8 +2,8 @@ package io.github.qudtlib;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import io.github.qudlib.common.RdfOps;
 import io.github.qudtlib.common.CodeGen;
+import io.github.qudtlib.common.RdfOps;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;

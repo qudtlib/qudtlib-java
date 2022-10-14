@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.qudtlib</groupId>
-            <artifactId>qudtlib-common</artifactId>
+            <artifactId>qudtlib-common-rdf</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
