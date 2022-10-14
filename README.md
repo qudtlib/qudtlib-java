@@ -48,7 +48,7 @@ The functionality comprises:
 * `Qudt.quantityKind(...)`: Get QuantityKind by IRI
 * `Qudt.unitFromLocalName(...)`: Get Unit by local name (i.e., last part of IRI)
 * `Qudt.quantityKindFromLocalName(...)`: Get QuantityKind by local name (i.e., last part of IRI)
-* `Qudt.derivedUnitsFrom...(...)`: Get Units by 'factor units', e.g. find `N` for factors  `m, kg, and s^-2`. Different matching modes available for broader or narrower matching. 
+* `Qudt.derivedUnitsFrom...(...)`: Get Units by 'factor units', e.g. find `N` for factors  `m, kg, and s^-2`. Different matching modes available for broader or narrower matching.
 * `Qudt.unitFromLabel(...)`: Get Unit by label
 
 
