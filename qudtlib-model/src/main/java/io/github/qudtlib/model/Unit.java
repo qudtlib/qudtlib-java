@@ -208,7 +208,7 @@ public class Unit {
             results.addAll(
                     subResults.stream().map(fus -> fus.scale(scale)).collect(Collectors.toSet()));
         }
-        // match this unit (even if it has factor units, the unit itself may also match,
+        // match this unit - even if it has factor units, the unit itself may also match,
         // e.g. if the unit is KiloN__M and the selectors contain M^1 as well as N.
         results.addAll(matchThisUnit(selections, cumulativeExponent, matchedPath, mode));
         matchedPath.pop();

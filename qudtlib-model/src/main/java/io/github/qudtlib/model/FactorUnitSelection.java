@@ -119,8 +119,7 @@ public class FactorUnitSelection {
             final FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> newSelections = new HashSet<>();
         // we have to iterate by index as we need to replace selectors, which may exist in multiple,
-        // equal instances
-        // in the selection (hence the treatment as List, not Set).
+        // equal instances in the selection (hence the treatment as List, not Set).
         for (int index = 0; index < this.selectors.size(); index++) {
             FactorUnitSelector s = this.selectors.get(index);
             if (s.isAvailable() && s.matches(factorUnit, cumulativeExponent, mode)) {
