@@ -49,7 +49,7 @@ class FactorUnitSelector {
      * A-PER-J = (A J^-1)</code>, and <code>J = (N M) = (KiloGM M^2 SEC^-2)</code>, so the path to
      * find <code>M</code> is <code>/A-PER-J/J/M or A-PER-J/J/N/M</code>. In each case, the
      * cumulative exponent of M is -1 because the exponent of J is -1. After matching one <code>M^-1
-     * </code>, there is <code>(A M^-1 KiloGM^-^1 SEC^2)</code> left to be matched.
+     * </code>, there is <code>(A M^-1 KiloGM^-1 SEC^2)</code> left to be matched.
      *
      * <p>The <b>matchedMultiplier</b> is the factor needed to scale from this FactorUnitSelector's
      * unit to the <code>factorUnit</code> we are matching with it.
@@ -61,15 +61,13 @@ class FactorUnitSelector {
      * @param factorUnit the matched unit
      * @param cumulativeExponent the
      * @param matchedPath the (inverted) list of Units traversed on the way here
-     * @param scaleFactor the scale factor
      * @return the list of FactorUnitSelectors resulting from matching this FactorUnitSelector in
      *     the specified situation
      */
     public List<FactorUnitSelector> forMatch(
-            FactorUnit factorUnit,
-            int cumulativeExponent,
-            Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            final FactorUnit factorUnit,
+            final int cumulativeExponent,
+            final Deque<Unit> matchedPath) {
         if (!this.isAvailable()) {
             throw new IllegalArgumentException("not available - selector is already bound");
         }
@@ -84,10 +82,7 @@ class FactorUnitSelector {
         }
         int remainingPower = this.exponent - matchedPower;
         List<FactorUnitSelector> ret = new ArrayList<>();
-        ret.add(
-                matched(
-                        new FactorUnitMatch(
-                                factorUnit, matchedMultiplier.get(), matchedPath, scaleFactor)));
+        ret.add(matched(new FactorUnitMatch(factorUnit, matchedMultiplier.get(), matchedPath)));
         if (remainingPower != 0) {
             ret.add(new FactorUnitSelector(this.unit, remainingPower));
         }
