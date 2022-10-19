@@ -13,13 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `Qudt.*required` static methods that return e.g. `Unit`, not `Optional<Unit>` and throw an Exception if there is nothing to return.
 
 ### Changed
-- A number of breaking changes without prior deprecations, sorry about that. 
+- A number of breaking changes without prior deprecations, sorry about that.
 - Upgrade to QUDT v2.1.19
 - Upgrade to RDF4J 4.2.0
 - Move any code from `Qudt` to model classes (`Unit`, `QuantityValue`, etc.) if the
-  code does not directly depend on pre-instantiated units.
+code does not directly depend on pre-instantiated units.
 - Refactor `Qudt.*` static methods to return `Optional`s where appropriate
-- Made `Qudt.convert(BigDecimal, Unit, Unit)` return `BigDecimal` (was:`QuantityValue`) while `Qudt.convert(QuantityValue, Unit)` still returns a `QuantityValue`. It's cleaner: you get what you provide. 
+- Made `Qudt.convert(BigDecimal, Unit, Unit)` return `BigDecimal` (was:`QuantityValue`) while `Qudt.convert(QuantityValue, Unit)` still returns a `QuantityValue`. It's cleaner: you get what you provide.
 - Refactor factor unit matching (fixing some bugs in the process)
 - Fix errors in RDF generation
 - Fix errors in constants generation
