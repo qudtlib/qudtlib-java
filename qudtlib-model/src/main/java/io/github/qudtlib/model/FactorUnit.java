@@ -62,7 +62,7 @@ public class FactorUnit {
 
     @Override
     public String toString() {
-        return unit + "^" + exponent;
+        return unit + (exponent == 1 ? "" : "^" + exponent);
     }
 
     @Override

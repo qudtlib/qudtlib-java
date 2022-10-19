@@ -581,8 +581,9 @@ public class Qudt {
      * @return a new {@link QuantityValue} object holding the result.
      * @throws InconvertibleQuantitiesException if the conversion is not possible
      */
-    public static QuantityValue convert(QuantityValue from, Unit toUnit) {
-        return convert(from.getValue(), from.getUnit(), toUnit);
+    public static QuantityValue convert(QuantityValue from, Unit toUnit)
+            throws InconvertibleQuantitiesException {
+        return from.convert(toUnit);
     }
 
     /**
@@ -596,9 +597,9 @@ public class Qudt {
      * @throws NotFoundException if <code>toUnitIri</code> does not identify a unit in the model
      */
     public static QuantityValue convert(QuantityValue from, String toUnitIri)
-            throws InconvertibleQuantitiesException {
+            throws InconvertibleQuantitiesException, NotFoundException {
         Unit toUnit = unitRequired(toUnitIri);
-        return convert(from.getValue(), from.getUnit(), toUnit);
+        return quantityValue(convert(from.getValue(), from.getUnit(), toUnit), toUnit);
     }
 
     /**
@@ -609,13 +610,13 @@ public class Qudt {
      * @param fromValue the value to convert
      * @param fromUnitIri the IRI of unit the <code>fromValue</code> is in
      * @param toUnitIri the IRI of the target unit
-     * @return a new {@link QuantityValue} object holding the result.
+     * @return the resulting value
      * @throws InconvertibleQuantitiesException if the conversion is not possible
      * @throws NotFoundException if <code>fromUnitIri</code> or <code>toUnitIri</code> does not
      *     identify a unit in the model
      */
-    public static QuantityValue convert(
-            BigDecimal fromValue, String fromUnitIri, String toUnitIri) {
+    public static BigDecimal convert(BigDecimal fromValue, String fromUnitIri, String toUnitIri)
+            throws InconvertibleQuantitiesException, NotFoundException {
         return convert(fromValue, unitRequired(fromUnitIri), unitRequired(toUnitIri));
     }
 
@@ -626,11 +627,12 @@ public class Qudt {
      * @param fromValue the value to convert
      * @param fromUnit the unit of the <code>value</code>
      * @param toUnit the target unit
-     * @return a new {@link QuantityValue} object holding the result.
+     * @return the resulting value
      * @throws InconvertibleQuantitiesException if the conversion is not possible
      */
-    public static QuantityValue convert(BigDecimal fromValue, Unit fromUnit, Unit toUnit) {
-        return fromUnit.convertToQuantityValue(fromValue, toUnit);
+    public static BigDecimal convert(BigDecimal fromValue, Unit fromUnit, Unit toUnit)
+            throws InconvertibleQuantitiesException {
+        return fromUnit.convert(fromValue, toUnit);
     }
 
     /**

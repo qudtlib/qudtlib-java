@@ -1,5 +1,6 @@
 package io.github.qudtlib.model;
 
+import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -33,6 +34,10 @@ public class QuantityValue {
         if (o == null || getClass() != o.getClass()) return false;
         QuantityValue that = (QuantityValue) o;
         return value.compareTo(that.value) == 0 && Objects.equals(unit, that.unit);
+    }
+
+    public QuantityValue convert(Unit toUnit) throws InconvertibleQuantitiesException {
+        return new QuantityValue(this.unit.convert(this.value, toUnit), toUnit);
     }
 
     @Override

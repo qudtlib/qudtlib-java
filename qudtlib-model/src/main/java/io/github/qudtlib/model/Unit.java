@@ -75,7 +75,8 @@ public class Unit {
         return new QuantityValue(convert(value, toUnit), toUnit);
     }
 
-    public BigDecimal convert(BigDecimal value, Unit toUnit) {
+    public BigDecimal convert(BigDecimal value, Unit toUnit)
+            throws InconvertibleQuantitiesException {
         Objects.requireNonNull(value);
         Objects.requireNonNull(toUnit);
         if (this.equals(toUnit)) {

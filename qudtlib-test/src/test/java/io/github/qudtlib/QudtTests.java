@@ -426,23 +426,22 @@ public class QudtTests {
     @Test
     public void testUnitless() {
         Assertions.assertEquals(
-                new QuantityValue(new BigDecimal("1.1234"), Qudt.Units.UNITLESS),
+                new BigDecimal("1.1234"),
                 Qudt.convert(
                         new BigDecimal("1.1234"), Qudt.Units.KiloGM__PER__M3, Qudt.Units.UNITLESS));
         Assertions.assertEquals(
-                new QuantityValue(new BigDecimal("1.1234"), Qudt.Units.KiloGM__PER__M3),
+                new BigDecimal("1.1234"),
                 Qudt.convert(
                         new BigDecimal("1.1234"), Qudt.Units.UNITLESS, Qudt.Units.KiloGM__PER__M3));
         Assertions.assertEquals(
-                new QuantityValue(new BigDecimal("1.1234"), Qudt.Units.UNITLESS),
+                new BigDecimal("1.1234"),
                 Qudt.convert(new BigDecimal("1.1234"), Qudt.Units.UNITLESS, Qudt.Units.UNITLESS));
     }
 
     @Test
     public void testConvert_N_to_kN() {
-        QuantityValue converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.N, Qudt.Units.KiloN);
-        MatcherAssert.assertThat(
-                converted.getValue(), Matchers.comparesEqualTo(new BigDecimal("0.001")));
+        BigDecimal converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.N, Qudt.Units.KiloN);
+        MatcherAssert.assertThat(converted, Matchers.comparesEqualTo(new BigDecimal("0.001")));
     }
 
     @Test
@@ -454,9 +453,9 @@ public class QudtTests {
 
     @Test
     public void testConvert_L_to_GAL_US() {
-        QuantityValue converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.L, Qudt.Units.GAL_US);
+        BigDecimal converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.L, Qudt.Units.GAL_US);
         MatcherAssert.assertThat(
-                converted.getValue(),
+                converted,
                 Matchers.comparesEqualTo(new BigDecimal("0.2641720372841846541406853467997671")));
     }
 
@@ -475,28 +474,28 @@ public class QudtTests {
     @Test
     public void testConvert_Celsius_to_Fahrenheit_2() {
         MatcherAssert.assertThat(
-                Qudt.convert(new BigDecimal("100"), Units.DEG_C, Units.DEG_F).getValue(),
+                Qudt.convert(new BigDecimal("100"), Units.DEG_C, Units.DEG_F),
                 Matchers.comparesEqualTo(new BigDecimal("212.0003929999999462664000000000043")));
     }
 
     @Test
     public void testConvert_Fahrenheit_to_Celsius() {
         MatcherAssert.assertThat(
-                Qudt.convert(new BigDecimal("100"), Units.DEG_F, Units.DEG_C).getValue(),
+                Qudt.convert(new BigDecimal("100"), Units.DEG_F, Units.DEG_C),
                 Matchers.comparesEqualTo(new BigDecimal("37.7775594444444693186492")));
     }
 
     @Test
     public void testConvert_byte_to_megabyte() {
         MatcherAssert.assertThat(
-                Qudt.convert(new BigDecimal("1048576"), Units.BYTE, Units.MegaBYTE).getValue(),
+                Qudt.convert(new BigDecimal("1048576"), Units.BYTE, Units.MegaBYTE),
                 Matchers.comparesEqualTo(new BigDecimal("1.000000000000000000000000000000003")));
     }
 
     @Test
     public void testConvert_megabyte_to_byte() {
         MatcherAssert.assertThat(
-                Qudt.convert(new BigDecimal("1"), Units.MegaBYTE, Units.BYTE).getValue(),
+                Qudt.convert(new BigDecimal("1"), Units.MegaBYTE, Units.BYTE),
                 Matchers.comparesEqualTo(new BigDecimal("1048575.999999999999999999999999997")));
     }
 
@@ -515,20 +514,16 @@ public class QudtTests {
 
     @Test
     public void testConvert_FemtoGM_to_KiloGM() {
-        QuantityValue converted =
-                Qudt.convert(BigDecimal.ONE, Qudt.Units.FemtoGM, Qudt.Units.KiloGM);
+        BigDecimal converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.FemtoGM, Qudt.Units.KiloGM);
         MatcherAssert.assertThat(
-                converted.getValue(),
-                Matchers.comparesEqualTo(new BigDecimal("0.000000000000000001")));
+                converted, Matchers.comparesEqualTo(new BigDecimal("0.000000000000000001")));
     }
 
     @Test
     public void testConvert_Metric_to_Imperial() {
-        QuantityValue converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.LB, Qudt.Units.KiloGM);
-        MatcherAssert.assertThat(
-                converted.getValue(), Matchers.comparesEqualTo(new BigDecimal("0.45359237")));
+        BigDecimal converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.LB, Qudt.Units.KiloGM);
+        MatcherAssert.assertThat(converted, Matchers.comparesEqualTo(new BigDecimal("0.45359237")));
         converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.BTU_IT__PER__LB, Qudt.Units.J__PER__GM);
-        MatcherAssert.assertThat(
-                converted.getValue(), Matchers.comparesEqualTo(new BigDecimal("2.326")));
+        MatcherAssert.assertThat(converted, Matchers.comparesEqualTo(new BigDecimal("2.326")));
     }
 }
