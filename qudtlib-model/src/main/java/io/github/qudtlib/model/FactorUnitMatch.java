@@ -8,21 +8,17 @@ public class FactorUnitMatch {
     private final FactorUnit matchedFactorUnit;
     private final List<Unit> matchedPath;
     private final BigDecimal matchedMultiplier;
-    private final ScaleFactor scaleFactor;
 
     public FactorUnitMatch(
             FactorUnit matchedFactorUnit,
             BigDecimal matchedMultiplier,
-            Collection<Unit> matchedPath,
-            ScaleFactor scaleFactor) {
+            Collection<Unit> matchedPath) {
         Objects.requireNonNull(matchedFactorUnit);
         Objects.requireNonNull(matchedPath);
         Objects.requireNonNull(matchedMultiplier);
-        Objects.requireNonNull(scaleFactor);
         this.matchedFactorUnit = matchedFactorUnit;
         this.matchedPath = Collections.unmodifiableList(new ArrayList<>(matchedPath));
         this.matchedMultiplier = matchedMultiplier;
-        this.scaleFactor = scaleFactor;
     }
 
     public FactorUnit getMatchedFactorUnit() {
@@ -37,19 +33,12 @@ public class FactorUnitMatch {
         return matchedPath;
     }
 
-    public ScaleFactor getScaleFactor() {
-        return scaleFactor;
-    }
-
     @Override
     public String toString() {
         return getPathAsString()
                 + (this.matchedMultiplier.compareTo(BigDecimal.ONE) == 0
                         ? ""
-                        : "*" + this.matchedMultiplier)
-                + (this.scaleFactor.getValue().compareTo(BigDecimal.ONE) == 0
-                        ? ""
-                        : "*" + this.scaleFactor);
+                        : "*" + this.matchedMultiplier);
     }
 
     private String getPathAsString() {
@@ -73,12 +62,11 @@ public class FactorUnitMatch {
         FactorUnitMatch that = (FactorUnitMatch) o;
         return matchedFactorUnit.equals(that.matchedFactorUnit)
                 && matchedPath.equals(that.matchedPath)
-                && matchedMultiplier.equals(that.matchedMultiplier)
-                && scaleFactor.equals(that.scaleFactor);
+                && matchedMultiplier.equals(that.matchedMultiplier);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(matchedFactorUnit, matchedPath, matchedMultiplier, scaleFactor);
+        return Objects.hash(matchedFactorUnit, matchedPath, matchedMultiplier);
     }
 }

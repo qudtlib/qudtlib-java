@@ -238,6 +238,44 @@ public class DerivedUnitTests {
                 Qudt.Units.KiloN__M.matches(
                         FactorUnitSelection.fromFactorUnitSpec(factors),
                         FactorUnitMatchingMode.ALLOW_SCALED));
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.EXACT));
+        factors = new Object[] {Qudt.Units.M, 1, Qudt.Units.KiloN, 1};
+        assertTrue(Qudt.Units.KiloN__M.matches(FactorUnitSelection.fromFactorUnitSpec(factors)));
+        factors = new Object[] {Qudt.Units.KiloM, 1, Qudt.Units.N, 1};
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        assertFalse(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.EXACT));
+        factors =
+                new Object[] {
+                    Qudt.Units.SEC,
+                    -2,
+                    Qudt.Units.KiloGM,
+                    1,
+                    Qudt.Units.KiloM,
+                    1,
+                    Qudt.Units.KiloM,
+                    1
+                };
+        assertFalse(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
+        factors =
+                new Object[] {
+                    Qudt.Units.SEC, -2, Qudt.Units.TONNE, 1, Qudt.Units.M, 1, Qudt.Units.M, 1
+                };
+        assertTrue(
+                Qudt.Units.KiloN__M.matches(
+                        FactorUnitSelection.fromFactorUnitSpec(factors),
+                        FactorUnitMatchingMode.ALLOW_SCALED));
         factors =
                 new Object[] {
                     Qudt.Units.KiloGM, 1, Qudt.Units.SEC, -2, Qudt.Units.M, 1, Qudt.Units.KiloM, 1
@@ -391,7 +429,7 @@ public class DerivedUnitTests {
                                 FactorUnitSelection.fromFactorUnitSpec(factors),
                                 FactorUnitMatchingMode.ALLOW_SCALED),
                         () -> "failed for " + factorUnits);
-                assertFalse(
+                assertTrue(
                         Qudt.Units.KiloN__M.matches(
                                 FactorUnitSelection.fromFactorUnitSpec(factors)),
                         () -> "failed for " + factorUnits);

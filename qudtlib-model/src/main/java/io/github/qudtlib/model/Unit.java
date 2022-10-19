@@ -75,7 +75,8 @@ public class Unit {
         return new QuantityValue(convert(value, toUnit), toUnit);
     }
 
-    public BigDecimal convert(BigDecimal value, Unit toUnit) {
+    public BigDecimal convert(BigDecimal value, Unit toUnit)
+            throws InconvertibleQuantitiesException {
         Objects.requireNonNull(value);
         Objects.requireNonNull(toUnit);
         if (this.equals(toUnit)) {
@@ -112,15 +113,32 @@ public class Unit {
         if (this.equals(toUnit)) {
             return BigDecimal.ONE;
         }
-        if (this.conversionOffset != null || toUnit.conversionOffset != null) {
+        if (this.conversionOffsetDiffers(toUnit)) {
             throw new IllegalArgumentException(
                     String.format(
-                            "Cannot convert from %s to %s just by multiplication, one of them has a conversion offset!",
+                            "Cannot convert from %s to %s just by multiplication as their conversion offsets differ",
                             this, toUnit));
         }
         BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(BigDecimal.ONE);
         BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
         return fromMultiplier.divide(toMultiplier, MathContext.DECIMAL128);
+    }
+
+    public boolean conversionOffsetDiffers(Unit other) {
+        if (this.hasNonzeroConversionOffset() && other.hasNonzeroConversionOffset()) {
+            return this.conversionOffset.compareTo(other.conversionOffset) != 0;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true iff this unit has a non-zero conversion offset.
+     *
+     * @return
+     */
+    public boolean hasNonzeroConversionOffset() {
+        return this.conversionOffset != null
+                && this.conversionOffset.compareTo(BigDecimal.ZERO) != 0;
     }
 
     public boolean isConvertible(Unit toUnit) {
@@ -161,41 +179,39 @@ public class Unit {
 
     public boolean matches(FactorUnitSelection initialSelection, FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> selections = Set.of(initialSelection);
-        selections = match(selections, 1, new ArrayDeque<>(), new ScaleFactor(), mode);
+        selections = match(selections, 1, new ArrayDeque<>(), mode);
         if (selections == null || selections.isEmpty()) return false;
         return selections.stream().anyMatch(FactorUnitSelection::isCompleteMatch);
     }
 
     Set<FactorUnitSelection> match(
-            Set<FactorUnitSelection> selections,
-            int cumulativeExponent,
-            Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor,
-            FactorUnitMatchingMode mode) {
+            final Set<FactorUnitSelection> selections,
+            final int cumulativeExponent,
+            final Deque<Unit> matchedPath,
+            final FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> results = new HashSet<>();
         matchedPath.push(this);
         // match factor units (if any)
         if (hasFactorUnits()) {
-            results.addAll(
-                    matchFactorUnits(
-                            selections, cumulativeExponent, matchedPath, scaleFactor, mode));
+            results.addAll(matchFactorUnits(selections, cumulativeExponent, matchedPath, mode));
         } else // try to match the unscaled version of the unit, if any
-        if (this.getScalingOf().isPresent()
-                && getPrefix().isPresent()
-                && getScalingOf().get().hasFactorUnits()) {
+        if (this.getScalingOf().isPresent() && getScalingOf().get().hasFactorUnits()) {
+            Unit baseUnit = this.getScalingOf().get();
+            BigDecimal scale = this.getConversionMultiplier(baseUnit);
+            Set<FactorUnitSelection> subResults =
+                    baseUnit.match(
+                            selections,
+                            cumulativeExponent,
+                            matchedPath,
+                            FactorUnitMatchingMode
+                                    .ALLOW_SCALED); // if we don't scale here, we will miss exact
+            // results!
             results.addAll(
-                    this.getScalingOf()
-                            .get()
-                            .match(
-                                    selections,
-                                    cumulativeExponent,
-                                    matchedPath,
-                                    scaleFactor.multiplyBy(this.getPrefix().get().getMultiplier()),
-                                    mode));
+                    subResults.stream().map(fus -> fus.scale(scale)).collect(Collectors.toSet()));
         }
-        // match this unit
-        results.addAll(
-                matchThisUnit(selections, cumulativeExponent, matchedPath, scaleFactor, mode));
+        // match this unit - even if it has factor units, the unit itself may also match,
+        // e.g. if the unit is KiloN__M and the selectors contain M^1 as well as N.
+        results.addAll(matchThisUnit(selections, cumulativeExponent, matchedPath, mode));
         matchedPath.pop();
         return results;
     }
@@ -204,14 +220,11 @@ public class Unit {
             Set<FactorUnitSelection> selections,
             int cumulativeExponent,
             Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor,
             FactorUnitMatchingMode mode) {
         Set<FactorUnitSelection> subResults = new HashSet<>(selections);
         Set<FactorUnitSelection> lastResults = subResults;
         for (FactorUnit factorUnit : factorUnits) {
-            subResults =
-                    factorUnit.match(
-                            lastResults, cumulativeExponent, matchedPath, scaleFactor, mode);
+            subResults = factorUnit.match(lastResults, cumulativeExponent, matchedPath, mode);
             if (lastResults.equals(subResults)) {
                 // no new matches for current factor unit - abort
                 return selections;
@@ -222,27 +235,20 @@ public class Unit {
     }
 
     private Set<FactorUnitSelection> matchThisUnit(
-            Set<FactorUnitSelection> selection,
-            int cumulativeExponent,
-            Deque<Unit> matchedPath,
-            ScaleFactor scaleFactor,
-            FactorUnitMatchingMode mode) {
+            final Set<FactorUnitSelection> selection,
+            final int cumulativeExponent,
+            final Deque<Unit> matchedPath,
+            final FactorUnitMatchingMode mode) {
         // now match this one
         Set<FactorUnitSelection> ret = new HashSet<>();
         for (FactorUnitSelection factorUnitSelection : selection) {
-            // add one solution where this node is matched
-            FactorUnitSelection processedSelection =
+            // add all solutions where this node is matched
+            Set<FactorUnitSelection> matchResults =
                     factorUnitSelection.forPotentialMatch(
-                            new FactorUnit(this, 1),
-                            cumulativeExponent,
-                            matchedPath,
-                            scaleFactor,
-                            mode);
-            if (!processedSelection.equals(factorUnitSelection)) {
-                // if there was a match, (i.e, we modified the selection),
-                // it's a new partial solution - return it
-                ret.add(processedSelection);
-            }
+                            new FactorUnit(this, 1), cumulativeExponent, matchedPath, mode);
+            // if there was a match, (i.e, we modified the selection),
+            // it's a new partial solution - return it
+            ret.addAll(matchResults);
         }
         return ret;
     }

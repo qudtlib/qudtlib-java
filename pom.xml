@@ -75,7 +75,7 @@
                 <groupId>org.eclipse.rdf4j</groupId>
                 <artifactId>rdf4j-bom</artifactId>
                 <type>pom</type>
-                <version>4.1.0</version>
+                <version>4.2.0</version>
                 <scope>import</scope>
             </dependency>
             <dependency>
