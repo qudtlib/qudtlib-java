@@ -261,7 +261,7 @@ public class QudtTests {
         units =
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.EXACT,
-                        Qudt.scaledUnit("Kilo", "Gram"),
+                        Qudt.scale("Kilo", "Gram"),
                         1,
                         Qudt.Units.M,
                         -3);
@@ -374,15 +374,15 @@ public class QudtTests {
 
     @Test
     public void testScaledUnit() {
-        Unit unit = Qudt.scaledUnit("Nano", "Meter");
+        Unit unit = Qudt.scale("Nano", "Meter");
         Assertions.assertEquals(Qudt.Units.NanoM, unit);
-        unit = Qudt.scaledUnit("Giga", "Hertz");
+        unit = Qudt.scale("Giga", "Hertz");
         Assertions.assertEquals(Qudt.Units.GigaHZ, unit);
-        unit = Qudt.scaledUnit("Kilo", "Gram");
+        unit = Qudt.scale("Kilo", "Gram");
         Assertions.assertEquals(Qudt.Units.KiloGM, unit);
-        unit = Qudt.scaledUnit("KILO", "GRAM");
+        unit = Qudt.scale("KILO", "GRAM");
         Assertions.assertEquals(Qudt.Units.KiloGM, unit);
-        unit = Qudt.scaledUnit(Qudt.Prefixes.Nano, Qudt.Units.M);
+        unit = Qudt.scale(Qudt.Prefixes.Nano, Qudt.Units.M);
         Assertions.assertEquals(Qudt.Units.NanoM, unit);
     }
 
@@ -418,7 +418,7 @@ public class QudtTests {
         List<FactorUnit> unitFactors = Qudt.factorUnits(unit);
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloN, 1)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
-        unitFactors = Qudt.unscaledFactorUnits(unitFactors);
+        unitFactors = Qudt.unscale(unitFactors);
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.N, 1)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
     }

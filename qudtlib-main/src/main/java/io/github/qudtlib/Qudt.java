@@ -156,7 +156,7 @@ public class Qudt {
         return unitBaseIri + localname;
     }
 
-    public static Unit scaledUnit(String prefixLabel, String baseUnitLabel) {
+    public static Unit scale(String prefixLabel, String baseUnitLabel) {
         LabelMatcher labelMatcher = new LabelMatcher(baseUnitLabel);
         return units.values().stream()
                 .filter(u -> u.getPrefix().isPresent())
@@ -188,7 +188,7 @@ public class Qudt {
      * @return the resulting unit
      * @throws NotFoundException if no such unit is present in the model.
      */
-    public static Unit scaledUnit(Prefix prefix, Unit baseUnit) {
+    public static Unit scale(Prefix prefix, Unit baseUnit) {
         return units.values().stream()
                 .filter(u -> u.getPrefix().isPresent())
                 .filter(u -> u.getPrefix().get().equals(prefix))
@@ -210,7 +210,7 @@ public class Qudt {
      * @param unit the scaled unit
      * @return the base unit
      */
-    public static Unit unscaledUnit(Unit unit) {
+    public static Unit unscale(Unit unit) {
         if (unit.getScalingOfIri().isEmpty()) {
             return unit;
         }
@@ -252,9 +252,9 @@ public class Qudt {
      * @param factorUnits the factor units to unscale
      * @return the unscaled factor units
      */
-    public static List<FactorUnit> unscaledFactorUnits(List<FactorUnit> factorUnits) {
+    public static List<FactorUnit> unscale(List<FactorUnit> factorUnits) {
         return factorUnits.stream()
-                .map(uf -> new FactorUnit(unscaledUnit(uf.getUnit()), uf.getExponent()))
+                .map(uf -> new FactorUnit(unscale(uf.getUnit()), uf.getExponent()))
                 .collect(toList());
     }
 
