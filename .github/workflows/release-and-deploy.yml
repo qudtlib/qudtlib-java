@@ -80,6 +80,16 @@ jobs:
           git config user.name ${{ github.actor }}
           git config user.email "<>"
 
+      # because we protect the main branch, the action cannot push to the repository
+      # Therefore, we create a branch for the release, and if the release succeeds, we will
+      # submit a pull request
+      - name: create branch for this release
+        run: |
+          BRANCH_NAME=release-$version-$(date +%s)
+          git checkout --track -b $BRANCH_NAME
+        env:
+          version: ${{ inputs.release_version }}
+
       # Update changelog unreleased section with new version
       - name: Update changelog
         uses: superfaceai/release-changelog-action@v1
@@ -111,6 +121,18 @@ jobs:
         env:
           password: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+      # create the pull request
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
+          title: Release ${{ inputs.release_version }}
+          body: |
+            Automated release through workflow: '${{ github.workflow }}'
+            Triggered by: ${{ github.triggering_actor }}
+            Version: ${{ inputs.release_version }}
+            Next development version: $${ inputs.next_snapshot_version }}
 
       # print the summary
       - name: Print summary
