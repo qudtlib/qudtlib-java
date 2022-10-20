@@ -120,7 +120,7 @@ jobs:
         run: mvn spotless:apply -DspotlessFiles='.*CHANGELOG.md'
 
       # Commit changes
-      - name: Commit CHANGELOG.md and package.json changes and create tag
+      - name: Commit CHANGELOG.md
         run: |
           git add "CHANGELOG.md"
           git commit -m "Update CHANGELOG.md for release ${{ inputs.release_version }}"
