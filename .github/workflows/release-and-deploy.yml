@@ -150,11 +150,12 @@ jobs:
           title: Release ${{ inputs.release_version }}
           base: main
           branch: ${{ steps.create_release_branch.outputs.branch_name }}
+          delete-branch: true
           body: |
             Automated release through workflow: '${{ github.workflow }}'
             Triggered by: ${{ github.triggering_actor }}
             Version: ${{ inputs.release_version }}
-            Next development version: $${ inputs.next_snapshot_version }}
+            Next development version: ${ inputs.next_snapshot_version }}
             
             Please merge this PR after publishing the release via the 
             [Sonatype Repository Manager](https://oss.sonatype.org/). 
