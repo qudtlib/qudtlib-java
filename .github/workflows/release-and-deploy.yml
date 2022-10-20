@@ -107,6 +107,14 @@ jobs:
         env:
           version: ${{ inputs.release_version }}
 
+      # Push to the remote so we create the remote branch without any changes
+      # because the create-pull-request action (see below) will only include unpushed
+      # changes in the PR
+      - name: Push changes to repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
+        run: git push origin
+
       # Update changelog unreleased section with new version
       - name: Update changelog
         uses: superfaceai/release-changelog-action@v1
@@ -131,12 +139,6 @@ jobs:
         env:
           password: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-
-      # Push repository changes
-      - name: Push changes to repository
-        env:
-          GITHUB_TOKEN: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
-        run: git push origin
 
       # create the pull request
       - name: Create Pull Request
