@@ -106,7 +106,7 @@ jobs:
         run: |
           BRANCH_NAME=release-$version-$(date +%s)
           git checkout --track -b $BRANCH_NAME
-          echo "{branch_name}={$BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
         env:
           version: ${{ inputs.release_version }}
 
@@ -155,6 +155,9 @@ jobs:
             Triggered by: ${{ github.triggering_actor }}
             Version: ${{ inputs.release_version }}
             Next development version: $${ inputs.next_snapshot_version }}
+            
+            Please merge this PR after publishing the release via the 
+            [Sonatype Repository Manager](https://oss.sonatype.org/). 
 
       # print the summary
       - name: Print summary
