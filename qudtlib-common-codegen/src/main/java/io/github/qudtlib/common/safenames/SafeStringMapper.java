@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
- * Applies the provided <b>deterministic</b> </b><code>mappingFunction</code> provided in the
+ * Applies the provided <b>deterministic</b> <code>mappingFunction</code> provided in the
  * constructor, keeping track of the mappings produced. If two different inputs result in the same
  * output, a {@link NameCollisionException} is thrown.
  */
