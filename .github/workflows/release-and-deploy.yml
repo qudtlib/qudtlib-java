@@ -102,7 +102,7 @@ jobs:
         id: create_release_branch
         run: |
           BRANCH_NAME=release-$version-$(date +%s)
-          git checkout -b $BRANCH_NAME
+          git checkout --track -b $BRANCH_NAME
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
         env:
           version: ${{ inputs.release_version }}
@@ -131,6 +131,12 @@ jobs:
         env:
           password: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+      # Push repository changes
+      - name: Push changes to repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
+        run: git push origin
 
       # create the pull request
       - name: Create Pull Request
