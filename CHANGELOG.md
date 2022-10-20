@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
 - Improve Changelog handling during release
 
 ## [2.0.0] - 2022-10-20
@@ -37,4 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2022-07-21
 
-Initial release.
+### Added
+
+- Initial release.
+
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/qudtlib/qudtlib-java/compare/qudtlib-java-1.0...2.0.0
+[1.0.0]: https://github.com/qudtlib/qudtlib-java/releases/tag/qudtlib-java-1.0
+
