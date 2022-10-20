@@ -137,7 +137,7 @@ jobs:
 
       # build and deploy to staging
       - name: Build with Maven, deploying to sonatype staging repo
-        run: mvn -B release:clean release:prepare release:perform -DreleaseVersion=${{ inputs.release_version }} -DdevelopmentVersion=${{ inputs.next_snapshot_version }} -Darguments=-Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE"
+        run: mvn -B release:clean release:prepare release:perform -DtagNameFormat="@{project.version}" -DreleaseVersion=${{ inputs.release_version }} -DdevelopmentVersion=${{ inputs.next_snapshot_version }} -Darguments=-Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE"
         env:
           password: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
