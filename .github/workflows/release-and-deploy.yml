@@ -155,7 +155,7 @@ jobs:
             Automated release through workflow: '${{ github.workflow }}'
             Triggered by: ${{ github.triggering_actor }}
             Version: ${{ inputs.release_version }}
-            Next development version: ${ inputs.next_snapshot_version }}
+            Next development version: ${{ inputs.next_snapshot_version }}
             
             Please merge this PR after publishing the release via the 
             [Sonatype Repository Manager](https://oss.sonatype.org/). 
