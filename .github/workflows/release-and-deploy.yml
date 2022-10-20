@@ -88,9 +88,6 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE  # env variable for GPG private key passphrase
           cache: 'maven'
 
-      - name: list GPG keys
-        run: gpg --list-keys
-
       # configure git
       - name: setup git config
         run: |
@@ -127,13 +124,6 @@ jobs:
         run: |
           git add "CHANGELOG.md"
           git commit -m "Update CHANGELOG.md for release ${{ inputs.release_version }}"
-
-      # Push repository changes
-      - name: Push changes to repository
-        env:
-          GITHUB_TOKEN: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
-        run: |
-          git push origin
 
       # build and deploy to staging
       - name: Build with Maven, deploying to sonatype staging repo
