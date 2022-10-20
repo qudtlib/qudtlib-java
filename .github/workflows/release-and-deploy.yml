@@ -102,7 +102,7 @@ jobs:
         id: create_release_branch
         run: |
           BRANCH_NAME=release-$version-$(date +%s)
-          git checkout --track -b $BRANCH_NAME
+          git checkout -b $BRANCH_NAME
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
         env:
           version: ${{ inputs.release_version }}
