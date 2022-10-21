@@ -140,6 +140,15 @@ jobs:
           password: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
+      # Read version changelog
+      - id: get-changelog
+        name: Get version changelog
+        uses: superfaceai/release-changelog-action@v1
+        with:
+          path-to-changelog: CHANGELOG.md
+          version: ${{ inputs.release_version }}
+          operation: read
+
       # create the pull request
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
@@ -150,12 +159,20 @@ jobs:
           branch: ${{ steps.create_release_branch.outputs.branch_name }}
           delete-branch: true
           body: |
+            # Changes
+            
+            ${{ steps.get-changelog.outputs.changelog }}
+            
+            # Release info
+            
             Automated release through workflow: '${{ github.workflow }}'
             Triggered by: ${{ github.triggering_actor }}
             Version: ${{ inputs.release_version }}
             Next development version: ${{ inputs.next_snapshot_version }}
             
-            Please merge this PR after publishing the release via the 
+            # Next Steps
+            
+            Please rebase this PR on top of `main` after publishing the release via the 
             [Sonatype Repository Manager](https://s01.oss.sonatype.org/). 
 
       # print the summary
