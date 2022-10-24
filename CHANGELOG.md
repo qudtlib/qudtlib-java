@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Changed
+### Changed
 
-- Update QUDT to 2.1.20
+- Update QUDT to [2.1.20](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.20) 
+
+### Fixed
+
 - Fix MW/mW derivation bug (#27) by adding missing QUDT triples manually (until the upstream fix is released)
 
 ## [2.0.1] - 2022-10-21
