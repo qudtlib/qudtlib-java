@@ -53,17 +53,17 @@ jobs:
 
       # check if a tag already exists for the version we want to publish - in that case the workflow
       # will fail later, so let us make it fail fast
-      - name: Check if tag ${{ inputs.release_version }} exists
+      - name: Check if tag v${{ inputs.release_version }} exists
         uses: mukunku/tag-exists-action@v1.0.0
         id: checkTag
         with:
-          tag: ${{ inputs.release_version }}
+          tag: v${{ inputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
-      - name: Fail if tag ${{ inputs.release_version }} exists
+      - name: Fail if tag v${{ inputs.release_version }} exists
         if: steps.checkTag.outputs.exists == 'true'
         run: |
-          echo Tag ${{ inputs.release_version }} already exists, release aborted >> $GITHUB_STEP_SUMMARY
+          echo Tag v${{ inputs.release_version }} already exists, release aborted >> $GITHUB_STEP_SUMMARY
           exit 1
 
       # Set up java with maven cache
