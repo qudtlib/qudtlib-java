@@ -3,3 +3,13 @@
 
 unit:TON_Metric qudt:isScalingOf unit:GM.
 unit:TONNE qudt:isScalingOf unit:GM.
+
+# missing triples, will be added in upcoming QUDT releas
+unit:DeciTONNE qudt:conversionMultiplier 100.0 .
+unit:EarthMass qudt:conversionMultiplier 5972400000000000000000000.0 .
+unit:KiloTONNE qudt:conversionMultiplier 1000000.0 .
+unit:LunarMass qudt:conversionMultiplier 73460000000000000000000.0 .
+unit:MegaW qudt:conversionMultiplier 1000000.0 .
+unit:MilliW qudt:conversionMultiplier 0.001 .
+unit:NUM-PER-YR qudt:conversionMultiplier 0.00000003168808781402895023702689684893655 .
+

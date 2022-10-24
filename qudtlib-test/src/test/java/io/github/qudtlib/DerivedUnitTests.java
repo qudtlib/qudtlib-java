@@ -519,4 +519,14 @@ public class DerivedUnitTests {
         MatcherAssert.assertThat(base.getValue(), Matchers.comparesEqualTo(BigDecimal.ONE));
         assertEquals(Qudt.Units.M, base.getKey());
     }
+
+    @Test
+    public void testScaleWatt() {
+        List<FactorUnit> wattFactors = Qudt.simplifyFactorUnits(Qudt.Units.W.getFactorUnits());
+        Set<Unit> units =
+                Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.EXACT, wattFactors);
+        assertEquals(units.size(), 2);
+        assertTrue(units.contains(Qudt.Units.W));
+        assertTrue(units.contains(Qudt.Units.J__PER__SEC));
+    }
 }

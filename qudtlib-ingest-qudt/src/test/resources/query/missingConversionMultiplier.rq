@@ -1,0 +1,14 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX qk: <http://qudt.org/vocab/quantitykind/>
+
+SELECT ?u  where
+{
+    ?u a qudt:Unit ;
+    FILTER NOT EXISTS {
+        ?u qudt:conversionMultiplier ?multiplier
+    }
+    FILTER NOT EXISTS {
+        ?u qudt:hasQuantityKind qk:Currency
+    }
+}
+order by str(?u)
