@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- All `(add|set).+` methods of `Unit`, `QuantityKind`, and `Prefix` now require non-null parameters. Not performing this check led to a [bug in QUDT v2.1.20](https://github.com/qudt/qudt-public-repo/issues/593) to slip through.
+## [2.1.1] - 2022-10-25
 
 ### Added
 
 - Add triples missing in Qudt v2.1.20 temporarily until the [upstream fix](https://github.com/qudt/qudt-public-repo/pull/594) is released.
+
+### Changed
+
+- All `(add|set).+` methods of `Unit`, `QuantityKind`, and `Prefix` now require non-null parameters. Not performing this check led to a [bug in QUDT v2.1.20](https://github.com/qudt/qudt-public-repo/issues/593) to slip through.
 
 ## [2.1.0] - 2022-10-24
 
@@ -63,7 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/qudtlib/qudtlib-java/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v1.0.0...v2.0.0
