@@ -1,0 +1,19 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix qkdv: <http://qudt.org/vocab/dimensionvector/> .
+@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
+
+
+# missing triples, will be added in upcoming QUDT release > v2.1.20
+
+# PR: https://github.com/qudt/qudt-public-repo/pull/594
+quantitykind:VolumePerArea
+  a qudt:QuantityKind ;
+  qudt:applicableUnit unit:M3-PER-HA ;
+  qudt:baseUnitDimensions "\\(L^3/L^2\\)"^^qudt:LatexString ;
+  qudt:baseUnitDimensions "\\(m^3/m^2\\)"^^qudt:LatexString ;
+  qudt:hasDimensionVector qkdv:A0E0L1I0M0H0T0D0 ;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind> ;
+  rdfs:label "Volume per Unit Area"@en ;
+.

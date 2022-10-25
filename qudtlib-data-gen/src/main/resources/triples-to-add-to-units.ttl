@@ -1,10 +1,15 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix qudt: <http://qudt.org/schema/qudt/> .
 @prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix qkdv: <http://qudt.org/vocab/dimensionvector/> .
+@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
 
 unit:TON_Metric qudt:isScalingOf unit:GM.
 unit:TONNE qudt:isScalingOf unit:GM.
 
-# missing triples, will be added in upcoming QUDT releas
+# missing triples, will be added in upcoming QUDT release > v2.1.20
+
+# PR: https://github.com/qudt/qudt-public-repo/pull/592
 unit:DeciTONNE qudt:conversionMultiplier 100.0 .
 unit:EarthMass qudt:conversionMultiplier 5972400000000000000000000.0 .
 unit:KiloTONNE qudt:conversionMultiplier 1000000.0 .
@@ -12,4 +17,3 @@ unit:LunarMass qudt:conversionMultiplier 73460000000000000000000.0 .
 unit:MegaW qudt:conversionMultiplier 1000000.0 .
 unit:MilliW qudt:conversionMultiplier 0.001 .
 unit:NUM-PER-YR qudt:conversionMultiplier 0.00000003168808781402895023702689684893655 .
-
