@@ -198,6 +198,7 @@
                     <markdown>
                         <includes>
                             <include>**/*.md</include>
+                            <exclude>**/target</exclude>
                         </includes>
                         <excludes>
                             <exclude>qudtlib-js/**</exclude>
