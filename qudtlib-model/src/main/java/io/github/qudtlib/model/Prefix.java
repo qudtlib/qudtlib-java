@@ -52,6 +52,7 @@ public class Prefix {
     }
 
     public void addLabel(LangString langString) {
+        Objects.requireNonNull(langString);
         this.labels.add(langString);
     }
 

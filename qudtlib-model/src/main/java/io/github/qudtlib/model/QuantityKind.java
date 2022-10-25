@@ -61,6 +61,7 @@ public class QuantityKind {
     }
 
     public void addLabel(LangString langString) {
+        Objects.requireNonNull(langString);
         this.labels.add(langString);
     }
 

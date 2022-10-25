@@ -362,22 +362,31 @@ public class Unit {
     }
 
     void setPrefix(Prefix prefix) {
+        Objects.requireNonNull(prefix);
         this.prefix = prefix;
     }
 
     void setScalingOf(Unit scalingOf) {
+        Objects.requireNonNull(scalingOf);
         this.scalingOf = scalingOf;
     }
 
     void addLabel(LangString langString) {
+        Objects.requireNonNull(langString);
         this.labels.add(langString);
     }
 
     void addQuantityKind(String quantityKind) {
+        Objects.requireNonNull(
+                quantityKind,
+                String.format("Property referenced by %s but not found in model", this.toString()));
         this.quantityKindIris.add(quantityKind);
     }
 
     void addQuantityKind(QuantityKind quantityKind) {
+        Objects.requireNonNull(
+                quantityKind,
+                String.format("Property referenced by %s but not found in model", this.toString()));
         if (this.quantityKinds == null) {
             this.quantityKinds = new HashSet<>();
         }
@@ -385,6 +394,9 @@ public class Unit {
     }
 
     void addFactorUnit(FactorUnit factorUnit) {
+        Objects.requireNonNull(
+                factorUnit,
+                String.format("Property referenced by %s but not found in model", this.toString()));
         if (this.factorUnits == null) {
             this.factorUnits = new ArrayList<>();
         }
