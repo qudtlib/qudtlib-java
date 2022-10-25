@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- All `(add|set).+` methods of `Unit`, `QuantityKind`, and `Prefix` now require non-null parameters. Not performing this check led to a [bug in QUDT v2.1.20](https://github.com/qudt/qudt-public-repo/issues/593) to slip through.
+
+### Added
+
+- Add triples missing in Qudt v2.1.20 temporarily until the [upstream fix](https://github.com/qudt/qudt-public-repo/pull/594) is released.
+
 ## [2.1.0] - 2022-10-24
 
 ### Changed
@@ -15,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix MW/mW derivation bug (#27) by adding missing QUDT triples manually (until the upstream fix is released)
+- Fix MW/mW derivation bug (#27) by adding missing QUDT triples manually (until the [upstream fix](https://github.com/qudt/qudt-public-repo/pull/592) is released)
 
 ## [2.0.1] - 2022-10-21
 
