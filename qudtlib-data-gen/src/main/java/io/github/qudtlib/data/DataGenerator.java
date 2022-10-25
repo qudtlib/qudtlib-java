@@ -43,7 +43,9 @@ public class DataGenerator {
     private static final String REMOVE_KILOGM_SCALINGS_QUERY = "remove-kiloGM-scalings.rq";
     // additional data
     private static final String SI_BASE_UNITS_DATA = "si-base-units.ttl";
-    private static final String ADDITIONAL_SCALINGS_DATA = "additional-scalings.ttl";
+    private static final String TRIPLES_TO_ADD_TO_UNITS = "triples-to-add-to-units.ttl";
+    private static final String TRIPLES_TO_ADD_TO_QUANTITYKINDS =
+            "triples-to-add-to-quantitykinds.ttl";
     private static final String UNITS_EXPECTED_DATA = "tmpExpected/qudt-unit.ttl";
 
     private static final boolean DEBUG = false;
@@ -96,6 +98,8 @@ public class DataGenerator {
         Repository outputRepo = new SailRepository(new MemoryStore());
         try (RepositoryConnection outputCon = outputRepo.getConnection()) {
             RdfOps.addStatementsFromFile(outputCon, QUANTITYKINDS_FILE);
+            // add missing triples
+            RdfOps.addStatementsFromFile(outputCon, TRIPLES_TO_ADD_TO_QUANTITYKINDS);
             RdfOps.writeTurtleFile(outputCon, outFile(QUANTITYKINDS_OUTFILE));
         }
     }
@@ -112,8 +116,8 @@ public class DataGenerator {
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
                 // add SI base units
                 RdfOps.addStatementsFromFile(outputCon, SI_BASE_UNITS_DATA);
-                // add missing scalings
-                RdfOps.addStatementsFromFile(outputCon, ADDITIONAL_SCALINGS_DATA);
+                // add missing triples
+                RdfOps.addStatementsFromFile(outputCon, TRIPLES_TO_ADD_TO_UNITS);
                 // put result in OUTPUT repo
                 RdfOps.copyData(inputCon, outputCon);
                 // add prefixes to INPUT repo (cannot be in output, but is required for queries!)
