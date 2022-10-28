@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update QUDT to [2.1.21](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.21)
+- Improve the release process on GitHub
+
 ## [2.1.1] - 2022-10-25
 
 ### Added
