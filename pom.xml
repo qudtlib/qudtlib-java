@@ -185,6 +185,7 @@
                             </includes>
                             <excludes>
                                 <exclude>qudtlib-js/**</exclude>
+                                <exclude>**/target/**</exclude>
                             </excludes>
                             <!-- define the steps to apply to those files -->
                             <trimTrailingWhitespace />
@@ -198,10 +199,10 @@
                     <markdown>
                         <includes>
                             <include>**/*.md</include>
-                            <exclude>**/target</exclude>
                         </includes>
                         <excludes>
                             <exclude>qudtlib-js/**</exclude>
+                            <exclude>**/target/**</exclude>
                         </excludes>
                         <flexmark />
                     </markdown>
