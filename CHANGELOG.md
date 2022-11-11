@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add QuantityKinds and Units required to map IFC to QUDT. These are added temporarily until an upstream release of QUDT.
+
 ## [2.2.0] - 2022-10-28
 
 ### Changed
