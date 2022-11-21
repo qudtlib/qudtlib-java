@@ -114,10 +114,10 @@ public class DataGenerator {
                 RdfOps.addStatementsFromFile(inputCon, UNITS_FILE);
                 // deal with kg
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
+                // add missing triples
+                RdfOps.addStatementsFromFile(inputCon, TRIPLES_TO_ADD_TO_UNITS);
                 // add SI base units
                 RdfOps.addStatementsFromFile(outputCon, SI_BASE_UNITS_DATA);
-                // add missing triples
-                RdfOps.addStatementsFromFile(outputCon, TRIPLES_TO_ADD_TO_UNITS);
                 // put result in OUTPUT repo
                 RdfOps.copyData(inputCon, outputCon);
                 // add prefixes to INPUT repo (cannot be in output, but is required for queries!)
