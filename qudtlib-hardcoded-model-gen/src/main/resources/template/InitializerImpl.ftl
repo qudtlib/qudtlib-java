@@ -51,7 +51,7 @@ public class InitializerImpl implements Initializer {
     <#list units as iri, unit>
     private static void addUnit${iri?index?c}(Map<String, Unit> units) {
         Unit unit = null;
-        unit = new Unit(${q(iri)}, ${optStr(unit.prefixIri)}, ${optStr(unit.scalingOfIri)}, ${optStr(unit.dimensionVectorIri)}, ${optBigDec(unit.conversionMultiplier)}, ${optBigDec(unit.conversionOffset)}, ${optStr(unit.symbol)});
+        unit = new Unit(${q(iri)}, ${optStr(unit.prefixIri)}, ${optStr(unit.scalingOfIri)}, ${optStr(unit.dimensionVectorIri)}, ${optBigDec(unit.conversionMultiplier)}, ${optBigDec(unit.conversionOffset)}, ${optStr(unit.symbol)}, ${optStr(unit.currencyCode)}, ${optNum(unit.currencyNumber)});
         <#list unit.labels as label>
         unit.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
         </#list>

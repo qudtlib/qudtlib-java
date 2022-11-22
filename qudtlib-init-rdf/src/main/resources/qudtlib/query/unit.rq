@@ -28,4 +28,10 @@ SELECT * where
     optional {
         ?unit qudt:hasDimensionVector ?dimensionVector
     }
+    optional {
+        ?unit qudt:currencyCode ?currencyCode
+    }
+    optional {
+        ?unit qudt:currencyNumber ?currencyNumber
+    }
 } order by ?unit

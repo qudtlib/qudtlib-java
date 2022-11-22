@@ -15,6 +15,7 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.model.impl.SimpleLiteral;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -255,7 +256,13 @@ public class InitializerImpl implements Initializer {
                 bs.hasBinding("conversionOffset")
                         ? new BigDecimal(bs.getBinding("conversionOffset").getValue().stringValue())
                         : null,
-                bs.hasBinding("symbol") ? bs.getBinding("symbol").getValue().stringValue() : null);
+                bs.hasBinding("symbol") ? bs.getBinding("symbol").getValue().stringValue() : null,
+                bs.hasBinding("currencyCode")
+                        ? bs.getBinding("currencyCode").getValue().stringValue()
+                        : null,
+                bs.hasBinding("currencyNumber")
+                        ? ((SimpleLiteral) bs.getBinding("currencyNumber").getValue()).intValue()
+                        : null);
     }
 
     private static QuantityKind makeQuantityKind(BindingSet bs) {
