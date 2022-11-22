@@ -57,7 +57,9 @@ export * from "@qudtlib/core";
     ${optStr(unit.scalingOfIri)},
     undefined,
     ${optStr(unit.symbol)},
-    undefined
+    undefined,
+    ${optStr(unit.currencyCode)},
+    ${optNum(unit.currencyNumber)}
   );
     <#list unit.labels as label>
   unit.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));

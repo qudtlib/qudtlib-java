@@ -26,6 +26,8 @@ public class Unit {
     private Unit scalingOf;
     private final String dimensionVectorIri;
     private List<FactorUnit> factorUnits = null;
+    private final String currencyCode;
+    private final Integer currencyNumber;
 
     public Unit(
             String iri,
@@ -36,7 +38,9 @@ public class Unit {
             BigDecimal conversionOffset,
             Set<String> quantityKindIris,
             String symbol,
-            Set<LangString> labels) {
+            Set<LangString> labels,
+            String currencyCode,
+            Integer currencyNumber) {
         this.iri = iri;
         this.prefixIri = prefixIri;
         this.scalingOfIri = scalingOfIri;
@@ -46,6 +50,8 @@ public class Unit {
         this.quantityKindIris = new HashSet<>(quantityKindIris);
         this.symbol = symbol;
         this.labels = labels;
+        this.currencyCode = currencyCode;
+        this.currencyNumber = currencyNumber;
     }
 
     public Unit(
@@ -55,7 +61,9 @@ public class Unit {
             String dimensionVectorIri,
             BigDecimal conversionMultiplier,
             BigDecimal conversionOffset,
-            String symbol) {
+            String symbol,
+            String currencyCode,
+            Integer currencyNumber) {
         this.iri = iri;
         this.prefixIri = prefixIri;
         this.scalingOfIri = scalingOfIri;
@@ -65,6 +73,8 @@ public class Unit {
         this.quantityKindIris = new HashSet<>();
         this.symbol = symbol;
         this.labels = new HashSet<>();
+        this.currencyCode = currencyCode;
+        this.currencyNumber = currencyNumber;
     }
 
     static boolean isUnitless(Unit unit) {
@@ -335,6 +345,14 @@ public class Unit {
         return factorUnits == null
                 ? Collections.emptyList()
                 : Collections.unmodifiableList(factorUnits);
+    }
+
+    public Optional<String> getCurrencyCode() {
+        return Optional.ofNullable(currencyCode);
+    }
+
+    public Optional<Integer> getCurrencyNumber() {
+        return Optional.ofNullable(currencyNumber);
     }
 
     @Override
