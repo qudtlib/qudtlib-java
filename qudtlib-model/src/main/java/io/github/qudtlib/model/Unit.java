@@ -158,7 +158,7 @@ public class Unit {
     }
 
     public boolean matches(Collection<Map.Entry<String, Integer>> factorUnitSpec) {
-        return matches(FactorUnitSelection.fromFactorUnitSpec((factorUnitSpec)));
+        return matches(FactorUnits.ofFactorUnitSpec((factorUnitSpec)));
     }
 
     /**
@@ -170,7 +170,7 @@ public class Unit {
      *     (overspecification is counted as a match)
      */
     public boolean matches(Object... factorUnitSpec) {
-        return matches(FactorUnitSelection.fromFactorUnitSpec(factorUnitSpec));
+        return matches(FactorUnits.ofFactorUnitSpec(factorUnitSpec));
     }
 
     /**
@@ -180,87 +180,13 @@ public class Unit {
      * <p>For example, the unit Nm (Newton Meter) would match a factor Unit selection containing
      * only the still unmatched selectors of (N^1? m^1?), as well as the selection containing
      *
-     * @param initialSelection the selection criteria
+     * @param factorUnits the selection criteria
      * @return true if the unit matches the criteria
      */
-    public boolean matches(FactorUnitSelection initialSelection) {
-        return matches(initialSelection, FactorUnitMatchingMode.EXACT);
-    }
-
-    public boolean matches(FactorUnitSelection initialSelection, FactorUnitMatchingMode mode) {
-        Set<FactorUnitSelection> selections = Set.of(initialSelection);
-        selections = match(selections, 1, new ArrayDeque<>(), mode);
-        if (selections == null || selections.isEmpty()) return false;
-        return selections.stream().anyMatch(FactorUnitSelection::isCompleteMatch);
-    }
-
-    Set<FactorUnitSelection> match(
-            final Set<FactorUnitSelection> selections,
-            final int cumulativeExponent,
-            final Deque<Unit> matchedPath,
-            final FactorUnitMatchingMode mode) {
-        Set<FactorUnitSelection> results = new HashSet<>();
-        matchedPath.push(this);
-        // match factor units (if any)
-        if (hasFactorUnits()) {
-            results.addAll(matchFactorUnits(selections, cumulativeExponent, matchedPath, mode));
-        } else // try to match the unscaled version of the unit, if any
-        if (this.getScalingOf().isPresent() && getScalingOf().get().hasFactorUnits()) {
-            Unit baseUnit = this.getScalingOf().get();
-            BigDecimal scale = this.getConversionMultiplier(baseUnit);
-            Set<FactorUnitSelection> subResults =
-                    baseUnit.match(
-                            selections,
-                            cumulativeExponent,
-                            matchedPath,
-                            FactorUnitMatchingMode
-                                    .ALLOW_SCALED); // if we don't scale here, we will miss exact
-            // results!
-            results.addAll(
-                    subResults.stream().map(fus -> fus.scale(scale)).collect(Collectors.toSet()));
-        }
-        // match this unit - even if it has factor units, the unit itself may also match,
-        // e.g. if the unit is KiloN__M and the selectors contain M^1 as well as N.
-        results.addAll(matchThisUnit(selections, cumulativeExponent, matchedPath, mode));
-        matchedPath.pop();
-        return results;
-    }
-
-    private Set<FactorUnitSelection> matchFactorUnits(
-            Set<FactorUnitSelection> selections,
-            int cumulativeExponent,
-            Deque<Unit> matchedPath,
-            FactorUnitMatchingMode mode) {
-        Set<FactorUnitSelection> subResults = new HashSet<>(selections);
-        Set<FactorUnitSelection> lastResults = subResults;
-        for (FactorUnit factorUnit : factorUnits) {
-            subResults = factorUnit.match(lastResults, cumulativeExponent, matchedPath, mode);
-            if (lastResults.equals(subResults)) {
-                // no new matches for current factor unit - abort
-                return selections;
-            }
-            lastResults = subResults;
-        }
-        return subResults;
-    }
-
-    private Set<FactorUnitSelection> matchThisUnit(
-            final Set<FactorUnitSelection> selection,
-            final int cumulativeExponent,
-            final Deque<Unit> matchedPath,
-            final FactorUnitMatchingMode mode) {
-        // now match this one
-        Set<FactorUnitSelection> ret = new HashSet<>();
-        for (FactorUnitSelection factorUnitSelection : selection) {
-            // add all solutions where this node is matched
-            Set<FactorUnitSelection> matchResults =
-                    factorUnitSelection.forPotentialMatch(
-                            new FactorUnit(this, 1), cumulativeExponent, matchedPath, mode);
-            // if there was a match, (i.e, we modified the selection),
-            // it's a new partial solution - return it
-            ret.addAll(matchResults);
-        }
-        return ret;
+    public boolean matches(FactorUnits factorUnits) {
+        FactorUnits thisNormalized = this.normalize();
+        FactorUnits selectionNormalized = factorUnits.normalize();
+        return thisNormalized.equals(selectionNormalized);
     }
 
     public boolean hasFactorUnits() {
@@ -271,12 +197,53 @@ public class Unit {
         return this.scalingOfIri != null;
     }
 
+    /**
+     * Returns this unit as a set of exponent-reduced factors, unless they are two factors that
+     * cancel each other out, in which case return the unit as a factor unit with exponent 1. For
+     * example, Steradian is m²/m² and will therefore return SR.
+     */
+    public FactorUnits normalize() {
+        if (this.hasFactorUnits()) {
+            FactorUnits ret =
+                    this.factorUnits.stream()
+                            .map(fu -> fu.normalize())
+                            .reduce((prev, cur) -> cur.combineWith(prev))
+                            .get();
+            if (ret.isRatioOfSameUnits()) {
+                // we don't want to reduce units like M²/M², as such units then match any other unit
+                // if they are
+                // compared by the normalization result
+                return FactorUnits.ofUnit(this);
+            }
+            return ret.reduceExponents();
+        } else if (this.isScaled()) {
+            return this.scalingOf.normalize().scale(this.getConversionMultiplier(this.scalingOf));
+        }
+        return FactorUnits.ofUnit(this);
+    }
+
     public List<FactorUnit> getLeafFactorUnitsWithCumulativeExponents() {
-        return this.factorUnits == null
-                ? Collections.emptyList()
+        return this.factorUnits == null || this.factorUnits.isEmpty()
+                ? List.of(new FactorUnit(this, 1))
                 : factorUnits.stream()
                         .flatMap(f -> f.getLeafFactorUnitsWithCumulativeExponents().stream())
                         .collect(Collectors.toList());
+    }
+
+    public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
+        if (!this.hasFactorUnits() || this.factorUnits.isEmpty()) {
+            if (this.isScaled()) {
+                return this.scalingOf.getAllPossibleFactorUnitCombinations();
+            }
+            return List.of(List.of(FactorUnit.ofUnit(this)));
+        }
+        List<List<FactorUnit>> result =
+                FactorUnit.getAllPossibleFactorUnitCombinations(this.factorUnits);
+        List<FactorUnit> thisAsResult = List.of(FactorUnit.ofUnit(this));
+        if (!result.contains(thisAsResult)) {
+            result.add(thisAsResult);
+        }
+        return result;
     }
 
     public String getIri() {

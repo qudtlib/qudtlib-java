@@ -259,7 +259,7 @@ public class Qudt {
     }
 
     /**
-     * Obtains units based on factor units, using the specified {@link FactorUnitMatchingMode}.
+     * Obtains units based on factor units.
      *
      * <p>For example,
      *
@@ -299,8 +299,8 @@ public class Qudt {
      */
     public static Set<Unit> derivedUnitsFromFactorUnits(
             DerivedUnitSearchMode searchMode, List<FactorUnit> factorUnits) {
-        FactorUnitSelection selection = FactorUnitSelection.fromFactorUnits(factorUnits);
-        return derivedUnitsFromFactorUnitSelection(searchMode, selection);
+        FactorUnits selection = new FactorUnits(factorUnits);
+        return derivedUnitsFromFactorUnits(searchMode, selection);
     }
 
     /**
@@ -345,8 +345,8 @@ public class Qudt {
                                 factorUnitSpec[i].toString(), i));
             }
         }
-        FactorUnitSelection selection = FactorUnitSelection.fromFactorUnitSpec(spec);
-        return derivedUnitsFromFactorUnitSelection(searchMode, selection);
+        FactorUnits selection = FactorUnits.ofFactorUnitSpec(spec);
+        return derivedUnitsFromFactorUnits(searchMode, selection);
     }
 
     /**
@@ -355,54 +355,159 @@ public class Qudt {
      * @return the units that match
      * @see #derivedUnitsFromMap(DerivedUnitSearchMode, Map)
      */
-    private static Set<Unit> derivedUnitsFromFactorUnitSelection(
-            DerivedUnitSearchMode searchMode, FactorUnitSelection selection) {
-        FactorUnitMatchingMode matchingMode =
-                searchMode.isExactInFirstRound()
-                        ? FactorUnitMatchingMode.EXACT
-                        : FactorUnitMatchingMode.ALLOW_SCALED;
+    private static Set<Unit> derivedUnitsFromFactorUnits(
+            DerivedUnitSearchMode searchMode, FactorUnits selection) {
         List<Unit> matchingUnits =
                 units.values().stream()
-                        .filter(d -> d.matches(selection, matchingMode))
+                        .filter(d -> d.matches(selection))
                         .collect(Collectors.toList());
-        if (searchMode == DerivedUnitSearchMode.EXACT
-                || searchMode == DerivedUnitSearchMode.ALLOW_SCALED) {
+        if (searchMode == DerivedUnitSearchMode.ALL || matchingUnits.size() < 2) {
             return new HashSet<>(matchingUnits);
         }
-        if (searchMode == DerivedUnitSearchMode.EXACT_ONLY_ONE) {
-            return retainOnlyOne(matchingUnits);
-        }
-        if (searchMode == DerivedUnitSearchMode.BEST_EFFORT_ONLY_ONE) {
-            if (matchingUnits.isEmpty()) {
-                matchingUnits =
-                        units.values().stream()
-                                .filter(
-                                        d ->
-                                                d.matches(
-                                                        selection,
-                                                        FactorUnitMatchingMode.ALLOW_SCALED))
-                                .collect(Collectors.toList());
-            }
-            return retainOnlyOne(matchingUnits);
-        }
-        throw new IllegalStateException(
-                "Search mode "
-                        + searchMode
-                        + " was not handled properly, this should never happen - please report as bug.");
-    }
-
-    private static Set<Unit> retainOnlyOne(List<Unit> matchingUnits) {
-        if (matchingUnits.isEmpty()) {
-            return Set.of();
+        Map<Unit, Double> scores = new HashMap<>();
+        for (Unit unit : matchingUnits) {
+            scores.put(unit, matchScore(unit, selection));
         }
         return Set.of(
                 matchingUnits.stream()
+                        .max((l, r) -> (int) Math.signum(scores.get(l) - scores.get(r)))
+                        .get());
+    }
+
+    private static Double matchScore(Unit unit, FactorUnits requested) {
+        List<List<FactorUnit>> unitFactors = unit.getAllPossibleFactorUnitCombinations();
+        List<List<FactorUnit>> requestedFactors =
+                FactorUnit.getAllPossibleFactorUnitCombinations(requested.getFactorUnits());
+        List<List<FactorUnit>> smaller =
+                unitFactors.size() > requestedFactors.size() ? requestedFactors : unitFactors;
+        List<List<FactorUnit>> larger =
+                unitFactors.size() > requestedFactors.size() ? unitFactors : requestedFactors;
+        double[][] unitSimilarityMatrix = getUnitSimilarityMatrix(smaller, larger);
+        double overlapScore = 0;
+        if (unitSimilarityMatrix.length > 0) {
+            long numAssignments = smaller.size();
+            double minAssignmentScore =
+                    AssignmentProblem.instance(unitSimilarityMatrix).solve().getWeight();
+            double overlap = numAssignments * (1 - (minAssignmentScore / (double) numAssignments));
+            overlapScore =
+                    overlap
+                            / ((double) unitFactors.size()
+                                    + (double) requestedFactors.size()
+                                    - overlap);
+        }
+        String unitLocalName = getIriLocalName(unit.getIri());
+        int tieBreaker =
+                requested.getFactorUnits().stream()
                         .reduce(
-                                null,
-                                (p, n) ->
-                                        p == null
-                                                ? n
-                                                : p.getIri().compareTo(n.getIri()) > 0 ? n : p));
+                                0,
+                                (prev, cur) ->
+                                        prev
+                                                + (unitLocalName.matches(
+                                                                        ".*\\b"
+                                                                                + getIriLocalName(
+                                                                                        cur.getUnit()
+                                                                                                .getIri())
+                                                                                + "\\b.*")
+                                                                || unitLocalName.matches(
+                                                                        ".*\\b"
+                                                                                + (getIriLocalName(
+                                                                                                cur.getUnit()
+                                                                                                        .getIri())
+                                                                                        + Math.abs(
+                                                                                                cur
+                                                                                                        .getExponent()))
+                                                                                + "\\b.*")
+                                                        ? 1
+                                                        : 0),
+                                (l, r) -> l + r);
+        return overlapScore
+                + tieBreaker / Math.pow(unitFactors.size() + requestedFactors.size() + 1, 2);
+    }
+
+    static double[][] getUnitSimilarityMatrix(
+            List<List<FactorUnit>> rows, List<List<FactorUnit>> cols) {
+        return rows.stream()
+                .map(
+                        rowCombination ->
+                                cols.stream()
+                                        .map(
+                                                colCombination ->
+                                                        scoreCombinations(
+                                                                rowCombination, colCombination))
+                                        .mapToDouble(d -> d)
+                                        .toArray())
+                .collect(toList())
+                .toArray(new double[0][0]);
+    }
+
+    private static double scoreCombinations(
+            List<FactorUnit> leftFactors, List<FactorUnit> rightFactors) {
+        double[][] similarityMatrix =
+                rightFactors.stream()
+                        .map(
+                                rightFactor ->
+                                        leftFactors.stream()
+                                                .map(
+                                                        leftFactor -> {
+                                                            if (rightFactor.equals(leftFactor)) {
+                                                                return 0.0;
+                                                            }
+                                                            Unit reqScaledOrSelf =
+                                                                    rightFactor
+                                                                            .getUnit()
+                                                                            .getScalingOf()
+                                                                            .orElse(
+                                                                                    rightFactor
+                                                                                            .getUnit());
+                                                            Unit unitScaledOrSelf =
+                                                                    leftFactor
+                                                                            .getUnit()
+                                                                            .getScalingOf()
+                                                                            .orElse(
+                                                                                    leftFactor
+                                                                                            .getUnit());
+                                                            if (reqScaledOrSelf.equals(
+                                                                            unitScaledOrSelf)
+                                                                    && rightFactor.getExponent()
+                                                                            == leftFactor
+                                                                                    .getExponent()) {
+                                                                return 0.6;
+                                                            }
+                                                            if (rightFactor
+                                                                    .getUnit()
+                                                                    .equals(leftFactor.getUnit())) {
+                                                                return 0.8;
+                                                            }
+                                                            if (reqScaledOrSelf.equals(
+                                                                    unitScaledOrSelf)) {
+                                                                return 0.9;
+                                                            }
+                                                            return 1.0;
+                                                        })
+                                                .mapToDouble(d -> d)
+                                                .toArray())
+                        .collect(toList())
+                        .toArray(new double[0][0]);
+        if (similarityMatrix.length == 0) {
+            return 0;
+        } else {
+            // matrix values are between 0 and 1.
+            // assignment is between 0 and (min(rows,cols))
+            double minAssignmentScore =
+                    AssignmentProblem.instance(similarityMatrix).solve().getWeight();
+            long numAssignments = Math.min(leftFactors.size(), rightFactors.size());
+            double overlap = numAssignments * (1 - (minAssignmentScore / (double) numAssignments));
+            double scoreForCombination =
+                    overlap
+                            / ((double) leftFactors.size()
+                                    + (double) rightFactors.size()
+                                    - overlap);
+            return 1 - scoreForCombination;
+        }
+    }
+
+    private static String getIriLocalName(String iri) {
+        return iri.replaceAll("^.+[/|#]", "");
     }
 
     /**
