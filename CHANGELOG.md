@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Modify the selection of units matching a set of factor units. The matching algorithm as well as the scoring algorithm of matching units was adapted. With this change, there are only two options for the client: get all matching units or get the one that matches best.
+- BREAKING: Modify the selection of units matching a set of factor units. The matching algorithm as well as the scoring algorithm of matching units was adapted. With this change, there are only two options for the client: get all matching units or get the one that matches best.
+- Upgrade to QUDT [v2.1.22](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.22). All data temporariy added via `/qudtlib-data-gen/src/main/resources/triples-to-add-to-(units|quantitykinds).ttl` while waiting for PRs to be released upstream have been removed. 
 
 ## [2.2.0] - 2022-10-28
 

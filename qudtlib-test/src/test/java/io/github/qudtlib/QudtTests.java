@@ -494,15 +494,15 @@ public class QudtTests {
     @Test
     public void testConvert_byte_to_megabyte() {
         MatcherAssert.assertThat(
-                Qudt.convert(new BigDecimal("1048576"), Units.BYTE, Units.MegaBYTE),
-                Matchers.comparesEqualTo(new BigDecimal("1.000000000000000000000000000000003")));
+                Qudt.convert(new BigDecimal("1000000"), Units.BYTE, Units.MegaBYTE),
+                Matchers.comparesEqualTo(new BigDecimal("1.000000000000000446394706347217183")));
     }
 
     @Test
     public void testConvert_megabyte_to_byte() {
         MatcherAssert.assertThat(
                 Qudt.convert(new BigDecimal("1"), Units.MegaBYTE, Units.BYTE),
-                Matchers.comparesEqualTo(new BigDecimal("1048575.999999999999999999999999997")));
+                Matchers.comparesEqualTo(new BigDecimal("999999.9999999995536052936527830164")));
     }
 
     @Test
