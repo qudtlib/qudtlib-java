@@ -1,7 +1,10 @@
 package io.github.qudtlib.model;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Combines a {@link Unit} and an exponent; some Units are a combination of {@link FactorUnit}s. If
@@ -21,6 +24,80 @@ public class FactorUnit {
         this.unit = unit;
     }
 
+    public static List<FactorUnit> contractExponents(List<FactorUnit> factorUnits) {
+        return factorUnits.stream()
+                .collect(groupingBy(FactorUnit::getKind, reducing((l, r) -> combine(l, r))))
+                .values()
+                .stream()
+                .map(Optional::get)
+                .collect(toList());
+    }
+
+    public static List<FactorUnit> reduceExponents(List<FactorUnit> factorUnits) {
+        return factorUnits.stream()
+                .collect(groupingBy(FactorUnit::getUnit, reducing((l, r) -> combine(l, r))))
+                .values()
+                .stream()
+                .map(Optional::get)
+                .filter(fu -> Math.abs(fu.getExponent()) > 0)
+                .collect(toList());
+    }
+
+    public static FactorUnits normalizeFactorUnits(List<FactorUnit> factorUnits) {
+        FactorUnits ret =
+                factorUnits.stream()
+                        .map(fu -> fu.normalize())
+                        .reduce((prev, cur) -> cur.combineWith(prev))
+                        .get();
+        if (ret.isRatioOfSameUnits()) {
+            return ret;
+        }
+        return ret.reduceExponents();
+    }
+
+    public static FactorUnit ofUnit(Unit unit) {
+        return new FactorUnit(unit, 1);
+    }
+
+    public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
+        List<List<FactorUnit>> subResult = this.unit.getAllPossibleFactorUnitCombinations();
+        return subResult.stream()
+                .map(fus -> fus.stream().map(fu -> fu.pow(this.exponent)).collect(toList()))
+                .distinct()
+                .collect(toList());
+    }
+
+    public static List<List<FactorUnit>> getAllPossibleFactorUnitCombinations(
+            List<FactorUnit> factorUnits) {
+        int numFactors = factorUnits.size();
+        List<List<List<FactorUnit>>> subresults =
+                factorUnits.stream()
+                        .map(fu -> fu.getAllPossibleFactorUnitCombinations())
+                        .collect(toList());
+        int[] subResultLengths =
+                subresults.stream().map(sr -> sr.size()).mapToInt(i -> i.intValue()).toArray();
+        int[] currentIndices = new int[numFactors];
+        Set<Set<FactorUnit>> results = new HashSet<>();
+        do {
+            Set<FactorUnit> curResult = new HashSet<>();
+            boolean countUp = true;
+            for (int i = 0; i < numFactors; i++) {
+                curResult.addAll(subresults.get(i).get(currentIndices[i]));
+                if (countUp) {
+                    currentIndices[i]++;
+                    if (currentIndices[i] >= subResultLengths[i]) {
+                        currentIndices[i] = 0;
+                    } else {
+                        countUp = false;
+                    }
+                }
+            }
+            results.add(new HashSet<>(FactorUnit.contractExponents(new ArrayList<>(curResult))));
+            results.add(new HashSet<>(FactorUnit.reduceExponents(new ArrayList<>(curResult))));
+        } while (IntStream.of(currentIndices).sum() > 0);
+        return results.stream().map(s -> s.stream().collect(toList())).collect(toList());
+    }
+
     public String getKind() {
         return unit.getIri() + " " + Integer.signum(exponent);
     }
@@ -38,26 +115,21 @@ public class FactorUnit {
     }
 
     public static FactorUnit combine(FactorUnit left, FactorUnit right) {
-        if (!left.getKind().equals(right.getKind())) {
+        if (left == null) {
+            return right;
+        }
+        if (right == null) {
+            return left;
+        }
+        if (!left.getUnit().equals(right.getUnit())) {
             throw new IllegalArgumentException(
-                    "Cannot combine UnitFactors of different kind (left: "
-                            + left.getKind()
+                    "Cannot combine UnitFactors of different units (left: "
+                            + left.getUnit()
                             + ", right: "
-                            + right.getKind()
+                            + right.getUnit()
                             + ")");
         }
         return new FactorUnit(left.getUnit(), left.getExponent() + right.getExponent());
-    }
-
-    Set<FactorUnitSelection> match(
-            Set<FactorUnitSelection> selection,
-            int cumulativeExponent,
-            Deque<Unit> matchedPath,
-            FactorUnitMatchingMode mode) {
-        Set<FactorUnitSelection> mySelection = new HashSet<>(selection);
-        // descend into unit, with cumulated exponent
-        return this.unit.match(
-                mySelection, getExponentCumulated(cumulativeExponent), matchedPath, mode);
     }
 
     @Override
@@ -82,7 +154,7 @@ public class FactorUnit {
         List<FactorUnit> leafFactorUnits = this.unit.getLeafFactorUnitsWithCumulativeExponents();
         if (!leafFactorUnits.isEmpty()) {
             return leafFactorUnits.stream()
-                    .map(f -> f.withExponentMultiplied(this.getExponent()))
+                    .map(f -> f.pow(this.getExponent()))
                     .collect(Collectors.toList());
         }
         return List.of(this);
@@ -90,5 +162,13 @@ public class FactorUnit {
 
     private FactorUnit withExponentMultiplied(int by) {
         return new FactorUnit(unit, this.exponent * by);
+    }
+
+    public FactorUnits normalize() {
+        return this.unit.normalize().pow(this.exponent);
+    }
+
+    public FactorUnit pow(int exponent) {
+        return new FactorUnit(this.unit, this.exponent * exponent);
     }
 }
