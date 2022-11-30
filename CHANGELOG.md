@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2022-11-30
+
 ### Added
 
 - Add QuantityKinds and Units required to map IFC to QUDT. These are added temporarily until an upstream release of QUDT.
@@ -14,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - BREAKING: Modify the selection of units matching a set of factor units. The matching algorithm as well as the scoring algorithm of matching units was adapted. With this change, there are only two options for the client: get all matching units or get the one that matches best.
-- Upgrade to QUDT [v2.1.22](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.22). All data temporariy added via `/qudtlib-data-gen/src/main/resources/triples-to-add-to-(units|quantitykinds).ttl` while waiting for PRs to be released upstream have been removed. 
+- Upgrade to QUDT [v2.1.22](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.22). All data temporariy added via `/qudtlib-data-gen/src/main/resources/triples-to-add-to-(units|quantitykinds).ttl` while waiting for PRs to be released upstream have been removed.
 
 ## [2.2.0] - 2022-10-28
 
@@ -81,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v2.2.0...v3.0.0
 [2.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/qudtlib/qudtlib-java/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v2.0.1...v2.1.0
