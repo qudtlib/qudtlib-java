@@ -26,7 +26,7 @@ public class QudtlibExample {
         System.out.println("finding unit for factors: m, kg, and s^-2:");
         Set<Unit> myUnits =
                 Qudt.derivedUnitsFromUnitExponentPairs(
-                        DerivedUnitSearchMode.EXACT,
+                        DerivedUnitSearchMode.BEST_MATCH,
                         Qudt.Units.M,
                         1,
                         Qudt.Units.KiloGM,

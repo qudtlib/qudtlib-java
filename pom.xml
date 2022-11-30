@@ -48,7 +48,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <qudt.release.version>v2.1.21</qudt.release.version>
+        <qudt.release.version>v2.1.22</qudt.release.version>
     </properties>
 
     <scm>
