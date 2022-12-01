@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -375,7 +376,7 @@ public class QudtTests {
                         -2,
                         Qudt.Units.M,
                         -2);
-        Assertions.assertTrue(units.contains(Qudt.Units.KiloGM__PER__SEC2));
+        Assertions.assertTrue(units.contains(Qudt.Units.N__M__PER__M2));
     }
 
     @Test
@@ -589,14 +590,6 @@ public class QudtTests {
                         new int[] {0, 1}),
                 Arguments.of(
                         new double[][] {
-                            {1, 0, 0},
-                            {0, 1, 0},
-                            {0, 0, 1},
-                            {1, 2, 1},
-                        },
-                        new int[] {1, 2, 0}),
-                Arguments.of(
-                        new double[][] {
                             {0, 1, 0},
                             {2, 5, 3},
                         },
@@ -615,6 +608,20 @@ public class QudtTests {
                             {4, 5, 4, 6}
                         },
                         new int[] {2, 0, 1}));
+    }
+
+    @Test
+    void assignmentProblemWrongShape() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        AssignmentProblem.instance(
+                                new double[][] {
+                                    {0, 1, 2},
+                                    {2, 3, 4},
+                                    {4, 5, 6},
+                                    {7, 8, 9}
+                                }));
     }
 
     @Test
@@ -639,5 +646,161 @@ public class QudtTests {
         AssignmentProblem.Instance instance = AssignmentProblem.instance(mat);
         AssignmentProblem.Solution solution = instance.solve();
         double score = solution.getWeight();
+    }
+
+    @ParameterizedTest
+    @MethodSource("testAllPossibleUnitFactors")
+    public void testAllPossibleUnitFactorsSize(int id, Unit unit, Object[][] expectedResult) {
+        List<List<FactorUnit>> expectedResultConverted =
+                Stream.of(expectedResult)
+                        .map(objarr -> FactorUnits.ofFactorUnitSpec(objarr).getFactorUnits())
+                        .collect(Collectors.toList());
+        List<List<FactorUnit>> actualResult = unit.getAllPossibleFactorUnitCombinations();
+        Assertions.assertEquals(expectedResultConverted.size(), actualResult.size());
+    }
+
+    @ParameterizedTest
+    @MethodSource("testAllPossibleUnitFactors")
+    public void testAllPossibleUnitFactorsActualResultIsExpected(
+            int id, Unit unit, Object[][] expectedResult) {
+        List<List<FactorUnit>> expectedResultConverted =
+                Stream.of(expectedResult)
+                        .map(objarr -> FactorUnits.ofFactorUnitSpec(objarr).getFactorUnits())
+                        .collect(Collectors.toList());
+        List<List<FactorUnit>> actualResult = unit.getAllPossibleFactorUnitCombinations();
+        actualResult.stream()
+                .forEach(
+                        act ->
+                                Assertions.assertTrue(
+                                        expectedResultConverted.stream()
+                                                .anyMatch(
+                                                        exp ->
+                                                                exp.stream()
+                                                                        .allMatch(
+                                                                                e ->
+                                                                                        act.stream()
+                                                                                                .anyMatch(
+                                                                                                        a ->
+                                                                                                                a
+                                                                                                                        .equals(
+                                                                                                                                e)))),
+                                        () ->
+                                                String.format(
+                                                        "Actual result %s not in expected result %s",
+                                                        act, expectedResult)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testAllPossibleUnitFactors")
+    public void testAllPossibleUnitFactorsExpectedResultIsPresent(
+            int id, Unit unit, Object[][] expectedResult) {
+        List<List<FactorUnit>> expectedResultConverted =
+                Stream.of(expectedResult)
+                        .map(objarr -> FactorUnits.ofFactorUnitSpec(objarr).getFactorUnits())
+                        .collect(Collectors.toList());
+        List<List<FactorUnit>> actualResult = unit.getAllPossibleFactorUnitCombinations();
+        expectedResultConverted.stream()
+                .forEach(
+                        exp ->
+                                Assertions.assertTrue(
+                                        actualResult.stream()
+                                                .anyMatch(
+                                                        act ->
+                                                                exp.stream()
+                                                                        .allMatch(
+                                                                                e ->
+                                                                                        act.stream()
+                                                                                                .anyMatch(
+                                                                                                        a ->
+                                                                                                                a
+                                                                                                                        .equals(
+                                                                                                                                e)))),
+                                        () ->
+                                                String.format(
+                                                        "Expected result %s not found in actual result %s",
+                                                        exp, actualResult)));
+    }
+
+    public static Stream<Arguments> testAllPossibleUnitFactors() {
+        return Stream.of(
+                Arguments.of(
+                        2,
+                        Units.N__M,
+                        new Object[][] {
+                            {Units.N__M, 1},
+                            {Units.GM, 1, Units.M, 2, Units.SEC, -2},
+                            {Units.N, 1, Units.M, 1}
+                        }),
+                Arguments.of(
+                        1,
+                        Qudt.Units.N,
+                        new Object[][] {
+                            {Units.N, 1},
+                            {Units.GM, 1, Units.M, 1, Units.SEC, -2}
+                        }),
+                Arguments.of(
+                        3,
+                        Qudt.Units.N__M__PER__M2,
+                        new Object[][] {
+                            {Qudt.Units.N__M__PER__M2, 1},
+                            {
+                                Qudt.Units.N, 1,
+                                Qudt.Units.M, -1
+                            },
+                            {
+                                Qudt.Units.GM, 1,
+                                Qudt.Units.SEC, -2
+                            },
+                            {
+                                Qudt.Units.N, 1,
+                                Qudt.Units.M, 1,
+                                Qudt.Units.M, -2
+                            },
+                            {
+                                Qudt.Units.M, -2,
+                                Qudt.Units.M, 2,
+                                Qudt.Units.GM, 1,
+                                Qudt.Units.SEC, -2
+                            },
+                        }),
+                Arguments.of(
+                        4,
+                        Units.J__PER__KiloGM__K__PA,
+                        new Object[][] {
+                            {Units.J__PER__KiloGM__K__PA, 1},
+                            {Units.J, 1, Units.GM, -1, Units.K, -1, Units.PA, -1},
+                            {Units.N, 1, Units.M, 1, Units.GM, -1, Units.K, -1, Units.PA, -1},
+                            {
+                                Units.GM, 1, Units.M, 2, Units.SEC, -2, Units.GM, -1, Units.K, -1,
+                                Units.PA, -1,
+                            },
+                            {Units.M, 2, Units.SEC, -2, Units.K, -1, Units.PA, -1},
+                            {Units.J, 1, Units.GM, -1, Units.K, -1, Units.N, -1, Units.M, 2},
+                            {
+                                Units.J, 1, Units.GM, -2, Units.K, -1, Units.M, -1, Units.SEC, 2,
+                                Units.M, 2,
+                            },
+                            {Units.J, 1, Units.GM, -2, Units.K, -1, Units.M, 1, Units.SEC, 2},
+                            {Units.N, 1, Units.M, 3, Units.GM, -1, Units.K, -1, Units.N, -1},
+                            {
+                                Units.N, 1, Units.M, 3, Units.GM, -2, Units.K, -1, Units.M, -1,
+                                Units.SEC, 2,
+                            },
+                            {
+                                Units.GM, 1, Units.M, 4, Units.SEC, -2, Units.GM, -1, Units.K, -1,
+                                Units.N, -1,
+                            },
+                            {Units.M, 4, Units.SEC, -2, Units.K, -1, Units.N, -1},
+                            {
+                                Units.GM, 1, Units.M, 4, Units.SEC, -2, Units.GM, -2, Units.K, -1,
+                                Units.M, -1, Units.SEC, 2,
+                            },
+                            {Units.GM, -1, Units.M, 3, Units.K, -1},
+                            {Units.N, 1, Units.M, 2, Units.GM, -2, Units.K, -1, Units.SEC, 2},
+                            {
+                                Units.M, 3, Units.GM, 1, Units.SEC, -2, Units.GM, -2, Units.K, -1,
+                                Units.SEC, 2,
+                            },
+                        }));
     }
 }
