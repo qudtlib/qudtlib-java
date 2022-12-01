@@ -385,15 +385,7 @@ public class Qudt {
         double[][] unitSimilarityMatrix = getUnitSimilarityMatrix(smaller, larger);
         double overlapScore = 0;
         if (unitSimilarityMatrix.length > 0) {
-            long numAssignments = smaller.size();
-            double minAssignmentScore =
-                    AssignmentProblem.instance(unitSimilarityMatrix).solve().getWeight();
-            double overlap = numAssignments * (1 - (minAssignmentScore / (double) numAssignments));
-            overlapScore =
-                    overlap
-                            / ((double) unitFactors.size()
-                                    + (double) requestedFactors.size()
-                                    - overlap);
+            overlapScore = getOverlapScore(unitSimilarityMatrix);
         }
         String unitLocalName = getIriLocalName(unit.getIri());
         int tieBreaker =
@@ -424,6 +416,15 @@ public class Qudt {
                 + tieBreaker / Math.pow(unitFactors.size() + requestedFactors.size() + 1, 2);
     }
 
+    private static double getOverlapScore(double[][] mat) {
+        int numAssignments = mat.length;
+        int rowsPlusCols = mat.length + mat[0].length;
+        double minAssignmentScore = AssignmentProblem.instance(mat).solve().getWeight();
+        double overlap =
+                (double) numAssignments * (1 - (minAssignmentScore / (double) numAssignments));
+        return overlap / ((double) rowsPlusCols - overlap);
+    }
+
     static double[][] getUnitSimilarityMatrix(
             List<List<FactorUnit>> rows, List<List<FactorUnit>> cols) {
         return rows.stream()
@@ -442,40 +443,42 @@ public class Qudt {
 
     private static double scoreCombinations(
             List<FactorUnit> leftFactors, List<FactorUnit> rightFactors) {
+        List<FactorUnit> smaller =
+                leftFactors.size() > rightFactors.size() ? rightFactors : leftFactors;
+        List<FactorUnit> larger =
+                leftFactors.size() > rightFactors.size() ? leftFactors : rightFactors;
+
         double[][] similarityMatrix =
-                rightFactors.stream()
+                smaller.stream()
                         .map(
-                                rightFactor ->
-                                        leftFactors.stream()
+                                sFactor ->
+                                        larger.stream()
                                                 .map(
-                                                        leftFactor -> {
-                                                            if (rightFactor.equals(leftFactor)) {
+                                                        lFactor -> {
+                                                            if (sFactor.equals(lFactor)) {
                                                                 return 0.0;
                                                             }
                                                             Unit reqScaledOrSelf =
-                                                                    rightFactor
-                                                                            .getUnit()
+                                                                    sFactor.getUnit()
                                                                             .getScalingOf()
                                                                             .orElse(
-                                                                                    rightFactor
+                                                                                    sFactor
                                                                                             .getUnit());
                                                             Unit unitScaledOrSelf =
-                                                                    leftFactor
-                                                                            .getUnit()
+                                                                    lFactor.getUnit()
                                                                             .getScalingOf()
                                                                             .orElse(
-                                                                                    leftFactor
+                                                                                    lFactor
                                                                                             .getUnit());
                                                             if (reqScaledOrSelf.equals(
                                                                             unitScaledOrSelf)
-                                                                    && rightFactor.getExponent()
-                                                                            == leftFactor
+                                                                    && sFactor.getExponent()
+                                                                            == lFactor
                                                                                     .getExponent()) {
                                                                 return 0.6;
                                                             }
-                                                            if (rightFactor
-                                                                    .getUnit()
-                                                                    .equals(leftFactor.getUnit())) {
+                                                            if (sFactor.getUnit()
+                                                                    .equals(lFactor.getUnit())) {
                                                                 return 0.8;
                                                             }
                                                             if (reqScaledOrSelf.equals(
@@ -489,20 +492,11 @@ public class Qudt {
                         .collect(toList())
                         .toArray(new double[0][0]);
         if (similarityMatrix.length == 0) {
-            return 0;
+            return 1;
         } else {
             // matrix values are between 0 and 1.
             // assignment is between 0 and (min(rows,cols))
-            double minAssignmentScore =
-                    AssignmentProblem.instance(similarityMatrix).solve().getWeight();
-            long numAssignments = Math.min(leftFactors.size(), rightFactors.size());
-            double overlap = numAssignments * (1 - (minAssignmentScore / (double) numAssignments));
-            double scoreForCombination =
-                    overlap
-                            / ((double) leftFactors.size()
-                                    + (double) rightFactors.size()
-                                    - overlap);
-            return 1 - scoreForCombination;
+            return 1 - getOverlapScore(similarityMatrix);
         }
     }
 

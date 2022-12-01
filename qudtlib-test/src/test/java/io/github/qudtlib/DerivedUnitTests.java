@@ -8,7 +8,11 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.opentest4j.AssertionFailedError;
 
 /**
@@ -18,7 +22,6 @@ import org.opentest4j.AssertionFailedError;
  * @since 1.0
  */
 public class DerivedUnitTests {
-
     @Test
     public void testSingleFactorUnit() {
         Unit du = Qudt.Units.PER__M;
@@ -207,7 +210,6 @@ public class DerivedUnitTests {
     public void
             testDeepFactorUnitWithDuplicateUnitExponentCombination_matchWithAggregatedExpression() {
         Unit du = Qudt.Units.N__M__PER__KiloGM;
-
         // now simplify: aggregate the M^1, M^1 to M^2: should still work.
         assertTrue(
                 du.matches(
@@ -225,7 +227,6 @@ public class DerivedUnitTests {
 
     @Test
     public void testScaledFactors() {
-
         // mJoule =
         //               new IfcDerivedUnit(100, IfcUnitType.ENERGYUNIT, Map.of(kg, 1, sec, -2, km,
         // 2), false);
@@ -264,7 +265,6 @@ public class DerivedUnitTests {
         assertTrue(Qudt.Units.KiloJ.matches(FactorUnits.ofFactorUnitSpec(factors)));
         assertFalse(Qudt.Units.MilliOHM.matches(FactorUnits.ofFactorUnitSpec(factors)));
         assertFalse(Qudt.Units.MilliS.matches(FactorUnits.ofFactorUnitSpec(factors)));
-
         factors = new Object[] {Qudt.Units.KiloGM, 1, Qudt.Units.K, -1, Qudt.Units.SEC, -3};
         assertFalse(Qudt.Units.W__PER__K.matches(FactorUnits.ofFactorUnitSpec(factors)));
         assertFalse(Qudt.Units.V__PER__K.matches(FactorUnits.ofFactorUnitSpec(factors)));
@@ -356,7 +356,6 @@ public class DerivedUnitTests {
         for (int i = 0; i < factors.length; i += 2) {
             factorUnits.add(new FactorUnit((Unit) factors[i], (Integer) factors[i + 1]));
         }
-
         try {
             for (int i = 0; i < 20; i++) {
                 Collections.shuffle(factorUnits);
@@ -443,5 +442,75 @@ public class DerivedUnitTests {
         units = Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, wattFactors);
         assertEquals(1, units.size());
         assertTrue(units.contains(Qudt.Units.W));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testDerivedUnits")
+    public void testDerivedUnitsExpectedResultPresent(
+            int id, DerivedUnitSearchMode searchMode, Object[] spec, Unit[] expectedResults) {
+        Set<Unit> actualResults =
+                Qudt.derivedUnitsFromFactorUnits(
+                        searchMode, FactorUnits.ofFactorUnitSpec(spec).getFactorUnits());
+        Stream.of(expectedResults)
+                .forEach(
+                        exp ->
+                                Assertions.assertTrue(
+                                        actualResults.contains(exp),
+                                        () ->
+                                                String.format(
+                                                        "Expected unit %s not contained in result %s",
+                                                        exp.toString(), actualResults)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testDerivedUnits")
+    public void testDerivedUnitsCorrectNumberOfResults(
+            int id, DerivedUnitSearchMode searchMode, Object[] spec, Unit[] expectedResults) {
+        Set<Unit> actualResults =
+                Qudt.derivedUnitsFromFactorUnits(
+                        searchMode, FactorUnits.ofFactorUnitSpec(spec).getFactorUnits());
+        Assertions.assertEquals(expectedResults.length, actualResults.size());
+    }
+
+    @ParameterizedTest
+    @MethodSource("testDerivedUnits")
+    public void testDerivedUnitsActualResultExpected(
+            int id, DerivedUnitSearchMode searchMode, Object[] spec, Unit[] expectedResults) {
+        Set<Unit> actualResults =
+                Qudt.derivedUnitsFromFactorUnits(
+                        searchMode, FactorUnits.ofFactorUnitSpec(spec).getFactorUnits());
+        actualResults.stream()
+                .forEach(
+                        act ->
+                                Assertions.assertTrue(
+                                        Stream.of(expectedResults).anyMatch(exp -> exp.equals(act)),
+                                        () ->
+                                                String.format(
+                                                        "Resulting unit %s not in  expected %s",
+                                                        act.toString(),
+                                                        Arrays.toString(expectedResults))));
+    }
+
+    public static Stream<Arguments> testDerivedUnits() {
+        return Stream.of(
+                Arguments.of(
+                        2,
+                        DerivedUnitSearchMode.BEST_MATCH,
+                        new Object[] {
+                            Qudt.Units.M,
+                            2,
+                            Qudt.Units.KiloGM,
+                            1,
+                            Qudt.Units.SEC,
+                            -2,
+                            Qudt.Units.M,
+                            -2
+                        },
+                        new Unit[] {Units.N__M__PER__M2}),
+                Arguments.of(
+                        1,
+                        DerivedUnitSearchMode.BEST_MATCH,
+                        new Object[] {Qudt.Units.KiloN, 1, Qudt.Units.MilliM, 1},
+                        new Unit[] {Units.N__M}));
     }
 }

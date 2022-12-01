@@ -77,9 +77,10 @@ public class FactorUnit {
         int[] subResultLengths =
                 subresults.stream().map(sr -> sr.size()).mapToInt(i -> i.intValue()).toArray();
         int[] currentIndices = new int[numFactors];
-        Set<Set<FactorUnit>> results = new HashSet<>();
+        List<List<FactorUnit>> results = new ArrayList<>();
+        // cycle through all possible combinations of results per factor unit and combine them
         do {
-            Set<FactorUnit> curResult = new HashSet<>();
+            List<FactorUnit> curResult = new ArrayList<>();
             boolean countUp = true;
             for (int i = 0; i < numFactors; i++) {
                 curResult.addAll(subresults.get(i).get(currentIndices[i]));
@@ -92,10 +93,27 @@ public class FactorUnit {
                     }
                 }
             }
-            results.add(new HashSet<>(FactorUnit.contractExponents(new ArrayList<>(curResult))));
-            results.add(new HashSet<>(FactorUnit.reduceExponents(new ArrayList<>(curResult))));
+            addNoDuplicate(results, FactorUnit.contractExponents(curResult));
+            addNoDuplicate(results, FactorUnit.reduceExponents(curResult));
         } while (IntStream.of(currentIndices).sum() > 0);
-        return results.stream().map(s -> s.stream().collect(toList())).collect(toList());
+        return results;
+    }
+
+    private static void addNoDuplicate(List<List<FactorUnit>> list, List<FactorUnit> candidate) {
+        if (!list.stream()
+                .anyMatch(
+                        elem ->
+                                candidate.size() == elem.size()
+                                        && elem.stream()
+                                                .allMatch(
+                                                        e ->
+                                                                candidate.stream()
+                                                                        .anyMatch(
+                                                                                c ->
+                                                                                        e.equals(
+                                                                                                c))))) {
+            list.add(candidate);
+        }
     }
 
     public String getKind() {

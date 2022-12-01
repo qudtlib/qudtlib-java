@@ -4,14 +4,16 @@ import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
 public class AssignmentProblem {
-    private static final int[] EMPTY_SELECTION = new int[0];
-
+    /**
+     * A problem instance, defined by its weight matrix. The matrix may not have more rows than
+     * columns. A valid solution is the assigment of one column per row, such that no columns are
+     * selected more than once and the sum of the assignment is minimal. Only one such solution is
+     * generated.
+     */
     public abstract static class Instance {
         protected final double[][] weights;
         protected final int rows;
         protected final int cols;
-        protected long solveCalls = 0;
-        protected long pruned = 0;
 
         public Instance(double[][] weights) {
             this.weights = weights;
@@ -48,14 +50,10 @@ public class AssignmentProblem {
             if (currentBestSolution == null) {
                 return true;
             }
-            if (currentBestSolution.assignment.length < rows) {
+            if (!currentBestSolution.isComplete()) {
                 return true;
             }
-            boolean ret = currentBestSolution.weight > weightToTest;
-            if (!ret) {
-                pruned++;
-            }
-            return ret;
+            return currentBestSolution.weight > weightToTest;
         }
 
         public void updateBestSolutionIfPossible(Solution candidate) {
@@ -67,27 +65,26 @@ public class AssignmentProblem {
 
         @Override
         public Solution solve() {
-            long start = System.currentTimeMillis();
             solve(0, new Solution(this));
             return this.currentBestSolution;
         }
 
         private void solve(int row, Solution solution) {
-            solveCalls++;
             if (row >= this.rows) {
                 updateBestSolutionIfPossible(solution);
                 return;
             }
-            double bestAttainableScore = sum(minPerRow(row, solution.assignment));
-            if (!solution.isEmpty()
-                    && !isLowerThanBestWeight(solution.weight + bestAttainableScore)) {
-                return;
+            if (!solution.isEmpty()) {
+                double bestAttainableScore = sum(minPerRow(row, solution.assignment));
+                if (!isLowerThanBestWeight(solution.weight + bestAttainableScore)) {
+                    return;
+                }
             }
             ValueWithIndex[] nMin = rowSortedAscending(this.weights, row, solution.getAssignment());
             for (int i = 0; i < nMin.length; i++) {
                 if ((solution.isEmpty())
                         || isLowerThanBestWeight(solution.getWeight() + nMin[i].value)) {
-                    solve(row + 1, solution.selectForNextRow(nMin[i].index));
+                    solve(row + 1, solution.assignColumnInNextRow(nMin[i].index));
                 }
             }
         }
@@ -142,11 +139,15 @@ public class AssignmentProblem {
             return weight;
         }
 
-        public Solution selectForNextRow(int col) {
-            if (this.assignment.length >= instance.rows) {
+        public Solution assignColumnInNextRow(int col) {
+            if (isComplete()) {
                 throw new IllegalStateException("Solution is already complete");
             }
             return new Solution(this.instance, append(this.assignment, col));
+        }
+
+        private boolean isComplete() {
+            return this.assignment.length >= instance.rows;
         }
 
         public boolean isEmpty() {
@@ -154,12 +155,8 @@ public class AssignmentProblem {
         }
 
         public boolean isBetterSolutionThan(Solution other) {
-            if (this.assignment.length != this.instance.rows
-                    || other.assignment.length != this.instance.rows) {
-                throw new IllegalStateException("Cannot compare incmplete solutions");
-            }
-            if (this.weight == null || other.weight == null) {
-                throw new IllegalStateException("Cannot compare empty solutions");
+            if (!(this.isComplete() && other.isComplete())) {
+                throw new IllegalStateException("Cannot compare incomplete solutions");
             }
             return this.weight < other.weight;
         }
@@ -171,8 +168,9 @@ public class AssignmentProblem {
             throw new IllegalArgumentException("Cannot create instance with 0x0 weights matrix");
         }
         int cols = weights[0].length;
-        if (cols < rows) {
-            return instance(flipMatrix(weights));
+        if (rows > cols) {
+            throw new IllegalArgumentException(
+                    "The weights matrix may not have more rows than columns");
         }
         return new NaiveAlgorithmInstance(copy(weights));
     }
@@ -221,7 +219,7 @@ public class AssignmentProblem {
         int cols = weights[row].length;
         ValueWithIndex[] sorted = new ValueWithIndex[cols - skipCols.length];
         int j = 0;
-        for (int i = 0; i < weights[row].length; i++) {
+        for (int i = 0; i < cols; i++) {
             if (!containsValue(skipCols, i)) {
                 sorted[j++] = new ValueWithIndex(weights[row][i], i);
             }
