@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.2] - 2022-12-06
+
 ### Added
 
 - Add quantity kinds for positive dimensionless ratio and normalized dimensionless ratio temporarily until the canges from the [upstream PR](https://github.com/qudt/qudt-public-repo/pull/619) are released.
@@ -93,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.2...HEAD
+[3.0.2]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v2.2.0...v3.0.0
 [2.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v2.1.1...v2.2.0
