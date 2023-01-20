@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- Updated QUDT to [v2.1.24](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.24)
+## [3.1.0] - 2023-01-20
 
 ### Added
 
 - Temporarily added quantitykinds `PositivePlaneAngle, NonNegativeLength, PositiveLength and Count` until upstream [upstream PR 630](https://github.com/qudt/qudt-public-repo/pull/630) and [upstream PR 631](https://github.com/qudt/qudt-public-repo/pull/631) are released.
+
+### Changed
+
+- Updated QUDT to [v2.1.24](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.24)
 
 ## [3.0.2] - 2022-12-06
 
@@ -103,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.2...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.2...v3.1.0
 [3.0.2]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v2.2.0...v3.0.0
