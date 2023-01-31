@@ -41,9 +41,11 @@ public class Qudt {
     public static final String quantityKindBaseIri = "http://qudt.org/vocab/quantitykind/";
     public static final String unitBaseIri = "http://qudt.org/vocab/unit/";
     public static final String prefixBaseIri = "http://qudt.org/vocab/prefix/";
+    public static final String systemOfUnitsBaseIri = "http://qudt.org/vocab/sou/";
     private static final Map<String, Unit> units;
     private static final Map<String, QuantityKind> quantityKinds;
     private static final Map<String, Prefix> prefixes;
+    private static final Map<String, SystemOfUnits> systemsOfUnits;
     private static final BigDecimal BD_1000 = new BigDecimal("1000");
 
     /*
@@ -55,6 +57,8 @@ public class Qudt {
     public abstract static class QuantityKinds extends io.github.qudtlib.model.QuantityKinds {}
 
     public abstract static class Prefixes extends io.github.qudtlib.model.Prefixes {}
+
+    public abstract static class SystemsOfUnits extends io.github.qudtlib.model.SystemsOfUnits {}
 
     /* Use the Initializer to load and wire all prefixes, units and quantityKinds. */
     static {
@@ -74,15 +78,16 @@ public class Qudt {
                     e);
         }
         if (initializer != null) {
-            prefixes = initializer.loadPrefixes();
-            units = initializer.loadUnits();
-            quantityKinds = initializer.loadQuantityKinds();
-            initializer.loadFactorUnits(units);
-            initializer.connectObjects(units, quantityKinds, prefixes);
+            Initializer.Definitions definitions = initializer.loadData();
+            prefixes = initializer.buildPrefixes(definitions);
+            units = initializer.buildUnits(definitions);
+            quantityKinds = initializer.buildQuantityKinds(definitions);
+            systemsOfUnits = initializer.buildSystemsOfUnits(definitions);
         } else {
             prefixes = new HashMap<>();
             units = new HashMap<>();
             quantityKinds = new HashMap<>();
+            systemsOfUnits = new HashMap<>();
             System.err.println(
                     "\n\n\n ERROR: The QUDTlib data model has not been initialized properly and will not work\n\n\n");
         }
@@ -211,10 +216,10 @@ public class Qudt {
      * @return the base unit
      */
     public static Unit unscale(Unit unit) {
-        if (unit.getScalingOfIri().isEmpty()) {
+        if (unit.getScalingOf().isEmpty()) {
             return unit;
         }
-        return unitRequired(unit.getScalingOfIri().get());
+        return unit.getScalingOf().get();
     }
 
     /**
@@ -254,7 +259,12 @@ public class Qudt {
      */
     public static List<FactorUnit> unscale(List<FactorUnit> factorUnits) {
         return factorUnits.stream()
-                .map(uf -> new FactorUnit(unscale(uf.getUnit()), uf.getExponent()))
+                .map(
+                        uf ->
+                                FactorUnit.builder()
+                                        .unit(unscale(uf.getUnit()))
+                                        .exponent(uf.getExponent())
+                                        .build())
                 .collect(toList());
     }
 
@@ -567,9 +577,7 @@ public class Qudt {
      * @return the quantity kinds
      */
     public static Set<QuantityKind> quantityKinds(Unit unit) {
-        return unit.getQuantityKindIris().stream()
-                .map(Qudt::quantityKindRequired)
-                .collect(Collectors.toSet());
+        return unit.getQuantityKinds().stream().collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -585,8 +593,7 @@ public class Qudt {
         while (!current.isEmpty()) {
             current =
                     current.stream()
-                            .flatMap(qk -> qk.getBroaderQuantityKindIris().stream())
-                            .map(Qudt::quantityKindRequired)
+                            .flatMap(qk -> qk.getBroaderQuantityKinds().stream())
                             .collect(Collectors.toSet());
             result.addAll(current);
         }
@@ -646,6 +653,75 @@ public class Qudt {
 
     public static Prefix prefixRequired(String iri) {
         return prefix(iri).orElseThrow(() -> new NotFoundException("Prefix not found: " + iri));
+    }
+
+    /**
+     * Returns a {@link SystemOfUnits} for the specified localname (i.e. the last element of the
+     * SystemOfUnits IRI). For example, <code>systemOfUnitsFromLocalName("N-PER-M2")</code> yields
+     * the systemOfUnits with IRI <code>
+     * http://qudt.org/vocab/systemOfUnits/N-PER-M2</code>.
+     *
+     * @param localname the local name of the IRI that identifies the requested systemOfUnits.
+     * @return the systemOfUnits
+     * @throws NotFoundException if no such systemOfUnits is found.
+     */
+    public static Optional<SystemOfUnits> systemOfUnitsFromLocalname(String localname) {
+        return systemOfUnits(systemOfUnitsIriFromLocalname(localname));
+    }
+
+    public static SystemOfUnits systemOfUnitsFromLocalnameRequired(String localname) {
+        return systemOfUnitsRequired(systemOfUnitsIriFromLocalname(localname));
+    }
+
+    /**
+     * Returns the first systemOfUnits found whose label matches the specified label after replacing
+     * any underscore with space and ignoring case (US locale). If more intricate matching is
+     * needed, clients can use <code>{@link #allSystemsOfUnits()}.stream().filter(...)</code>.
+     *
+     * @param label the matched label
+     * @return the first systemOfUnits found
+     */
+    public static Optional<SystemOfUnits> systemOfUnitsFromLabel(String label) {
+        LabelMatcher labelMatcher = new LabelMatcher(label);
+        return systemsOfUnits.values().stream()
+                .filter(u -> u.getLabels().stream().anyMatch(labelMatcher::matches))
+                .findFirst();
+    }
+
+    public static SystemOfUnits systemOfUnitsFromLabelRequired(String label) {
+        return systemOfUnitsFromLabel(label)
+                .orElseThrow(
+                        () ->
+                                new NotFoundException(
+                                        "No systemOfUnits found for label '" + label + "'"));
+    }
+
+    /**
+     * Returns the {@link SystemOfUnits} identified the specified IRI. For example, <code>
+     * systemOfUnits("http://qudt.org/vocab/systemOfUnits/N-PER-M2")</code> yields {@code
+     * Qudt.SystemOfUnitss.N__PER__M2};
+     *
+     * @param iri the requested systemOfUnits IRI
+     * @return the systemOfUnits
+     */
+    public static Optional<SystemOfUnits> systemOfUnits(String iri) {
+        return Optional.ofNullable(systemsOfUnits.get(iri));
+    }
+
+    public static SystemOfUnits systemOfUnitsRequired(String iri) {
+        return Optional.ofNullable(systemsOfUnits.get(iri))
+                .orElseThrow(() -> new NotFoundException("No systemOfUnits found for Iri " + iri));
+    }
+
+    /**
+     * Returns a systemOfUnits IRI with the specified localname (even if no such systemOfUnits
+     * exists in the model).
+     *
+     * @param localname the local name of the IRI that identifies the requested systemOfUnits.
+     * @return the full IRI, possibly identifying a systemOfUnits
+     */
+    public static String systemOfUnitsIriFromLocalname(String localname) {
+        return systemOfUnitsBaseIri + localname;
     }
 
     /**
@@ -793,6 +869,10 @@ public class Qudt {
         return Collections.unmodifiableMap(units);
     }
 
+    static Map<String, SystemOfUnits> getSystemsOfUnitsMap() {
+        return Collections.unmodifiableMap(systemsOfUnits);
+    }
+
     /**
      * Returns all {@link Unit}s in the model.
      *
@@ -818,5 +898,14 @@ public class Qudt {
      */
     public static Collection<Prefix> allPrefixes() {
         return Collections.unmodifiableCollection(prefixes.values());
+    }
+
+    /**
+     * Returns all {@link SystemOfUnits}s in the model.
+     *
+     * @return all systemsOfUnits
+     */
+    public static Collection<SystemOfUnits> allSystemsOfUnits() {
+        return Collections.unmodifiableCollection(systemsOfUnits.values());
     }
 }

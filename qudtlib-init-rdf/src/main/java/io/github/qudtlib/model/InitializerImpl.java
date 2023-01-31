@@ -7,7 +7,10 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.eclipse.rdf4j.model.IRI;
@@ -37,14 +40,13 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 public class InitializerImpl implements Initializer {
-
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private final Repository qudtRepository;
     private final String queryLoadUnit;
     private final String queryLoadQuantityKind;
     private final String queryLoadPrefix;
     private final String queryLoadFactorUnits;
+    private final String queryLoadSystemsOfUnits;
 
     public InitializerImpl() {
         Model m = loadQudtModel();
@@ -57,49 +59,69 @@ public class InitializerImpl implements Initializer {
         queryLoadQuantityKind = loadQuery("qudtlib/query/quantitykind.rq");
         queryLoadPrefix = loadQuery("qudtlib/query/prefix.rq");
         queryLoadFactorUnits = loadQuery("qudtlib/query/factor-units.rq");
+        queryLoadSystemsOfUnits = loadQuery("qudtlib/query/system-of-units.rq");
     }
 
     @Override
-    public Map<String, Unit> loadUnits() {
+    public Definitions loadData() {
+        Definitions definitions = new Definitions();
         try (RepositoryConnection con = qudtRepository.getConnection()) {
-            TupleQuery query = con.prepareTupleQuery(queryLoadUnit);
-            return queryUnits(query);
+            populateUnitDefinitions(con, definitions);
+            populateQuantityKindDefinitions(con, definitions);
+            populatePrefixDefinitions(con, definitions);
+            populateFactorUnits(con, definitions);
+            populateSystemOfUnitsDefinitions(con, definitions);
         }
+        return definitions;
     }
 
-    private Map<String, Unit> queryUnits(TupleQuery query) {
+    private void populateUnitDefinitions(RepositoryConnection con, Definitions definitions) {
+        TupleQuery query = con.prepareTupleQuery(queryLoadUnit);
         try (TupleQueryResult result = query.evaluate()) {
             Iterator<BindingSet> solutions = result.iterator();
-            Unit unit = null;
-            Map<String, Unit> results = new HashMap<>();
+            Unit.Definition unitDefinition = null;
             while (solutions.hasNext()) {
                 BindingSet bs = solutions.next();
-                String currentUnitIri = bs.getBinding("unit").getValue().stringValue();
-                if (unit != null && !currentUnitIri.equals(unit.getIri())) {
-                    results.put(unit.getIri(), unit);
-                    unit = null;
+                String currentUnitIri = bs.getValue("unit").stringValue();
+                if (unitDefinition != null && !currentUnitIri.equals(unitDefinition.getId())) {
+                    definitions.addUnitDefinition(unitDefinition);
+                    unitDefinition = null;
                 }
-                if (unit == null) {
-                    unit = makeUnit(bs);
+                if (unitDefinition == null) {
+                    unitDefinition = makeUnitBuilder(bs, definitions);
                 }
-                if (bs.hasBinding("quantityKind")) {
-                    unit.addQuantityKind(bs.getBinding("quantityKind").getValue().stringValue());
-                }
-                if (bs.hasBinding("label")) {
-                    Value val = bs.getValue("label");
-                    Literal lit = (Literal) val;
-                    unit.addLabel(new LangString(lit.getLabel(), lit.getLanguage().orElse(null)));
-                }
+                unitDefinition
+                        .addLabel(
+                                getIfPresent(
+                                        bs,
+                                        "label",
+                                        v ->
+                                                new LangString(
+                                                        ((Literal) v).getLabel(),
+                                                        ((Literal) v).getLanguage().orElse(null))))
+                        .addQuantityKind(
+                                getIfPresent(
+                                        bs,
+                                        "quantityKind",
+                                        compose(
+                                                Value::stringValue,
+                                                definitions::expectQuantityKindDefinition)))
+                        .addUnitOfSystem(
+                                getIfPresent(
+                                        bs,
+                                        "systemOfUnits",
+                                        compose(
+                                                Value::stringValue,
+                                                definitions::expectSystemOfUnitsDefinition)));
             }
-            if (unit != null) {
-                results.put(unit.getIri(), unit);
+            if (unitDefinition != null) {
+                definitions.addUnitDefinition(unitDefinition);
             }
-            if (results.isEmpty()) {
+            if (!definitions.hasUnitDefinitions()) {
                 throw new NotFoundException(
                         "No units found for unit query with bindings "
                                 + bindingsToString(query.getBindings()));
             }
-            return results;
         }
     }
 
@@ -113,99 +135,146 @@ public class InitializerImpl implements Initializer {
                 .collect(Collectors.joining(", ", "[ ", " ]"));
     }
 
-    @Override
-    public Map<String, QuantityKind> loadQuantityKinds() {
-        try (RepositoryConnection con = qudtRepository.getConnection()) {
-            TupleQuery query = con.prepareTupleQuery(queryLoadQuantityKind);
-            try (TupleQueryResult result = query.evaluate()) {
-                Iterator<BindingSet> solutions = result.iterator();
-                QuantityKind quantityKind = null;
-                Map<String, QuantityKind> results = new HashMap<>();
-                while (solutions.hasNext()) {
-                    BindingSet bs = solutions.next();
-                    String currentQuantityKindIri =
-                            bs.getBinding("quantityKind").getValue().stringValue();
-                    if (quantityKind != null
-                            && !currentQuantityKindIri.equals(quantityKind.getIri())) {
-                        results.put(quantityKind.getIri(), quantityKind);
-                        quantityKind = null;
-                    }
-                    if (quantityKind == null) {
-                        quantityKind = makeQuantityKind(bs);
-                    }
-                    if (bs.hasBinding("label")) {
-                        Value val = bs.getValue("label");
-                        Literal lit = (Literal) val;
-                        quantityKind.addLabel(
-                                new LangString(lit.getLabel(), lit.getLanguage().orElse(null)));
-                    }
-                    if (bs.hasBinding("broaderQuantityKind")) {
-                        String val = bs.getValue("broaderQuantityKind").stringValue();
-                        quantityKind.addBroaderQuantityKindIri(val);
-                    }
-                    if (bs.hasBinding("applicableUnit")) {
-                        quantityKind.addApplicableUnitIri(
-                                bs.getBinding("applicableUnit").getValue().stringValue());
-                    }
+    private void populateQuantityKindDefinitions(
+            RepositoryConnection con, Definitions definitions) {
+        TupleQuery query = con.prepareTupleQuery(queryLoadQuantityKind);
+        try (TupleQueryResult result = query.evaluate()) {
+            Iterator<BindingSet> solutions = result.iterator();
+            QuantityKind.Definition quantityKindDefinition = null;
+            String builderIri = null;
+            while (solutions.hasNext()) {
+                BindingSet bs = solutions.next();
+                String currentQuantityKindIri = bs.getValue("quantityKind").stringValue();
+                if (quantityKindDefinition != null && !currentQuantityKindIri.equals(builderIri)) {
+                    definitions.addQuantityKindDefinition(quantityKindDefinition);
+                    quantityKindDefinition = null;
                 }
-                if (quantityKind != null) {
-                    results.put(quantityKind.getIri(), quantityKind);
+                if (quantityKindDefinition == null) {
+                    quantityKindDefinition = makeQuantityKindBuilder(bs);
+                    builderIri = bs.getValue("quantityKind").stringValue();
                 }
-                return results;
+                if (bs.hasBinding("label")) {
+                    Value val = bs.getValue("label");
+                    Literal lit = (Literal) val;
+                    quantityKindDefinition.addLabel(
+                            new LangString(lit.getLabel(), lit.getLanguage().orElse(null)));
+                }
+                if (bs.hasBinding("broaderQuantityKind")) {
+                    String broaderQkIri = bs.getValue("broaderQuantityKind").stringValue();
+                    quantityKindDefinition.addBroaderQuantityKind(
+                            definitions.expectQuantityKindDefinition(broaderQkIri));
+                }
+                if (bs.hasBinding("applicableUnit")) {
+                    quantityKindDefinition.addApplicableUnit(
+                            definitions.expectUnitDefinition(
+                                    bs.getValue("applicableUnit").stringValue()));
+                }
+            }
+            if (quantityKindDefinition != null) {
+                definitions.addQuantityKindDefinition(quantityKindDefinition);
             }
         }
     }
 
-    @Override
-    public Map<String, Prefix> loadPrefixes() {
-        try (RepositoryConnection con = qudtRepository.getConnection()) {
-            TupleQuery query = con.prepareTupleQuery(queryLoadPrefix);
-            try (TupleQueryResult result = query.evaluate()) {
-                Iterator<BindingSet> solutions = result.iterator();
-                Prefix prefix = null;
-                Map<String, Prefix> results = new HashMap<>();
-                while (solutions.hasNext()) {
-                    BindingSet bs = solutions.next();
-                    IRI currentQuantityKindIri = (IRI) bs.getBinding("prefix").getValue();
-                    if (prefix != null
-                            && !currentQuantityKindIri.toString().equals(prefix.getIri())) {
-                        results.put(prefix.getIri(), prefix);
-                        prefix = null;
-                    }
-                    if (prefix == null) {
-                        prefix = makePrefix(bs);
-                    }
-                    if (bs.hasBinding("label")) {
-                        Value val = bs.getValue("label");
-                        Literal lit = (Literal) val;
-                        prefix.addLabel(
-                                new LangString(lit.getLabel(), lit.getLanguage().orElse(null)));
-                    }
+    private void populateSystemOfUnitsDefinitions(
+            RepositoryConnection con, Definitions definitions) {
+        TupleQuery query = con.prepareTupleQuery(queryLoadSystemsOfUnits);
+        try (TupleQueryResult result = query.evaluate()) {
+            Iterator<BindingSet> solutions = result.iterator();
+            SystemOfUnits.Definition systemOfUnitsDefinition = null;
+            while (solutions.hasNext()) {
+                BindingSet bs = solutions.next();
+                String currentSystemOfUnitsIri = bs.getValue("systemOfUnits").stringValue();
+                if (systemOfUnitsDefinition != null
+                        && !currentSystemOfUnitsIri.equals(systemOfUnitsDefinition.getId())) {
+                    definitions.addSystemOfUnitsDefinition(systemOfUnitsDefinition);
+                    systemOfUnitsDefinition = null;
                 }
-                if (prefix != null) {
-                    results.put(prefix.getIri(), prefix);
+                if (systemOfUnitsDefinition == null) {
+                    systemOfUnitsDefinition = makeSystemOfUnitsBuilder(bs);
                 }
-                return results;
+                systemOfUnitsDefinition
+                        .addLabel(
+                                getIfPresent(
+                                        bs,
+                                        "label",
+                                        val ->
+                                                new LangString(
+                                                        ((Literal) val).getLabel(),
+                                                        ((Literal) val)
+                                                                .getLanguage()
+                                                                .orElse(null))))
+                        .addBaseUnit(
+                                getIfPresent(
+                                        bs,
+                                        "baseUnit",
+                                        compose(
+                                                Value::stringValue,
+                                                val -> definitions.expectUnitDefinition(val))));
+            }
+            if (systemOfUnitsDefinition != null) {
+                definitions.addSystemOfUnitsDefinition(systemOfUnitsDefinition);
             }
         }
     }
 
-    @Override
-    public void loadFactorUnits(Map<String, Unit> units) {
-        try (RepositoryConnection con = qudtRepository.getConnection()) {
-            TupleQuery query = con.prepareTupleQuery(queryLoadFactorUnits);
-            try (TupleQueryResult result = query.evaluate()) {
-                for (BindingSet bs : result) {
-                    String currentDerivedUnitIri =
-                            bs.getBinding("derivedUnit").getValue().stringValue();
-                    Unit derivedUnit = units.get(currentDerivedUnitIri);
-                    if (derivedUnit == null) {
-                        throw new IllegalArgumentException(
-                                "found a factor of unknown unit " + currentDerivedUnitIri);
-                    }
-                    Optional<FactorUnit> factorUnit = makeFactorUnit(units, bs);
-                    factorUnit.ifPresent(derivedUnit::addFactorUnit);
+    private void populatePrefixDefinitions(RepositoryConnection con, Definitions definitions) {
+        TupleQuery query = con.prepareTupleQuery(queryLoadPrefix);
+        try (TupleQueryResult result = query.evaluate()) {
+            Iterator<BindingSet> solutions = result.iterator();
+            Prefix.Definition prefixDefinition = null;
+            String builderIri = null;
+            while (solutions.hasNext()) {
+                BindingSet bs = solutions.next();
+                IRI currentQuantityKindIri = (IRI) bs.getValue("prefix");
+                if (prefixDefinition != null
+                        && !currentQuantityKindIri.toString().equals(builderIri)) {
+                    definitions.addPrefixDefinition(prefixDefinition);
+                    prefixDefinition = null;
                 }
+                if (prefixDefinition == null) {
+                    prefixDefinition = makePrefixBuilder(bs);
+                    builderIri = bs.getValue("prefix").stringValue();
+                }
+                if (bs.hasBinding("label")) {
+                    Value val = bs.getValue("label");
+                    Literal lit = (Literal) val;
+                    prefixDefinition.addLabel(
+                            new LangString(lit.getLabel(), lit.getLanguage().orElse(null)));
+                }
+            }
+            if (prefixDefinition != null) {
+                definitions.addPrefixDefinition(prefixDefinition);
+            }
+        }
+    }
+
+    private void populateFactorUnits(RepositoryConnection con, Definitions definitions) {
+        TupleQuery query = con.prepareTupleQuery(queryLoadFactorUnits);
+        try (TupleQueryResult result = query.evaluate()) {
+            for (BindingSet bs : result) {
+                String currentDerivedUnitIri = bs.getValue("derivedUnit").stringValue();
+                Unit.Definition derivedUnit =
+                        definitions
+                                .getUnitDefinition(currentDerivedUnitIri)
+                                .orElseThrow(
+                                        () ->
+                                                new IllegalArgumentException(
+                                                        "Found a factor of unknown unit "
+                                                                + currentDerivedUnitIri));
+                String unitIri = bs.getValue("factorUnit").stringValue();
+                Unit.Definition unitDefinition =
+                        definitions
+                                .getUnitDefinition(unitIri)
+                                .orElseThrow(
+                                        () ->
+                                                new IllegalArgumentException(
+                                                        "Found factor unit for unknown unit "
+                                                                + unitIri));
+                derivedUnit.addFactorUnit(
+                        FactorUnit.builder()
+                                .unit(unitDefinition)
+                                .exponent(((Literal) bs.getValue("exponent")).intValue()));
             }
         }
     }
@@ -214,7 +283,8 @@ public class InitializerImpl implements Initializer {
         try (InputStream in =
                 Thread.currentThread().getContextClassLoader().getResourceAsStream(queryFile)) {
             if (in == null) {
-                throw new IllegalArgumentException("Cannot read query from file " + queryFile);
+                throw new IllegalArgumentException(
+                        "Classpath resource not found, cannot read query from " + queryFile);
             }
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
@@ -229,6 +299,7 @@ public class InitializerImpl implements Initializer {
         loadTtlFile("qudtlib/qudt-prefixes.ttl", parser);
         loadTtlFile("qudtlib/qudt-quantitykinds.ttl", parser);
         loadTtlFile("qudtlib/qudt-units.ttl", parser);
+        loadTtlFile("qudtlib/qudt-systems-of-units.ttl", parser);
         return model;
     }
 
@@ -241,56 +312,67 @@ public class InitializerImpl implements Initializer {
         }
     }
 
-    private static Unit makeUnit(BindingSet bs) {
-        return new Unit(
-                bs.getBinding("unit").getValue().stringValue(),
-                bs.hasBinding("prefix") ? bs.getBinding("prefix").getValue().stringValue() : null,
-                bs.hasBinding("scalingOf") ? bs.getValue("scalingOf").stringValue() : null,
-                bs.hasBinding("dimensionVector")
-                        ? bs.getValue("dimensionVector").stringValue()
-                        : null,
-                bs.hasBinding("conversionMultiplier")
-                        ? new BigDecimal(
-                                bs.getBinding("conversionMultiplier").getValue().stringValue())
-                        : null,
-                bs.hasBinding("conversionOffset")
-                        ? new BigDecimal(bs.getBinding("conversionOffset").getValue().stringValue())
-                        : null,
-                bs.hasBinding("symbol") ? bs.getBinding("symbol").getValue().stringValue() : null,
-                bs.hasBinding("currencyCode")
-                        ? bs.getBinding("currencyCode").getValue().stringValue()
-                        : null,
-                bs.hasBinding("currencyNumber")
-                        ? ((SimpleLiteral) bs.getBinding("currencyNumber").getValue()).intValue()
-                        : null);
-    }
-
-    private static QuantityKind makeQuantityKind(BindingSet bs) {
-        return new QuantityKind(
-                bs.getBinding("quantityKind").getValue().stringValue(),
-                bs.hasBinding("dimensionVector")
-                        ? bs.getBinding("dimensionVector").getValue().stringValue()
-                        : null,
-                bs.hasBinding("symbol") ? bs.getBinding("symbol").getValue().stringValue() : null);
-    }
-
-    private static Prefix makePrefix(BindingSet bs) {
-        return new Prefix(
-                bs.getBinding("prefix").getValue().stringValue(),
-                new BigDecimal(bs.getBinding("prefixMultiplier").getValue().stringValue()),
-                bs.getBinding("symbol").getValue().stringValue(),
-                bs.hasBinding("ucumCode")
-                        ? bs.getBinding("ucumCode").getValue().stringValue()
-                        : null);
-    }
-
-    private Optional<FactorUnit> makeFactorUnit(Map<String, Unit> units, BindingSet bs) {
-        String unitIri = bs.getValue("factorUnit").stringValue();
-        Unit unit = units.get(unitIri);
-        if (unit == null) {
-            logger.info("Found factor unit for inexistent unit {}", unitIri);
-            return Optional.empty();
+    private static <T> T getIfPresent(
+            BindingSet bindingSet, String key, Function<Value, T> extractor) {
+        if (bindingSet.hasBinding(key)) {
+            return extractor.apply(bindingSet.getValue(key));
         }
-        return Optional.of(new FactorUnit(unit, ((Literal) bs.getValue("exponent")).intValue()));
+        return null;
+    }
+
+    private static <T1, R1, R2> Function<T1, R2> compose(
+            Function<T1, R1> first, Function<R1, R2> second) {
+        return (T1 input) -> first.andThen(second).apply(input);
+    }
+
+    private static Unit.Definition makeUnitBuilder(BindingSet bs, Definitions definitions) {
+        return Unit.definition(bs.getValue("unit").stringValue())
+                .dimensionVectorIri(getIfPresent(bs, "dimensionVector", Value::stringValue))
+                .conversionMultiplier(
+                        getIfPresent(
+                                bs,
+                                "conversionMultiplier",
+                                compose(Value::stringValue, s -> new BigDecimal(s))))
+                .conversionOffset(
+                        getIfPresent(
+                                bs,
+                                "conversionOffset",
+                                compose(Value::stringValue, s -> new BigDecimal(s))))
+                .symbol(getIfPresent(bs, "symbol", Value::stringValue))
+                .currencyCode(getIfPresent(bs, "currencyCode", Value::stringValue))
+                .currencyNumber(
+                        getIfPresent(bs, "currencyNumber", v -> ((SimpleLiteral) v).intValue()))
+                .prefix(
+                        getIfPresent(
+                                bs,
+                                "prefix",
+                                compose(Value::stringValue, definitions::expectPrefixDefinition)))
+                .scalingOf(
+                        getIfPresent(
+                                bs,
+                                "scalingOf",
+                                compose(Value::stringValue, definitions::expectUnitDefinition)));
+    }
+
+    private static QuantityKind.Definition makeQuantityKindBuilder(BindingSet bs) {
+        return QuantityKind.definition(bs.getValue("quantityKind").stringValue())
+                .dimensionVectorIri(getIfPresent(bs, "dimensionVector", Value::stringValue))
+                .symbol(getIfPresent(bs, "symbol", Value::stringValue));
+    }
+
+    private static Prefix.Definition makePrefixBuilder(BindingSet bs) {
+        return Prefix.definition(bs.getValue("prefix").stringValue())
+                .multiplier(
+                        getIfPresent(
+                                bs,
+                                "prefixMultiplier",
+                                compose(Value::stringValue, s -> new BigDecimal(s))))
+                .symbol(getIfPresent(bs, "symbol", Value::stringValue))
+                .ucumCode(getIfPresent(bs, "ucumCode", Value::stringValue));
+    }
+
+    private static SystemOfUnits.Definition makeSystemOfUnitsBuilder(BindingSet bs) {
+        return SystemOfUnits.definition(bs.getValue("systemOfUnits").stringValue())
+                .abbreviation(getIfPresent(bs, "abbreviation", Value::stringValue));
     }
 }

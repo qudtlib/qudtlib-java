@@ -34,4 +34,7 @@ SELECT * where
     optional {
         ?unit qudt:currencyNumber ?currencyNumber
     }
+    optional {
+        ?unit qudt:systemOfUnit|qudt:baseUnitOfSystem|qudt:derivedCoherentUnitOfSystem|qudt:derivedNonCoherentUnitOfSystem|qudt:derivedUnitOfSystem|qudt:coherentUnitOfSystem|qudt:definedUnitOfSystem|qudt:allowedUnitOfSystem ?systemOfUnits
+    }
 } order by ?unit

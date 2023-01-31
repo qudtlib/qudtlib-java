@@ -1,0 +1,18 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX kind: <http://qudt.org/vocab/systemOfUnits/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT * where
+{
+    ?systemOfUnits a qudt:SystemOfUnits;
+        rdfs:label ?label .
+
+    optional {
+        ?systemOfUnits qudt:abbreviation ?abbreviation
+    }
+    optional {
+        ?systemOfUnits qudt:hasBaseUnit ?baseUnit
+    }
+} order by ?systemOfUnits

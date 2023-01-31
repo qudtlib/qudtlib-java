@@ -3,6 +3,7 @@ package io.github.qudtlib.model;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 <#-- null constant -->
 <#assign null = "null" >
@@ -14,6 +15,12 @@ import java.util.Map;
 <#function optStr optVal>
     <#return optVal.isPresent()?then(q(optVal.get()), null) >
 </#function>
+<#-- string property of optional value-->
+<#function optValIri optVal>
+    <#return optVal.isPresent()?then(q(optVal.get().iri), null) >
+</#function>
+
+
 <#-- nullable String -->
 <#function nullableStr nVal="">
     <#if nVal?has_content>
@@ -40,81 +47,138 @@ import java.util.Map;
 
 public class InitializerImpl implements Initializer {
 
-    @Override public Map<String, Unit> loadUnits() {
-        Map units = new HashMap<>();
+        @Override
+        public Definitions loadData() {
+            Definitions definitions = new Definitions();
+            populateUnitDefinitions(definitions);
+            populateQuantityKindDefinitions(definitions);
+            populatePrefixDefinitions(definitions);
+            populateFactorUnits(definitions);
+            populateSystemOfUnitsDefinitions(definitions);
+            return definitions;
+        }
+
+    private void populateUnitDefinitions(Definitions definitions) {
         <#list units as iri, unit>
-        addUnit${iri?index?c}(units);
+        addUnit${iri?index?c}(definitions);
         </#list>
-        return units;
     }
 
     <#list units as iri, unit>
-    private static void addUnit${iri?index?c}(Map<String, Unit> units) {
-        Unit unit = null;
-        unit = new Unit(${q(iri)}, ${optStr(unit.prefixIri)}, ${optStr(unit.scalingOfIri)}, ${optStr(unit.dimensionVectorIri)}, ${optBigDec(unit.conversionMultiplier)}, ${optBigDec(unit.conversionOffset)}, ${optStr(unit.symbol)}, ${optStr(unit.currencyCode)}, ${optNum(unit.currencyNumber)});
-        <#list unit.labels as label>
-        unit.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
-        </#list>
-        <#list unit.quantityKindIris as quantityKindIri>
-        unit.addQuantityKind(${q(quantityKindIri)});
-        </#list>
-        units.put(${q(iri)}, unit);
+    private static void addUnit${iri?index?c}(Definitions definitions) {
+        Unit.Definition def = Unit
+            .definition(${q(iri)})
+            .prefix(definitions.expectPrefixDefinition(${optValIri(unit.prefix)}))
+            .scalingOf(definitions.expectUnitDefinition(${optValIri(unit.scalingOf)}))
+            .dimensionVectorIri(${optStr(unit.dimensionVectorIri)})
+            .conversionMultiplier(${optBigDec(unit.conversionMultiplier)})
+            .conversionOffset(${optBigDec(unit.conversionOffset)})
+            .symbol(${optStr(unit.symbol)})
+            .currencyCode(${optStr(unit.currencyCode)})
+            .currencyNumber(${optNum(unit.currencyNumber)})
+            <#list unit.labels as label>
+            .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
+            </#list>
+            <#list unit.quantityKinds as quantityKind>
+            .addQuantityKind(definitions.expectQuantityKindDefinition(${q(quantityKind.iri)}))
+            </#list>
+            <#list unit.unitOfSystems as sou>
+            .addUnitOfSystem(definitions.expectSystemOfUnitsDefinition(${q(sou.iri)}))
+            </#list>
+            ;
+        definitions.addUnitDefinition(def);
     }
     </#list>
 
-    @Override public Map<String, QuantityKind> loadQuantityKinds() {
-        Map quantityKinds = new HashMap<>();
+    private void populateQuantityKindDefinitions(Definitions definitions) {
         <#list quantityKinds as iri, quantityKind>
-        addQuantityKind${iri?index?c}(quantityKinds);
+        addQuantityKind${iri?index?c}(definitions);
         </#list>
-        return quantityKinds;
     }
 
     <#list quantityKinds as iri, quantityKind>
-    private static void addQuantityKind${iri?index?c}(Map<String, QuantityKind> quantityKinds){
-        QuantityKind quantityKind = new QuantityKind(${q(iri)}, ${optStr(quantityKind.dimensionVectorIri)}, ${optStr(quantityKind.symbol)});
-        <#list quantityKind.labels as label>
-        quantityKind.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
-        </#list>
-        <#list quantityKind.applicableUnitIris as unitIri>
-        quantityKind.addApplicableUnitIri(${q(unitIri)});
-        </#list>
-        <#list quantityKind.broaderQuantityKindIris as qkIri>
-            quantityKind.addBroaderQuantityKindIri(${q(qkIri)});
-        </#list>
-        quantityKinds.put(${q(iri)}, quantityKind);
+    private static void addQuantityKind${iri?index?c}(Definitions definitions){
+        QuantityKind.Definition def =
+            QuantityKind
+                .definition(${q(iri)})
+                .dimensionVectorIri(${optStr(quantityKind.dimensionVectorIri)})
+                .symbol(${optStr(quantityKind.symbol)})
+                <#list quantityKind.labels as label>
+                .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
+                </#list>
+                <#list quantityKind.applicableUnits as unit>
+                .addApplicableUnit(definitions.expectUnitDefinition(${q(unit.iri)}))
+                </#list>
+                <#list quantityKind.broaderQuantityKinds as qk>
+                .addBroaderQuantityKind(definitions.expectQuantityKindDefinition(${q(qk.iri)}))
+                </#list>
+                ;
+        definitions.addQuantityKindDefinition(def);
     }
     </#list>
 
-    @Override public Map<String, Prefix> loadPrefixes() {
-        Map prefixes = new HashMap<>();
-        Prefix prefix = null;
+    private void populatePrefixDefinitions(Definitions definitions) {
+        Prefix.Definition def =  null;
         <#list prefixes as iri, prefix>
-        prefix = new Prefix(${q(iri)}, ${bigDec(prefix.multiplier)}, ${q(prefix.symbol)}, (String) ${nullableStr(prefix.ucumCode)});
-            <#list prefix.labels as label>
-            prefix.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
-            </#list>
-            prefixes.put(${q(iri)}, prefix);
+            def = Prefix
+                    .definition(${q(iri)})
+                    .multiplier(${bigDec(prefix.multiplier)})
+                    .symbol(${q(prefix.symbol)})
+                    .ucumCode((String) ${nullableStr(prefix.ucumCode)})
+                    <#list prefix.labels as label>
+                    .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
+                    </#list>
+                    ;
+            definitions.addPrefixDefinition(def);
         </#list>
-        return prefixes;
     }
 
-    @Override public void loadFactorUnits(Map<String, Unit> units) {
+    private void populateFactorUnits(Definitions definitions) {
         <#list units as iri, unit>
             <#if unit.hasFactorUnits()>
-            setFactorUnits${iri?counter?c}(units);
+            setFactorUnits${iri?counter?c}(definitions);
             </#if>
         </#list>
     }
 
+    private static Supplier<? extends RuntimeException> exceptionSupplier(String iri){
+        return () -> new IllegalStateException("Not found: " + iri);
+    }
+
     <#list units as iri, unit>
         <#if unit.hasFactorUnits()>
-        private static void setFactorUnits${iri?counter?c}(Map<String, Unit> units){
-            Unit unit = units.get("${iri}");
-            <#list unit.factorUnits as factorUnit>
-            unit.addFactorUnit(new FactorUnit(units.get("${factorUnit.unit.iri}"), ${factorUnit.exponent}));
-            </#list>
+        private static void setFactorUnits${iri?counter?c}(Definitions definitions){
+            String iri = "${iri}";
+            Unit.Definition def =
+                definitions.getUnitDefinition(iri).orElseThrow(exceptionSupplier(iri))
+                <#list unit.factorUnits as factorUnit>
+                .addFactorUnit(
+                    FactorUnit
+                        .builder()
+                        .unit(definitions.expectUnitDefinition("${factorUnit.unit.iri}"))
+                        .exponent(${factorUnit.exponent})
+                )
+                </#list>
+                ;
         }
         </#if>
     </#list>
+
+    private void populateSystemOfUnitsDefinitions(Definitions definitions) {
+        SystemOfUnits.Definition def =  null;
+        <#list systemsOfUnits as iri, sou>
+            def = SystemOfUnits
+                .definition(${q(iri)})
+                .abbreviation(${nullableStr(sou.abbreviation)})
+                <#list sou.labels as label>
+                .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
+                </#list>
+                <#list sou.baseUnits as baseUnit>
+                .addBaseUnit(definitions.expectUnitDefinition(${q(baseUnit.iri)}))
+                </#list>
+                ;
+            definitions.addSystemOfUnitsDefinition(def);
+        </#list>
+    }
 }
+
