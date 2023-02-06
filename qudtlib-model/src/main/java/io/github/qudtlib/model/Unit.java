@@ -240,11 +240,7 @@ public class Unit extends SelfSmuggler {
         return false;
     }
 
-    /**
-     * Returns true iff this unit has a non-zero conversion offset.
-     *
-     * @return
-     */
+    /** @return true iff this unit has a non-zero conversion offset. */
     public boolean hasNonzeroConversionOffset() {
         return this.conversionOffset != null
                 && this.conversionOffset.compareTo(BigDecimal.ZERO) != 0;
@@ -300,6 +296,8 @@ public class Unit extends SelfSmuggler {
      * Returns this unit as a set of exponent-reduced factors, unless they are two factors that
      * cancel each other out, in which case return the unit as a factor unit with exponent 1. For
      * example, Steradian is m²/m² and will therefore return SR.
+     *
+     * @return a FactorUnits with the normalized and scaled factors.
      */
     public FactorUnits normalize() {
         if (this.hasFactorUnits()) {

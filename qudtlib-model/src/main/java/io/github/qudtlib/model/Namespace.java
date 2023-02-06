@@ -22,30 +22,20 @@ public class Namespace {
         this.baseIri = baseIri;
     }
 
-    /**
-     * Returns the string used to abbreviate IRIs in this namespace.
-     *
-     * @return
-     */
+    /** @return the string used to abbreviate IRIs in this namespace. */
     public String getAbbreviationPrefix() {
         return abbreviationPrefix;
     }
 
-    /**
-     * Returns the base IRI of the namespace.
-     *
-     * @return
-     */
+    /** @return the base IRI of the namespace. */
     public String getBaseIri() {
         return baseIri;
     }
 
     /**
-     * Returns an abbreviated IRI if the specified iri starts with the baseIri; the unchanged input
-     * String otherwise;
-     *
-     * @param iri
-     * @return
+     * @param iri the IRI to abbreviate
+     * @return an abbreviated IRI if the specified iri starts with the baseIri; the unchanged input
+     *     String otherwise;
      */
     public String abbreviate(String iri) {
         if (isFullNamespaceIri(iri)) {
@@ -54,6 +44,12 @@ public class Namespace {
         return new String(iri);
     }
 
+    /**
+     * Expands an IRI from this namespace that is abbreviated.
+     *
+     * @param abbreviatedIri the IRI to expand
+     * @return the expanded IRI
+     */
     public String expand(String abbreviatedIri) {
         if (isAbbreviatedNamespaceIri(abbreviatedIri)) {
             return this.baseIri + abbreviatedIri.substring(this.abbreviationPrefix.length() + 1);
@@ -62,13 +58,17 @@ public class Namespace {
     }
 
     /**
-     * Returns true if the specified abbreviatedIri starts with the namespace's abbreviation prefix.
+     * @param abbreviatedIri the IRI to check
+     * @return true if the specified abbreviatedIri starts with the namespace's abbreviation prefix.
      */
     public boolean isAbbreviatedNamespaceIri(String abbreviatedIri) {
         return abbreviatedIri.startsWith(this.abbreviationPrefix + ':');
     }
 
-    /** Returns true if the specified iri starts with the namespace's baseIri. */
+    /**
+     * @param iri the IRI to check
+     * @return true if the specified iri starts with the namespace's baseIri.
+     */
     public boolean isFullNamespaceIri(String iri) {
         return iri.startsWith(this.baseIri);
     }
@@ -76,8 +76,8 @@ public class Namespace {
     /**
      * Prepends the namespace's baseIri to the specified localName.
      *
-     * @param localName
-     * @return
+     * @param localName the last part of the iri to be created
+     * @return the IRI created in this namespace
      */
     public String makeIriInNamespace(String localName) {
         return this.baseIri + localName;
