@@ -1,0 +1,21 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?constName ?localName ?label
+where
+{
+    ?sou a qudt:SystemOfUnits .
+    {
+        select ?sou (MIN(STR(?labelVal)) as ?label) where {
+            ?sou a qudt:SystemOfUnits .
+            optional {
+                ?sou rdfs:label ?labelVal .
+                FILTER(LANG(?labelVal) = "en")
+            }
+        } GROUP BY ?sou
+    }
+    BIND(REPLACE(STR(?sou), "^.+/", "") as ?localName)
+    BIND(REPLACE(?localName, "-", "__") as ?constName)
+} order by ?sou

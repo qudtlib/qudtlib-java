@@ -36,6 +36,8 @@ public class DataGenerator {
     private static final String UNITS_OUTFILE = "qudt-units.ttl";
     private static final String PREFIXES_OUTFILE = "qudt-prefixes.ttl";
     private static final String QUANTITYKINDS_OUTFILE = "qudt-quantitykinds.ttl";
+
+    private static final String SYSTEMS_OF_UNITS_OUTFILE = "qudt-systems-of-units.ttl";
     // queries
     private static final String FACTOR_UNITS_QUERY = "factorUnit.rq";
     private static final String IS_SCALING_OF_QUERY = "isScalingOf.rq";
@@ -47,6 +49,11 @@ public class DataGenerator {
     private static final String TRIPLES_TO_ADD_TO_QUANTITYKINDS =
             "triples-to-add-to-quantitykinds.ttl";
     private static final String UNITS_EXPECTED_DATA = "tmpExpected/qudt-unit.ttl";
+
+    private static final String SYSTEM_OF_UNITS_FILE =
+            "qudt/vocab/systems/VOCAB_QUDT-SYSTEM-OF-UNITS-ALL-v2.1.ttl";
+
+    private static final String SYSTEM_OF_UNITS_QUERY = "system-of-units.rq";
 
     private static final boolean DEBUG = false;
 
@@ -81,7 +88,17 @@ public class DataGenerator {
         generator.processUnits();
         generator.processPrefixes();
         generator.processQuantityKinds();
+        generator.processSystemsOfUnits();
         RdfOps.message("Done generating qudtlib-flavored TTL files");
+    }
+
+    private void processSystemsOfUnits() {
+        RdfOps.message("Processing QUDT Systems of Units");
+        Repository outputRepo = new SailRepository(new MemoryStore());
+        try (RepositoryConnection outputCon = outputRepo.getConnection()) {
+            RdfOps.addStatementsFromFile(outputCon, SYSTEM_OF_UNITS_FILE);
+            RdfOps.writeTurtleFile(outputCon, outFile(SYSTEMS_OF_UNITS_OUTFILE));
+        }
     }
 
     private void processPrefixes() {

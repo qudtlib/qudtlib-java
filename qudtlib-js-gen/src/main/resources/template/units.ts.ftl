@@ -9,6 +9,7 @@ import {
   Prefix,
   LangString,
   FactorUnit,
+  SystemOfUnits,
   Qudt,
 } from "@qudtlib/core";
 
@@ -30,6 +31,10 @@ export * from "@qudtlib/core";
     <#else >
         <#return null >
     </#if>
+</#function>
+<#-- required iri property of optional value-->
+<#function optValIri optVal>
+  <#return optVal.isPresent()?then(q(optVal.get().iri), null) >
 </#function>
 <#-- optional numeric literal, e.g. Optional<Double> -->
 <#function optNum optVal>
@@ -53,20 +58,21 @@ export * from "@qudtlib/core";
     ${optStr(unit.dimensionVectorIri)},
     ${optBigDec(unit.conversionMultiplier)},
     ${optBigDec(unit.conversionOffset)},
-    ${optStr(unit.prefixIri)},
-    ${optStr(unit.scalingOfIri)},
+    ${optValIri(unit.prefix)},
+    ${optValIri(unit.scalingOf)},
     undefined,
     ${optStr(unit.symbol)},
     undefined,
     ${optStr(unit.currencyCode)},
-    ${optNum(unit.currencyNumber)}
+    ${optNum(unit.currencyNumber)},
+    [${unit.unitOfSystems?map(s -> "\""+s.iri+"\"")?join(",")}],
   );
     <#list unit.labels as label>
   unit.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
     </#list>
-    <#list unit.quantityKindIris as quantityKindIri>
+    <#list unit.quantityKinds as quantityKind>
   unit.addQuantityKindIri(
-    ${q(quantityKindIri)}
+    ${q(quantityKind.iri)}
   );
     </#list>
   config.units.set(${q(iri)}, unit);
@@ -88,11 +94,11 @@ export const Units = {
     <#list quantityKind.labels as label>
   quantityKind.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
     </#list>
-    <#list quantityKind.applicableUnitIris as unitIri>
-  quantityKind.addApplicableUnitIri(${q(unitIri)});
+    <#list quantityKind.applicableUnits as unit>
+  quantityKind.addApplicableUnitIri(${q(unit.iri)});
     </#list>
-    <#list quantityKind.broaderQuantityKindIris as qkIri>
-  quantityKind.addBroaderQuantityKindIri(${q(qkIri)});
+    <#list quantityKind.broaderQuantityKinds as qk>
+  quantityKind.addBroaderQuantityKindIri(${q(qk.iri)});
     </#list>
   config.quantityKinds.set(${q(iri)}, quantityKind);
 </#list>
@@ -121,6 +127,37 @@ export const Prefixes = {
 <#list prefixConstants as q>
   // ${q.label}
   ${q.codeConstantName}: Qudt.prefixFromLocalnameRequired("${q.iriLocalname}"),
+</#list>
+}
+
+
+// systemsOfUnit
+{
+let systemOfUnits: SystemOfUnits;
+<#list systemsOfUnits as iri, systemOfUnits>
+  systemOfUnits = new SystemOfUnits(
+    ${q(iri)},
+  <#if ( systemOfUnits.labels?size > 0 )>
+    [
+    <#list systemOfUnits.labels as label>
+    new LangString(${q(label.string)}, ${optStr(label.languageTag)}),
+    </#list>
+    ]
+  <#else>
+    undefined
+  </#if>
+  ,
+  ${optStr(systemOfUnits.abbreviation)},
+    [ ${ systemOfUnits.baseUnits?map(u -> "\""+u.iri+"\"")?join(",")} ]
+);
+  config.systemsOfUnits.set(${q(iri)}, systemOfUnits);
+</#list>
+}
+
+export const SystemsOfUnits = {
+<#list systemOfUnitConstants as q>
+  // ${q.label}
+  ${q.codeConstantName}: Qudt.systemOfUnitsFromLocalnameRequired("${q.iriLocalname}"),
 </#list>
 }
 
@@ -169,4 +206,24 @@ for (const unit of config.units.values()){
         </#list>
     </#if>
 </#list>
+}
+
+// freeze everything
+{
+  for (const x of config.prefixes.values()) {
+    Object.freeze(x);
+  }
+  for (const x of config.units.values()) {
+    Object.freeze(x);
+  }
+  for (const x of config.quantityKinds.values()) {
+    Object.freeze(x);
+  }
+  for (const x of config.systemsOfUnits.values()) {
+    Object.freeze(x);
+  }
+  Object.freeze(Units);
+  Object.freeze(QuantityKinds);
+  Object.freeze(Prefixes);
+  Object.freeze(SystemsOfUnits);
 }

@@ -2,6 +2,7 @@ package io.github.qudtlib;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.github.qudtlib.algorithm.AssignmentProblem;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;

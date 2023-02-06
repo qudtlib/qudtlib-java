@@ -1,6 +1,12 @@
 package io.github.qudtlib.model;
 
+import static io.github.qudtlib.nodedef.Builder.buildList;
+import static io.github.qudtlib.nodedef.Builder.buildSet;
+
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
+import io.github.qudtlib.nodedef.Builder;
+import io.github.qudtlib.nodedef.NodeDefinitionBase;
+import io.github.qudtlib.nodedef.SelfSmuggler;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
@@ -12,69 +18,162 @@ import java.util.stream.Collectors;
  * @author Florian Kleedorfer
  * @version 1.0
  */
-public class Unit {
-    private final String iri;
-    private final String prefixIri;
-    private Prefix prefix;
-    private final BigDecimal conversionMultiplier;
-    private final BigDecimal conversionOffset;
-    private final Set<String> quantityKindIris;
-    private Set<QuantityKind> quantityKinds;
-    private final String symbol;
-    private final Set<LangString> labels;
-    private final String scalingOfIri;
-    private Unit scalingOf;
-    private final String dimensionVectorIri;
-    private List<FactorUnit> factorUnits = null;
-    private final String currencyCode;
-    private final Integer currencyNumber;
+public class Unit extends SelfSmuggler {
 
-    public Unit(
-            String iri,
-            String prefixIri,
-            String scalingOfIri,
-            String dimensionVectorIri,
-            BigDecimal conversionMultiplier,
-            BigDecimal conversionOffset,
-            Set<String> quantityKindIris,
-            String symbol,
-            Set<LangString> labels,
-            String currencyCode,
-            Integer currencyNumber) {
-        this.iri = iri;
-        this.prefixIri = prefixIri;
-        this.scalingOfIri = scalingOfIri;
-        this.dimensionVectorIri = dimensionVectorIri;
-        this.conversionMultiplier = conversionMultiplier;
-        this.conversionOffset = conversionOffset;
-        this.quantityKindIris = new HashSet<>(quantityKindIris);
-        this.symbol = symbol;
-        this.labels = labels;
-        this.currencyCode = currencyCode;
-        this.currencyNumber = currencyNumber;
+    public static Definition definition(String iri) {
+        return new Definition(iri);
     }
 
-    public Unit(
-            String iri,
-            String prefixIri,
-            String scalingOfIri,
-            String dimensionVectorIri,
-            BigDecimal conversionMultiplier,
-            BigDecimal conversionOffset,
-            String symbol,
-            String currencyCode,
-            Integer currencyNumber) {
-        this.iri = iri;
-        this.prefixIri = prefixIri;
-        this.scalingOfIri = scalingOfIri;
-        this.dimensionVectorIri = dimensionVectorIri;
-        this.conversionMultiplier = conversionMultiplier;
-        this.conversionOffset = conversionOffset;
-        this.quantityKindIris = new HashSet<>();
-        this.symbol = symbol;
-        this.labels = new HashSet<>();
-        this.currencyCode = currencyCode;
-        this.currencyNumber = currencyNumber;
+    static Definition definition(Unit product) {
+        return new Definition(product);
+    }
+
+    public static class Definition extends NodeDefinitionBase<String, Unit> {
+
+        private String iri;
+        private Builder<Prefix> prefix;
+        private BigDecimal conversionMultiplier;
+        private BigDecimal conversionOffset;
+        private Set<Builder<QuantityKind>> quantityKinds = new HashSet<>();
+        private String symbol;
+        private Set<LangString> labels = new HashSet<>();
+        private Builder<Unit> scalingOf;
+        private String dimensionVectorIri;
+        private List<Builder<FactorUnit>> factorUnits = new ArrayList<>();
+        private String currencyCode;
+        private Integer currencyNumber;
+        private Set<Builder<SystemOfUnits>> unitOfSystems = new HashSet<>();
+
+        Definition(String iri) {
+            super(iri);
+            this.iri = iri;
+        }
+
+        Definition(Unit product) {
+            super(product.getIri(), product);
+            this.iri = product.iri;
+        }
+
+        public Definition conversionMultiplier(BigDecimal conversionMultiplier) {
+            this.conversionMultiplier = conversionMultiplier;
+            return this;
+        }
+
+        public Definition conversionOffset(BigDecimal conversionOffset) {
+            this.conversionOffset = conversionOffset;
+            return this;
+        }
+
+        public Definition symbol(String symbol) {
+            this.symbol = symbol;
+            return this;
+        }
+
+        Definition addLabel(String label, String languageTag) {
+            if (label != null) {
+                return this.addLabel(new LangString(label, languageTag));
+            }
+            return this;
+        }
+
+        public Definition addLabel(LangString label) {
+            doIfPresent(label, l -> this.labels.add(l));
+            return this;
+        }
+
+        Definition addLabels(Collection<LangString> labels) {
+            this.labels.addAll(labels);
+            return this;
+        }
+
+        public Definition dimensionVectorIri(String dimensionVectorIri) {
+            this.dimensionVectorIri = dimensionVectorIri;
+            return this;
+        }
+
+        public Definition addFactorUnit(FactorUnit.Builder factorUnit) {
+            doIfPresent(factorUnit, f -> this.factorUnits.add(f));
+            return this;
+        }
+
+        Definition addFactorUnit(FactorUnit factorUnit) {
+            doIfPresent(factorUnit, f -> this.factorUnits.add(FactorUnit.builder(f)));
+            return this;
+        }
+
+        public Definition currencyCode(String currencyCode) {
+            this.currencyCode = currencyCode;
+            return this;
+        }
+
+        public Definition currencyNumber(Integer currencyNumber) {
+            this.currencyNumber = currencyNumber;
+            return this;
+        }
+
+        public Definition addUnitOfSystem(Builder<SystemOfUnits> systemOfUnits) {
+            doIfPresent(systemOfUnits, s -> this.unitOfSystems.add(systemOfUnits));
+            return this;
+        }
+
+        public Definition prefix(Builder<Prefix> prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+
+        public Definition scalingOf(Builder<Unit> scalingOf) {
+            this.scalingOf = scalingOf;
+            return this;
+        }
+
+        public Definition addQuantityKind(Builder<QuantityKind> quantityKind) {
+            doIfPresent(quantityKind, q -> this.quantityKinds.add(quantityKind));
+            return this;
+        }
+
+        public Unit doBuild() {
+            return new Unit(this);
+        }
+    }
+
+    private final String iri;
+    private final Prefix prefix;
+    private final BigDecimal conversionMultiplier;
+    private final BigDecimal conversionOffset;
+    private final Set<QuantityKind> quantityKinds;
+    private final String symbol;
+    private final LangStrings labels;
+    private final Unit scalingOf;
+    private final String dimensionVectorIri;
+    private final List<FactorUnit> factorUnits;
+    private final String currencyCode;
+    private final Integer currencyNumber;
+    private final Set<SystemOfUnits> unitOfSystems;
+
+    private Unit(Definition definition) {
+        super(definition);
+        Objects.requireNonNull(definition.iri);
+        Objects.requireNonNull(definition.labels);
+        Objects.requireNonNull(definition.factorUnits);
+        Objects.requireNonNull(definition.quantityKinds);
+        if (definition.dimensionVectorIri == null) {
+            definition.dimensionVectorIri = "missing:dimensionvector:iri";
+            System.err.println("warning: no dimension vector present for unit " + definition.iri);
+        }
+        Objects.requireNonNull(definition.dimensionVectorIri);
+        this.iri = definition.iri;
+        this.dimensionVectorIri = definition.dimensionVectorIri;
+        this.conversionMultiplier = definition.conversionMultiplier;
+        this.conversionOffset = definition.conversionOffset;
+        this.symbol = definition.symbol;
+        this.currencyCode = definition.currencyCode;
+        this.currencyNumber = definition.currencyNumber;
+        this.labels = new LangStrings(definition.labels);
+        this.prefix = definition.prefix == null ? null : definition.prefix.build();
+        this.scalingOf = definition.scalingOf == null ? null : definition.scalingOf.build();
+        this.quantityKinds = buildSet(definition.quantityKinds);
+        this.factorUnits = buildList(definition.factorUnits);
+        this.unitOfSystems = buildSet(definition.unitOfSystems);
     }
 
     static boolean isUnitless(Unit unit) {
@@ -194,7 +293,7 @@ public class Unit {
     }
 
     public boolean isScaled() {
-        return this.scalingOfIri != null;
+        return this.scalingOf != null;
     }
 
     /**
@@ -224,7 +323,7 @@ public class Unit {
 
     public List<FactorUnit> getLeafFactorUnitsWithCumulativeExponents() {
         return this.factorUnits == null || this.factorUnits.isEmpty()
-                ? List.of(new FactorUnit(this, 1))
+                ? List.of(FactorUnit.ofUnit(this))
                 : factorUnits.stream()
                         .flatMap(f -> f.getLeafFactorUnitsWithCumulativeExponents().stream())
                         .collect(Collectors.toList());
@@ -250,14 +349,6 @@ public class Unit {
         return iri;
     }
 
-    public Optional<String> getPrefixIri() {
-        return Optional.ofNullable(prefixIri);
-    }
-
-    public Optional<String> getScalingOfIri() {
-        return Optional.ofNullable(scalingOfIri);
-    }
-
     public Optional<String> getDimensionVectorIri() {
         return Optional.ofNullable(dimensionVectorIri);
     }
@@ -270,30 +361,20 @@ public class Unit {
         return Optional.ofNullable(conversionOffset);
     }
 
-    public Set<String> getQuantityKindIris() {
-        return Collections.unmodifiableSet(quantityKindIris);
-    }
-
     public Optional<String> getSymbol() {
         return Optional.ofNullable(symbol);
     }
 
     public Set<LangString> getLabels() {
-        return Collections.unmodifiableSet(labels);
+        return labels.getAll();
     }
 
     public Optional<LangString> getLabelForLanguageTag(String languageTag) {
-        if (languageTag == null) {
-            return labels.stream().filter(s -> s.getLanguageTag().isEmpty()).findFirst();
-        } else {
-            return labels.stream()
-                    .filter(s -> languageTag.equals(s.getLanguageTag().orElse(null)))
-                    .findFirst();
-        }
+        return labels.getLangStringForLanguageTag(languageTag, null, true);
     }
 
     public boolean hasLabel(String label) {
-        return labels.stream().anyMatch(s -> s.getString().equals(label));
+        return labels.containsString(label);
     }
 
     public Optional<Prefix> getPrefix() {
@@ -305,7 +386,7 @@ public class Unit {
     }
 
     public Set<QuantityKind> getQuantityKinds() {
-        return Collections.unmodifiableSet(quantityKinds);
+        return quantityKinds;
     }
 
     public List<FactorUnit> getFactorUnits() {
@@ -320,6 +401,10 @@ public class Unit {
 
     public Optional<Integer> getCurrencyNumber() {
         return Optional.ofNullable(currencyNumber);
+    }
+
+    public Set<SystemOfUnits> getUnitOfSystems() {
+        return unitOfSystems;
     }
 
     @Override
@@ -346,48 +431,6 @@ public class Unit {
         return "unit:" + iri.replaceAll(".+/([^/]+)", "$1");
     }
 
-    void setPrefix(Prefix prefix) {
-        Objects.requireNonNull(prefix);
-        this.prefix = prefix;
-    }
-
-    void setScalingOf(Unit scalingOf) {
-        Objects.requireNonNull(scalingOf);
-        this.scalingOf = scalingOf;
-    }
-
-    void addLabel(LangString langString) {
-        Objects.requireNonNull(langString);
-        this.labels.add(langString);
-    }
-
-    void addQuantityKind(String quantityKind) {
-        Objects.requireNonNull(
-                quantityKind,
-                String.format("Property referenced by %s but not found in model", this.toString()));
-        this.quantityKindIris.add(quantityKind);
-    }
-
-    void addQuantityKind(QuantityKind quantityKind) {
-        Objects.requireNonNull(
-                quantityKind,
-                String.format("Property referenced by %s but not found in model", this.toString()));
-        if (this.quantityKinds == null) {
-            this.quantityKinds = new HashSet<>();
-        }
-        this.quantityKinds.add(quantityKind);
-    }
-
-    void addFactorUnit(FactorUnit factorUnit) {
-        Objects.requireNonNull(
-                factorUnit,
-                String.format("Property referenced by %s but not found in model", this.toString()));
-        if (this.factorUnits == null) {
-            this.factorUnits = new ArrayList<>();
-        }
-        this.factorUnits.add(factorUnit);
-    }
-
     private boolean findInBasesRecursively(Unit toFind) {
         if (!this.isScaled()) {
             return this.equals(toFind);
@@ -405,8 +448,8 @@ public class Unit {
         if (this.equals(other)) {
             return true;
         }
-        if (this.getScalingOfIri()
-                .map(s -> s.equals(other.getScalingOfIri().orElse(null)))
+        if (this.getScalingOf()
+                .map(s -> s.equals(other.getScalingOf().orElse(null)))
                 .orElse(false)) {
             return true;
         }

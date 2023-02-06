@@ -2,6 +2,8 @@ package io.github.qudtlib.model;
 
 import static java.util.stream.Collectors.*;
 
+import io.github.qudtlib.nodedef.NodeDefinition;
+import io.github.qudtlib.nodedef.SettableBuilderBase;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,8 +17,57 @@ import java.util.stream.IntStream;
  * @version 1.0
  */
 public class FactorUnit {
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder builder(FactorUnit factorUnit) {
+        return new Builder(factorUnit);
+    }
+
+    public static class Builder extends SettableBuilderBase<FactorUnit> {
+        private Integer exponent;
+        private io.github.qudtlib.nodedef.Builder<Unit> unitBuilder;
+
+        public Builder() {}
+
+        public Builder(FactorUnit presetProduct) {
+            super(presetProduct);
+        }
+
+        public Builder exponent(int exponent) {
+            this.exponent = exponent;
+            resetProduct();
+            return this;
+        }
+
+        public Builder unit(NodeDefinition<String, Unit> unitDefinition) {
+            this.unitBuilder = unitDefinition;
+            resetProduct();
+            return this;
+        }
+
+        public Builder unit(Unit unit) {
+            Objects.requireNonNull(unit);
+            this.unitBuilder = Unit.definition(unit);
+            return this;
+        }
+
+        public FactorUnit doBuild() {
+            return new FactorUnit(this);
+        }
+    }
+
     final int exponent;
     final Unit unit;
+
+    private FactorUnit(Builder builder) {
+        Objects.requireNonNull(builder.unitBuilder);
+        Objects.requireNonNull(builder.exponent);
+        this.exponent = builder.exponent;
+        this.unit = builder.unitBuilder.build();
+    }
 
     public FactorUnit(Unit unit, int exponent) {
         Objects.requireNonNull(unit);
@@ -56,7 +107,7 @@ public class FactorUnit {
     }
 
     public static FactorUnit ofUnit(Unit unit) {
-        return new FactorUnit(unit, 1);
+        return FactorUnit.builder().unit(unit).exponent(1).build();
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
@@ -147,7 +198,10 @@ public class FactorUnit {
                             + right.getUnit()
                             + ")");
         }
-        return new FactorUnit(left.getUnit(), left.getExponent() + right.getExponent());
+        return FactorUnit.builder()
+                .unit(left.getUnit())
+                .exponent(left.getExponent() + right.getExponent())
+                .build();
     }
 
     @Override
@@ -179,7 +233,7 @@ public class FactorUnit {
     }
 
     private FactorUnit withExponentMultiplied(int by) {
-        return new FactorUnit(unit, this.exponent * by);
+        return FactorUnit.builder().unit(unit).exponent(this.exponent * by).build();
     }
 
     public FactorUnits normalize() {

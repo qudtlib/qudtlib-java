@@ -9,20 +9,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FactorUnits {
-    private List<FactorUnit> factorUnits;
-    private BigDecimal scaleFactor = new BigDecimal("1");
+    private final List<FactorUnit> factorUnits;
+    private final BigDecimal scaleFactor;
 
     public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
-        this.factorUnits = factorUnits;
+        this.factorUnits = factorUnits.stream().collect(Collectors.toUnmodifiableList());
         this.scaleFactor = scaleFactor;
     }
 
     public FactorUnits(List<FactorUnit> factorUnits) {
-        this.factorUnits = factorUnits;
+        this(factorUnits, new BigDecimal("1"));
     }
 
     public static FactorUnits ofUnit(Unit unit) {
-        return new FactorUnits(List.of(new FactorUnit(unit, 1)));
+        return new FactorUnits(
+                List.of(FactorUnit.builder().unit(Unit.definition(unit)).exponent(1).build()));
     }
 
     /**
@@ -46,7 +47,11 @@ public class FactorUnits {
             Unit requestedUnit;
             requestedUnit = ((Unit) factorUnitSpec[i]);
             Integer requestedExponent = (Integer) factorUnitSpec[i + 1];
-            factorUnits.add(new FactorUnit(requestedUnit, requestedExponent));
+            factorUnits.add(
+                    FactorUnit.builder()
+                            .unit(Unit.definition(requestedUnit))
+                            .exponent(requestedExponent)
+                            .build());
         }
         return new FactorUnits(factorUnits);
     }

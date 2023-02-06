@@ -72,7 +72,7 @@ unit:V
     qudt:factorUnit [ qudt:exponent -1 ;
                       qudt:unit unit:A ] .
 
-unit:F
+unit:FARAD
     qudt:factorUnit [ qudt:exponent 1 ;
                       qudt:unit unit:C ] ;
     qudt:factorUnit [ qudt:exponent -1 ;

@@ -1,4 +1,4 @@
-package io.github.qudtlib.model;
+package io.github.qudtlib.algorithm;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;

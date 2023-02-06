@@ -143,9 +143,11 @@ public class DerivedUnitTests {
         Set<Unit> units =
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.ALL, "KiloGM", 1, "M", -3);
-        assertEquals(2, units.size());
         assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
         assertTrue(units.contains(Qudt.Units.GM__PER__DeciM3));
+        assertTrue(units.contains(Qudt.Units.GM__PER__L));
+        assertTrue(units.contains(Qudt.Units.MilliGM__PER__MilliL));
+        assertEquals(4, units.size());
     }
 
     @Test
@@ -511,6 +513,11 @@ public class DerivedUnitTests {
                         1,
                         DerivedUnitSearchMode.BEST_MATCH,
                         new Object[] {Qudt.Units.KiloN, 1, Qudt.Units.MilliM, 1},
-                        new Unit[] {Units.N__M}));
+                        new Unit[] {Units.N__M}),
+                Arguments.of(
+                        1,
+                        DerivedUnitSearchMode.BEST_MATCH,
+                        new Object[] {Qudt.Units.KiloGM, 1, Qudt.Units.M3, -1},
+                        new Unit[] {Units.KiloGM__PER__M3}));
     }
 }

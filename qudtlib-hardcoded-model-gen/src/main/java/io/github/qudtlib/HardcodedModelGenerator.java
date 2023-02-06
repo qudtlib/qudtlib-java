@@ -64,6 +64,7 @@ public class HardcodedModelGenerator {
         templateVars.put("prefixes", new TreeMap<>(Qudt.getPrefixesMap()));
         templateVars.put("quantityKinds", new TreeMap<>(Qudt.getQuantityKindsMap()));
         templateVars.put("units", new TreeMap<>(Qudt.getUnitsMap()));
+        templateVars.put("systemsOfUnits", new TreeMap<>(Qudt.getSystemsOfUnitsMap()));
         generateJavaFile(config, templateVars);
     }
 

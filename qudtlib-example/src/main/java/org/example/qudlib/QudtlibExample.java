@@ -63,8 +63,7 @@ public class QudtlibExample {
         System.out.println("---");
         System.out.println(
                 "Which units are applicable for " + Qudt.QuantityKinds.PressureRatio + "?");
-        for (String unitIri : Qudt.QuantityKinds.PressureRatio.getApplicableUnitIris()) {
-            Unit unit = Qudt.unitRequired(unitIri);
+        for (Unit unit : Qudt.QuantityKinds.PressureRatio.getApplicableUnits()) {
             System.out.println("  " + unit + " (" + unit.getIri() + ")");
         }
         System.out.println("---");
