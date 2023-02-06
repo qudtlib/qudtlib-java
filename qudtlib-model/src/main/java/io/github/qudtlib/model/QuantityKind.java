@@ -1,7 +1,10 @@
 package io.github.qudtlib.model;
 
-import static io.github.qudtlib.model.Builder.buildSet;
+import static io.github.qudtlib.nodedef.Builder.buildSet;
 
+import io.github.qudtlib.nodedef.Builder;
+import io.github.qudtlib.nodedef.NodeDefinitionBase;
+import io.github.qudtlib.nodedef.SelfSmuggler;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +25,7 @@ public class QuantityKind extends SelfSmuggler {
         return new Definition(quantityKind);
     }
 
-    static class Definition extends NodeDefinitionBase<String, QuantityKind> {
+    public static class Definition extends NodeDefinitionBase<String, QuantityKind> {
         private final String iri;
         private Set<LangString> labels = new HashSet<>();
         private Set<Builder<Unit>> applicableUnits = new HashSet<>();

@@ -1,9 +1,12 @@
 package io.github.qudtlib.model;
 
-import static io.github.qudtlib.model.Builder.buildList;
-import static io.github.qudtlib.model.Builder.buildSet;
+import static io.github.qudtlib.nodedef.Builder.buildList;
+import static io.github.qudtlib.nodedef.Builder.buildSet;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
+import io.github.qudtlib.nodedef.Builder;
+import io.github.qudtlib.nodedef.NodeDefinitionBase;
+import io.github.qudtlib.nodedef.SelfSmuggler;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
@@ -17,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class Unit extends SelfSmuggler {
 
-    static Definition definition(String iri) {
+    public static Definition definition(String iri) {
         return new Definition(iri);
     }
 
@@ -25,7 +28,7 @@ public class Unit extends SelfSmuggler {
         return new Definition(product);
     }
 
-    static class Definition extends NodeDefinitionBase<String, Unit> {
+    public static class Definition extends NodeDefinitionBase<String, Unit> {
 
         private String iri;
         private Builder<Prefix> prefix;
@@ -51,17 +54,17 @@ public class Unit extends SelfSmuggler {
             this.iri = product.iri;
         }
 
-        Definition conversionMultiplier(BigDecimal conversionMultiplier) {
+        public Definition conversionMultiplier(BigDecimal conversionMultiplier) {
             this.conversionMultiplier = conversionMultiplier;
             return this;
         }
 
-        Definition conversionOffset(BigDecimal conversionOffset) {
+        public Definition conversionOffset(BigDecimal conversionOffset) {
             this.conversionOffset = conversionOffset;
             return this;
         }
 
-        Definition symbol(String symbol) {
+        public Definition symbol(String symbol) {
             this.symbol = symbol;
             return this;
         }
@@ -73,7 +76,7 @@ public class Unit extends SelfSmuggler {
             return this;
         }
 
-        Definition addLabel(LangString label) {
+        public Definition addLabel(LangString label) {
             doIfPresent(label, l -> this.labels.add(l));
             return this;
         }
@@ -83,12 +86,12 @@ public class Unit extends SelfSmuggler {
             return this;
         }
 
-        Definition dimensionVectorIri(String dimensionVectorIri) {
+        public Definition dimensionVectorIri(String dimensionVectorIri) {
             this.dimensionVectorIri = dimensionVectorIri;
             return this;
         }
 
-        Definition addFactorUnit(FactorUnit.Builder factorUnit) {
+        public Definition addFactorUnit(FactorUnit.Builder factorUnit) {
             doIfPresent(factorUnit, f -> this.factorUnits.add(f));
             return this;
         }
@@ -98,7 +101,7 @@ public class Unit extends SelfSmuggler {
             return this;
         }
 
-        Definition currencyCode(String currencyCode) {
+        public Definition currencyCode(String currencyCode) {
             this.currencyCode = currencyCode;
             return this;
         }
@@ -108,7 +111,7 @@ public class Unit extends SelfSmuggler {
             return this;
         }
 
-        Definition addUnitOfSystem(Builder<SystemOfUnits> systemOfUnits) {
+        public Definition addUnitOfSystem(Builder<SystemOfUnits> systemOfUnits) {
             doIfPresent(systemOfUnits, s -> this.unitOfSystems.add(systemOfUnits));
             return this;
         }

@@ -1,12 +1,15 @@
 package io.github.qudtlib.model;
 
-import static io.github.qudtlib.model.Builder.buildSet;
+import static io.github.qudtlib.nodedef.Builder.buildSet;
 
+import io.github.qudtlib.nodedef.Builder;
+import io.github.qudtlib.nodedef.NodeDefinitionBase;
+import io.github.qudtlib.nodedef.SelfSmuggler;
 import java.util.*;
 
 public class SystemOfUnits extends SelfSmuggler {
 
-    static Definition definition(String iri) {
+    public static Definition definition(String iri) {
         return new Definition(iri);
     }
 
@@ -14,11 +17,11 @@ public class SystemOfUnits extends SelfSmuggler {
         return new Definition(sou);
     }
 
-    static final class Definition extends NodeDefinitionBase<String, SystemOfUnits> {
+    public static final class Definition extends NodeDefinitionBase<String, SystemOfUnits> {
         private final String iri;
         private String abbreviation;
         private Set<LangString> labels = new HashSet<>();
-        private Set<io.github.qudtlib.model.Builder<Unit>> baseUnits = new HashSet<>();
+        private Set<Builder<Unit>> baseUnits = new HashSet<>();
 
         Definition(String iri) {
             super(iri);
@@ -30,7 +33,7 @@ public class SystemOfUnits extends SelfSmuggler {
             this.iri = presetProduct.getIri();
         }
 
-        Definition abbreviation(String abbreviation) {
+        public Definition abbreviation(String abbreviation) {
             if (abbreviation != null) {
                 this.abbreviation = abbreviation;
             }
@@ -44,7 +47,7 @@ public class SystemOfUnits extends SelfSmuggler {
             return this;
         }
 
-        Definition addLabel(LangString label) {
+        public Definition addLabel(LangString label) {
             if (label != null) {
                 this.labels.add(label);
             }
@@ -58,7 +61,7 @@ public class SystemOfUnits extends SelfSmuggler {
             return this;
         }
 
-        Definition addBaseUnit(io.github.qudtlib.model.Builder<Unit> unitBuilder) {
+        public Definition addBaseUnit(Builder<Unit> unitBuilder) {
             if (unitBuilder != null) {
                 this.baseUnits.add(unitBuilder);
             }
@@ -91,8 +94,8 @@ public class SystemOfUnits extends SelfSmuggler {
         return iri;
     }
 
-    public String getAbbreviation() {
-        return abbreviation;
+    public Optional<String> getAbbreviation() {
+        return Optional.ofNullable(abbreviation);
     }
 
     public Set<LangString> getLabels() {
@@ -101,6 +104,37 @@ public class SystemOfUnits extends SelfSmuggler {
 
     public Set<Unit> getBaseUnits() {
         return baseUnits;
+    }
+
+    public boolean hasBaseUnit(Unit toCheck) {
+        return this.baseUnits.contains(toCheck);
+    }
+
+    public boolean allowsUnit(Unit toCheck) {
+        if (hasBaseUnit(toCheck)) {
+            return true;
+        }
+        if (toCheck.getUnitOfSystems().contains(this)) {
+            return true;
+        }
+        // we use gram as the base unit, but SI uses KiloGM, so if we fail for GM, try KiloGM
+        if (toCheck.getIri().equals(QudtNamespaces.unit.makeIriInNamespace("GM"))) {
+            return this.baseUnits.stream()
+                    .anyMatch(
+                            bu ->
+                                    bu.getIri()
+                                            .equals(
+                                                    QudtNamespaces.unit.makeIriInNamespace(
+                                                            "KiloGM")));
+        }
+        if (toCheck.getScalingOf().isPresent()) {
+            Unit base = toCheck.getScalingOf().get();
+            return allowsUnit(base);
+        }
+        if (!toCheck.getFactorUnits().isEmpty()) {
+            return toCheck.getFactorUnits().stream().allMatch(fu -> this.allowsUnit(fu.unit));
+        }
+        return false;
     }
 
     @Override

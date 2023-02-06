@@ -8,5 +8,27 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
-unit:TON_Metric qudt:isScalingOf unit:GM.
-unit:TONNE qudt:isScalingOf unit:GM.
+unit:TON_Metric qudt:isScalingOf unit:GM .
+unit:TONNE qudt:isScalingOf unit:GM .
+unit:MIN qudt:isScalingOf unit:SEC .
+unit:HR qudt:isScalingOf unit:SEC .
+unit:DAY qudt:isScalingOf unit:SEC .
+unit:DAY_Sidereal qudt:isScalingOf unit:SEC .
+unit:WK qudt:isScalingOf unit:SEC .
+unit:MO qudt:isScalingOf unit:SEC .
+unit:YR qudt:isScalingOf unit:SEC .
+unit:KiloYR qudt:isScalingOf unit:SEC .
+unit:MegaYR qudt:isScalingOf unit:SEC .
+unit:YR_Sidereal qudt:isScalingOf unit:SEC .
+unit:YR_TROPICAL qudt:isScalingOf unit:SEC .
+unit:EV qudt:isScalingOf unit:J .
+unit:HA qudt:isScalingOf unit:M2 .
+unit:ARE qudt:isScalingOf unit:M2 .
+unit:ElementaryCharge qudt:isScalingOf unit:C .
+unit:AU qudt:isScalingOf unit:M .
+unit:E_h qudt:isScalingOf unit:J .
+unit:R qudt:isScalingOf unit:C-PER-KiloGM .
+unit:L qudt:factorUnit [
+    qudt:unit unit:DeciM;
+    qudt:exponent 3
+] .

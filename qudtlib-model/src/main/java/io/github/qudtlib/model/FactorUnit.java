@@ -2,6 +2,8 @@ package io.github.qudtlib.model;
 
 import static java.util.stream.Collectors.*;
 
+import io.github.qudtlib.nodedef.NodeDefinition;
+import io.github.qudtlib.nodedef.SettableBuilderBase;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,7 +28,7 @@ public class FactorUnit {
 
     public static class Builder extends SettableBuilderBase<FactorUnit> {
         private Integer exponent;
-        private io.github.qudtlib.model.Builder<Unit> unitBuilder;
+        private io.github.qudtlib.nodedef.Builder<Unit> unitBuilder;
 
         public Builder() {}
 
@@ -239,6 +241,6 @@ public class FactorUnit {
     }
 
     public FactorUnit pow(int exponent) {
-        return FactorUnit.builder().unit(this.unit).exponent(this.exponent * exponent).build();
+        return new FactorUnit(this.unit, this.exponent * exponent);
     }
 }

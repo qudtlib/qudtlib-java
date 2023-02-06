@@ -1,9 +1,10 @@
-package io.github.qudtlib.model;
+package io.github.qudtlib.init;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import io.github.qudtlib.model.*;
 
 <#-- null constant -->
 <#assign null = "null" >
@@ -15,7 +16,7 @@ import java.util.function.Supplier;
 <#function optStr optVal>
     <#return optVal.isPresent()?then(q(optVal.get()), null) >
 </#function>
-<#-- string property of optional value-->
+<#-- required iri property of optional value-->
 <#function optValIri optVal>
     <#return optVal.isPresent()?then(q(optVal.get().iri), null) >
 </#function>
@@ -68,14 +69,30 @@ public class InitializerImpl implements Initializer {
     private static void addUnit${iri?index?c}(Definitions definitions) {
         Unit.Definition def = Unit
             .definition(${q(iri)})
+            <#if unit.prefix.isPresent() >
             .prefix(definitions.expectPrefixDefinition(${optValIri(unit.prefix)}))
+            </#if>
+            <#if unit.scalingOf.isPresent() >
             .scalingOf(definitions.expectUnitDefinition(${optValIri(unit.scalingOf)}))
+            </#if>
+            <#if unit.dimensionVectorIri.isPresent()>
             .dimensionVectorIri(${optStr(unit.dimensionVectorIri)})
+            </#if>
+            <#if unit.conversionMultiplier.isPresent()>
             .conversionMultiplier(${optBigDec(unit.conversionMultiplier)})
+            </#if>
+            <#if unit.conversionOffset.isPresent()>
             .conversionOffset(${optBigDec(unit.conversionOffset)})
+            </#if>
+            <#if unit.symbol.isPresent()>
             .symbol(${optStr(unit.symbol)})
+            </#if>
+            <#if unit.currencyCode.isPresent()>
             .currencyCode(${optStr(unit.currencyCode)})
+            </#if>
+            <#if unit.currencyNumber.isPresent()>
             .currencyNumber(${optNum(unit.currencyNumber)})
+            </#if>
             <#list unit.labels as label>
             .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
             </#list>
@@ -102,7 +119,9 @@ public class InitializerImpl implements Initializer {
             QuantityKind
                 .definition(${q(iri)})
                 .dimensionVectorIri(${optStr(quantityKind.dimensionVectorIri)})
+                <#if quantityKind.symbol.isPresent()>
                 .symbol(${optStr(quantityKind.symbol)})
+                </#if>
                 <#list quantityKind.labels as label>
                 .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
                 </#list>
@@ -124,7 +143,7 @@ public class InitializerImpl implements Initializer {
                     .definition(${q(iri)})
                     .multiplier(${bigDec(prefix.multiplier)})
                     .symbol(${q(prefix.symbol)})
-                    .ucumCode((String) ${nullableStr(prefix.ucumCode)})
+                    .ucumCode((String) ${optStr(prefix.ucumCode)})
                     <#list prefix.labels as label>
                     .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
                     </#list>
@@ -169,7 +188,7 @@ public class InitializerImpl implements Initializer {
         <#list systemsOfUnits as iri, sou>
             def = SystemOfUnits
                 .definition(${q(iri)})
-                .abbreviation(${nullableStr(sou.abbreviation)})
+                .abbreviation(${optStr(sou.abbreviation)})
                 <#list sou.labels as label>
                 .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
                 </#list>

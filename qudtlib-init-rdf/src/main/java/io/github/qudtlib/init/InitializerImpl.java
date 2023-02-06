@@ -1,7 +1,8 @@
-package io.github.qudtlib.model;
+package io.github.qudtlib.init;
 
 import io.github.qudtlib.exception.NotFoundException;
 import io.github.qudtlib.exception.QudtInitializationException;
+import io.github.qudtlib.model.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;

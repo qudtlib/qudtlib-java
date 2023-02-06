@@ -1,8 +1,14 @@
-package io.github.qudtlib.model;
+package io.github.qudtlib.init;
 
 import static java.util.stream.Collectors.toMap;
 
 import io.github.qudtlib.exception.NotFoundException;
+import io.github.qudtlib.model.Prefix;
+import io.github.qudtlib.model.QuantityKind;
+import io.github.qudtlib.model.SystemOfUnits;
+import io.github.qudtlib.model.Unit;
+import io.github.qudtlib.nodedef.MapBackedNodeDefinition;
+import io.github.qudtlib.nodedef.NodeDefinition;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,19 +36,19 @@ public interface Initializer {
         }
 
         public void addUnitDefinition(Unit.Definition definition) {
-            this.unitDefinitions.put(definition.id, definition);
+            this.unitDefinitions.put(definition.getId(), definition);
         }
 
         public void addQuantityKindDefinition(QuantityKind.Definition definition) {
-            this.quantityKindDefinitions.put(definition.id, definition);
+            this.quantityKindDefinitions.put(definition.getId(), definition);
         }
 
         public void addPrefixDefinition(Prefix.Definition definition) {
-            this.prefixDefinitions.put(definition.id, definition);
+            this.prefixDefinitions.put(definition.getId(), definition);
         }
 
         public void addSystemOfUnitsDefinition(SystemOfUnits.Definition definition) {
-            this.systemOfUnitsDefinitions.put(definition.id, definition);
+            this.systemOfUnitsDefinitions.put(definition.getId(), definition);
         }
 
         public NodeDefinition<String, Unit> expectUnitDefinition(String iri) {

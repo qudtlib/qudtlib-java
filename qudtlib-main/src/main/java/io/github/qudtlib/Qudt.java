@@ -2,8 +2,10 @@ package io.github.qudtlib;
 
 import static java.util.stream.Collectors.toList;
 
+import io.github.qudtlib.algorithm.AssignmentProblem;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.exception.NotFoundException;
+import io.github.qudtlib.init.Initializer;
 import io.github.qudtlib.model.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -38,15 +40,13 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("unused")
 public class Qudt {
-    public static final String quantityKindBaseIri = "http://qudt.org/vocab/quantitykind/";
-    public static final String unitBaseIri = "http://qudt.org/vocab/unit/";
-    public static final String prefixBaseIri = "http://qudt.org/vocab/prefix/";
-    public static final String systemOfUnitsBaseIri = "http://qudt.org/vocab/sou/";
     private static final Map<String, Unit> units;
     private static final Map<String, QuantityKind> quantityKinds;
     private static final Map<String, Prefix> prefixes;
     private static final Map<String, SystemOfUnits> systemsOfUnits;
     private static final BigDecimal BD_1000 = new BigDecimal("1000");
+
+    public abstract static class NAMESPACES extends QudtNamespaces {}
 
     /*
      * The constants for units, quantity kinds and prefixes are kept in separate package-protected classes as they are
@@ -64,7 +64,7 @@ public class Qudt {
     static {
         Initializer initializer = null;
         try {
-            Class<?> type = Class.forName("io.github.qudtlib.model.InitializerImpl");
+            Class<?> type = Class.forName("io.github.qudtlib.init.InitializerImpl");
             initializer = (Initializer) type.getConstructor().newInstance();
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
@@ -158,7 +158,7 @@ public class Qudt {
      * @return the full IRI, possibly identifying a unit
      */
     public static String unitIriFromLocalname(String localname) {
-        return unitBaseIri + localname;
+        return NAMESPACES.unit.makeIriInNamespace(localname);
     }
 
     public static Unit scale(String prefixLabel, String baseUnitLabel) {
@@ -608,7 +608,7 @@ public class Qudt {
      * @return the full IRI, possibly identifying a quantityKind
      */
     public static String quantityKindIriFromLocalname(String localname) {
-        return quantityKindBaseIri + localname;
+        return NAMESPACES.quantityKind.makeIriInNamespace(localname);
     }
 
     /**
@@ -619,7 +619,7 @@ public class Qudt {
      * @return the full IRI, possibly identifying a prefix
      */
     public static String prefixIriFromLocalname(String localname) {
-        return prefixBaseIri + localname;
+        return NAMESPACES.prefix.makeIriInNamespace(localname);
     }
 
     /**
@@ -721,7 +721,7 @@ public class Qudt {
      * @return the full IRI, possibly identifying a systemOfUnits
      */
     public static String systemOfUnitsIriFromLocalname(String localname) {
-        return systemOfUnitsBaseIri + localname;
+        return NAMESPACES.systemOfUnits.makeIriInNamespace(localname);
     }
 
     /**
@@ -907,5 +907,11 @@ public class Qudt {
      */
     public static Collection<SystemOfUnits> allSystemsOfUnits() {
         return Collections.unmodifiableCollection(systemsOfUnits.values());
+    }
+
+    public static Collection<Unit> allUnitsOfSystem(SystemOfUnits system) {
+        return units.values().stream()
+                .filter(system::allowsUnit)
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

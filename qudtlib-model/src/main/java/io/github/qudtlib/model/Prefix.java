@@ -1,5 +1,7 @@
 package io.github.qudtlib.model;
 
+import io.github.qudtlib.nodedef.NodeDefinitionBase;
+import io.github.qudtlib.nodedef.SelfSmuggler;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -19,7 +21,7 @@ public class Prefix extends SelfSmuggler {
         return new Definition(prefix);
     }
 
-    static class Definition extends NodeDefinitionBase<String, Prefix> {
+    public static class Definition extends NodeDefinitionBase<String, Prefix> {
         private final String iri;
         private BigDecimal multiplier;
         private String symbol;

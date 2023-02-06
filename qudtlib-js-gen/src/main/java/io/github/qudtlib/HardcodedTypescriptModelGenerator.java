@@ -62,6 +62,7 @@ public class HardcodedTypescriptModelGenerator {
         templateVars.put("prefixes", new TreeMap<>(Qudt.getPrefixesMap()));
         templateVars.put("quantityKinds", new TreeMap<>(Qudt.getQuantityKindsMap()));
         templateVars.put("units", new TreeMap<>(Qudt.getUnitsMap()));
+        templateVars.put("systemsOfUnits", new TreeMap<>(Qudt.getSystemsOfUnitsMap()));
         Set<Constant> unitConstants =
                 Qudt.getUnitsMap().values().stream()
                         .map(
@@ -83,9 +84,17 @@ public class HardcodedTypescriptModelGenerator {
                                         CodeGen.makeConstant(
                                                 p.getLabels(), p.getIri(), this.constantNameMapper))
                         .collect(Collectors.toSet());
+        Set<Constant> systemOfUnitConstants =
+                Qudt.getSystemsOfUnitsMap().values().stream()
+                        .map(
+                                p ->
+                                        CodeGen.makeConstant(
+                                                p.getLabels(), p.getIri(), this.constantNameMapper))
+                        .collect(Collectors.toSet());
         templateVars.put("unitConstants", unitConstants);
         templateVars.put("quantityKindConstants", quantityKindConstants);
         templateVars.put("prefixConstants", prefixConstants);
+        templateVars.put("systemOfUnitConstants", systemOfUnitConstants);
         generateTypescriptFile(config, templateVars);
     }
 

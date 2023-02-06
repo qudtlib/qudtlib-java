@@ -1,4 +1,4 @@
-package io.github.qudtlib.model;
+package io.github.qudtlib.nodedef;
 
 public class EmptyBuilder<T> implements Builder<T> {
     public EmptyBuilder() {}

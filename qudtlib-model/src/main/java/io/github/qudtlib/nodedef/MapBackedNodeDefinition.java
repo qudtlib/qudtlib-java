@@ -1,4 +1,4 @@
-package io.github.qudtlib.model;
+package io.github.qudtlib.nodedef;
 
 import java.util.Map;
 import java.util.Objects;
