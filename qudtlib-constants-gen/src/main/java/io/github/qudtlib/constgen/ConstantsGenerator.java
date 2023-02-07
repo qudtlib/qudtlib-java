@@ -8,12 +8,11 @@ import io.github.qudtlib.common.safenames.SafeStringMapper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -101,12 +100,18 @@ public class ConstantsGenerator {
     }
 
     private Map<String, Object> getConstantNamesByQuery(String queryFile, String dataFile) {
-        String query = RdfOps.loadQuery(queryFile);
+        String queryStr = RdfOps.loadQuery(queryFile);
         Repository repo = new SailRepository(new MemoryStore());
         Map<String, Object> templateVars = new HashMap<>();
         try (RepositoryConnection con = repo.getConnection()) {
             RdfOps.addStatementsFromFile(con, dataFile);
-            try (TupleQueryResult result = con.prepareTupleQuery(query).evaluate()) {
+            TupleQuery query;
+            try {
+                query = con.prepareTupleQuery(queryStr);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Cannot parse query in file " + queryFile, e);
+            }
+            try (TupleQueryResult result = query.evaluate()) {
                 List<Constant> constants = new ArrayList<>();
                 while (result.hasNext()) {
                     BindingSet bindings = result.next();
@@ -118,7 +123,15 @@ public class ConstantsGenerator {
                             bindings.getValue("label") == null
                                     ? localName
                                     : bindings.getValue("label").stringValue();
-                    Constant constant = new Constant(constName, localName, label);
+                    String iri = bindings.getValue("iri").stringValue();
+                    String typeName = bindings.getValue("typeName").stringValue();
+                    String symbol =
+                            Optional.ofNullable(bindings.getValue("symbol"))
+                                    .map(Value::stringValue)
+                                    .map(s -> s.isBlank() ? null : s)
+                                    .orElse(null);
+                    Constant constant =
+                            new Constant(constName, localName, label, iri, typeName, symbol);
                     constants.add(constant);
                 }
                 templateVars.put("constants", constants);
