@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2023-02-07
+
 ### Added
 
 - SystemOfUnits as a model class
@@ -114,7 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v3.1.0...v4.0.0
 [3.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.2...v3.1.0
 [3.0.2]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.0...v3.0.1
