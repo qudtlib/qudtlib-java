@@ -3,7 +3,7 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?constName ?localName ?label
+SELECT DISTINCT ?constName ?localName ?label (?prefix as ?iri) ("Prefix" as ?typeName) ?symbol
 where
 {
     ?prefix a qudt:Prefix .
@@ -13,6 +13,15 @@ where
            optional {
                ?prefix rdfs:label ?labelVal .
                FILTER(LANG(?labelVal) = "en")
+           }
+
+       } GROUP BY ?prefix
+    }
+    {
+        select ?prefix (GROUP_CONCAT(STR(?smb); separator=" or ") as ?symbol) where {
+           ?prefix a qudt:Prefix .
+           optional {
+            ?prefix qudt:symbol ?smb .
            }
        } GROUP BY ?prefix
     }
