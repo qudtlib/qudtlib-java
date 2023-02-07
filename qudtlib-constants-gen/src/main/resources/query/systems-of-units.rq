@@ -3,7 +3,7 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?constName ?localName ?label
+SELECT DISTINCT ?constName ?localName ?label (?sou as ?iri) ("System of Units" as ?typeName) ?symbol
 where
 {
     ?sou a qudt:SystemOfUnits .
@@ -15,7 +15,16 @@ where
                 FILTER(LANG(?labelVal) = "en")
             }
         } GROUP BY ?sou
+
     }
+    {
+                select ?sou (GROUP_CONCAT(STR(?smb); separator=" or ") as ?symbol) where {
+                   ?sou a qudt:SystemOfUnits .
+                   optional {
+                    ?sou qudt:abbreviation ?smb .
+                   }
+               } GROUP BY ?sou
+            }
     BIND(REPLACE(STR(?sou), "^.+/", "") as ?localName)
     BIND(REPLACE(?localName, "-", "__") as ?constName)
 } order by ?sou

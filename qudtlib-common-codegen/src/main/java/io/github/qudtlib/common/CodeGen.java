@@ -45,11 +45,15 @@ public abstract class CodeGen {
     }
 
     public static Constant makeConstant(
-            Set<LangString> labels, String iri, SafeStringMapper constantNameMapper) {
+            Set<LangString> labels,
+            String iri,
+            String typeName,
+            String symbol,
+            SafeStringMapper constantNameMapper) {
         String label = labels.stream().findFirst().map(LangString::getString).orElse("[no label]");
         String iriLocalName = iri.replaceAll("^.+[/|#]", "");
         String codeConstantName = constantNameMapper.applyMapping(iriLocalName);
-        return new Constant(codeConstantName, iriLocalName, label);
+        return new Constant(codeConstantName, iriLocalName, label, iri, typeName, symbol);
     }
 
     public static SafeStringMapper javaConstantMapper() {

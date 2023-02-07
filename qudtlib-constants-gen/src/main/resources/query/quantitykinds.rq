@@ -3,7 +3,7 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?constName ?localName ?label
+SELECT DISTINCT ?constName ?localName ?label (?qk as ?iri) ("Quantity Kind" as ?typeName) ?symbol
 where
 {
     ?qk a qudt:QuantityKind .
@@ -14,8 +14,16 @@ where
                ?qk rdfs:label ?labelVal .
                FILTER(LANG(?labelVal) = "en")
            }
-       } GROUP BY ?qk
-    }    
+       } GROUP BY ?qk ?symbol
+    }
+    {
+            select ?qk (GROUP_CONCAT(STR(?smb); separator=" or ") as ?symbol) where {
+               ?qk a qudt:QuantityKind .
+               optional {
+                ?qk qudt:symbol ?smb .
+               }
+           } GROUP BY ?qk
+        }
     BIND(REPLACE(STR(?qk), "^.+/", "") as ?localName)
     BIND(REPLACE(?localName, "-", "__") as ?constName)
 } order by ?qk

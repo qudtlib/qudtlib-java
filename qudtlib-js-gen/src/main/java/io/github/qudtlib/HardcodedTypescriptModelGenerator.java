@@ -68,28 +68,44 @@ public class HardcodedTypescriptModelGenerator {
                         .map(
                                 u ->
                                         CodeGen.makeConstant(
-                                                u.getLabels(), u.getIri(), this.constantNameMapper))
+                                                u.getLabels(),
+                                                u.getIri(),
+                                                "Unit",
+                                                u.getSymbol().orElse(null),
+                                                this.constantNameMapper))
                         .collect(Collectors.toSet());
         Set<Constant> quantityKindConstants =
                 Qudt.getQuantityKindsMap().values().stream()
                         .map(
                                 q ->
                                         CodeGen.makeConstant(
-                                                q.getLabels(), q.getIri(), this.constantNameMapper))
+                                                q.getLabels(),
+                                                q.getIri(),
+                                                "Quantity Kind",
+                                                q.getSymbol().orElse(null),
+                                                this.constantNameMapper))
                         .collect(Collectors.toSet());
         Set<Constant> prefixConstants =
                 Qudt.getPrefixesMap().values().stream()
                         .map(
                                 p ->
                                         CodeGen.makeConstant(
-                                                p.getLabels(), p.getIri(), this.constantNameMapper))
+                                                p.getLabels(),
+                                                p.getIri(),
+                                                "Prefix",
+                                                p.getSymbol(),
+                                                this.constantNameMapper))
                         .collect(Collectors.toSet());
         Set<Constant> systemOfUnitConstants =
                 Qudt.getSystemsOfUnitsMap().values().stream()
                         .map(
                                 p ->
                                         CodeGen.makeConstant(
-                                                p.getLabels(), p.getIri(), this.constantNameMapper))
+                                                p.getLabels(),
+                                                p.getIri(),
+                                                "System of Units",
+                                                p.getAbbreviation().orElse(null),
+                                                this.constantNameMapper))
                         .collect(Collectors.toSet());
         templateVars.put("unitConstants", unitConstants);
         templateVars.put("quantityKindConstants", quantityKindConstants);
