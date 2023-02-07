@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class HardcodedModelGenerator {
     private final Path outputDir;
     // output
-    private static final String DESTINATION_PACKAGE = "io.github.qudtlib.model";
+    private static final String DESTINATION_PACKAGE = "io.github.qudtlib.init";
     private static final String FILENAME = "InitializerImpl.java";
     // template
     private static final String TEMPLATE_FILE = "template/InitializerImpl.ftl";
