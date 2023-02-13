@@ -109,7 +109,7 @@ public class Log10BigDecimal {
                 .setScale(scale, BigDecimal.ROUND_HALF_EVEN);
     }
 
-    /** Compute the natural logarithm of x to a given scale, x > 0. */
+    /** Compute the natural logarithm of x to a given scale, x &gt; 0. */
     public static BigDecimal ln(BigDecimal x, int scale) {
         // Check that x > 0.
         if (x.signum() <= 0) {
@@ -195,7 +195,7 @@ public class Log10BigDecimal {
         return power;
     }
 
-    /** Compute the natural logarithm of x to a given scale, x > 0. Use Newton's algorithm. */
+    /** Compute the natural logarithm of x to a given scale, x &gt; 0. Use Newton's algorithm. */
     private static BigDecimal lnNewton(BigDecimal x, int scale) {
         int sp1 = scale + 1;
         BigDecimal n = x;
@@ -217,7 +217,7 @@ public class Log10BigDecimal {
     }
 
     /**
-     * Compute the integral root of x to a given scale, x >= 0. Use Newton's algorithm.
+     * Compute the integral root of x to a given scale, x &gt;= 0. Use Newton's algorithm.
      *
      * @param x the value of x
      * @param index the integral root value
