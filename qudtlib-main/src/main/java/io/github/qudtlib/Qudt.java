@@ -2,6 +2,7 @@ package io.github.qudtlib;
 
 import static java.util.stream.Collectors.toList;
 
+import com.java2s.Log10BigDecimal;
 import io.github.qudtlib.algorithm.AssignmentProblem;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.exception.NotFoundException;
@@ -457,7 +458,6 @@ public class Qudt {
                 leftFactors.size() > rightFactors.size() ? rightFactors : leftFactors;
         List<FactorUnit> larger =
                 leftFactors.size() > rightFactors.size() ? leftFactors : rightFactors;
-
         double[][] similarityMatrix =
                 smaller.stream()
                         .map(
@@ -913,5 +913,131 @@ public class Qudt {
         return units.values().stream()
                 .filter(system::allowsUnit)
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Returns the first unit obtained using {@link #correspondingUnitsInSystem(Unit,
+     * SystemOfUnits)}.
+     *
+     * @return the unit corresponding to the specified unit in the specified systemOfUnits.
+     */
+    public static Optional<Unit> correspondingUnitInSystem(Unit unit, SystemOfUnits systemOfUnits) {
+        return correspondingUnitsInSystem(unit, systemOfUnits).stream().findFirst();
+    }
+
+    /**
+     * Gets units that correspond to the specified unit are allowed in the specified systemOfUnits.
+     * The resulting units have to
+     *
+     * <ol>
+     *   <li>have the same dimension vector as the unit
+     *   <li>share at least one quantityKind with unit
+     * </ol>
+     *
+     * and they are ascending sorted by dissimilarity in magnitude to the magnitude of the specified
+     * unit, i.e. the first unit returned is the closest in magnitude.
+     *
+     * <p>If two resulting units have the same magnitude difference from the specified one, the
+     * following comparisons are made consecutively until a difference is found:
+     *
+     * <ol>
+     *   <li>the base unit of the specified system is ranked first
+     *   <li>conversion offset closer to the one of the specified unit is ranked first
+     *   <li>the unscaled unit is ranked first
+     *   <li>the unit that has a symbol is ranked first
+     *   <li>the unit with more quantityKinds is ranked first
+     *   <li>the units are ranked by their IRIs lexicographically
+     * </ol>
+     *
+     * that is a base unit of the system is ranked first. If none or both are base units, the one
+     * with a conversion offset closer to the specified unit's conversion offset is ranked first.
+     *
+     * @param unit
+     * @param systemOfUnits
+     * @return
+     */
+    public static List<Unit> correspondingUnitsInSystem(Unit unit, SystemOfUnits systemOfUnits) {
+        if (systemOfUnits.allowsUnit(unit)) {
+            return List.of(unit);
+        }
+        List<Unit> elegible =
+                Qudt.getUnitsMap().values().stream()
+                        .filter(u -> systemOfUnits.allowsUnit(u))
+                        .filter(u -> u.getDimensionVectorIri().equals(unit.getDimensionVectorIri()))
+                        .collect(Collectors.toList());
+        if (elegible.size() == 1) {
+            return elegible;
+        }
+        List<Unit> candidates = new ArrayList(elegible);
+        // get the unit that is closest in magnitude (conversionFactor)
+        // recursively check for factor units
+        candidates = new ArrayList(elegible);
+        candidates.removeIf(
+                u ->
+                        !u.getQuantityKinds().stream()
+                                .anyMatch(q -> unit.getQuantityKinds().contains(q)));
+        if (candidates.size() == 1) {
+            return candidates;
+        }
+        candidates.sort(
+                (Unit l, Unit r) -> {
+                    double scaleDiffL = Math.abs(scaleDifference(l, unit));
+                    double scaleDiffR = Math.abs(scaleDifference(r, unit));
+                    double diff = Math.signum(scaleDiffL - scaleDiffR);
+                    if (diff != 0) {
+                        return (int) diff;
+                    }
+                    // tie breaker: base unit ranked before non-base unit
+                    int cmp =
+                            Boolean.compare(
+                                    systemOfUnits.hasBaseUnit(r), systemOfUnits.hasBaseUnit(l));
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    // tie breaker: closer offset
+                    double offsetDiffL = Math.abs(offsetDifference(l, unit));
+                    double offsetDiffR = Math.abs(offsetDifference(r, unit));
+                    cmp = (int) Math.signum(offsetDiffL - offsetDiffR);
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    // tie breaker: perfer unit that is not scaled
+                    cmp = Boolean.compare(l.isScaled(), r.isScaled());
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    // tie breaker prefer the unit that has a symbol (it's more likely to be
+                    // commonly used):
+                    cmp = Boolean.compare(r.getSymbol().isPresent(), l.getSymbol().isPresent());
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    // tie breaker: prefer unit with more quantity kinds (it's less specific)
+                    cmp = Integer.compare(l.getQuantityKinds().size(), r.getQuantityKinds().size());
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    // tie breaker: lexicographically compare iris.
+                    return l.getIri().compareTo(r.getIri());
+                });
+        return candidates;
+    }
+
+    private static double scaleDifference(Unit u1, Unit u2) {
+        BigDecimal u1Log10 = Log10BigDecimal.log10(u1.getConversionMultiplier().get());
+        BigDecimal u2Log10 = Log10BigDecimal.log10(u2.getConversionMultiplier().get());
+        return u1Log10.doubleValue() - u2Log10.doubleValue();
+    }
+
+    private static double offsetDifference(Unit u1, Unit u2) {
+        BigDecimal u1Log10 = u1.getConversionOffset().get().abs();
+        if (u1Log10.compareTo(BigDecimal.ZERO) > 0) {
+            u1Log10 = Log10BigDecimal.log10(u1Log10);
+        }
+        BigDecimal u2Log10 = u2.getConversionOffset().get().abs();
+        if (u2Log10.compareTo(BigDecimal.ZERO) > 0) {
+            u2Log10 = Log10BigDecimal.log10(u2Log10);
+        }
+        return u1Log10.doubleValue() - u2Log10.doubleValue();
     }
 }
