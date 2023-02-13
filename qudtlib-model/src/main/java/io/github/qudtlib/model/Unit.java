@@ -163,8 +163,17 @@ public class Unit extends SelfSmuggler {
         Objects.requireNonNull(definition.dimensionVectorIri);
         this.iri = definition.iri;
         this.dimensionVectorIri = definition.dimensionVectorIri;
-        this.conversionMultiplier = definition.conversionMultiplier;
-        this.conversionOffset = definition.conversionOffset;
+        if (definition.conversionMultiplier != null
+                && definition.conversionMultiplier.compareTo(BigDecimal.ZERO) == 0) {
+            System.out.println("warning: conversionMultiplier 0.0 for unit " + this.iri);
+            definition.conversionMultiplier = null;
+        }
+        this.conversionMultiplier =
+                definition.conversionMultiplier != null
+                        ? definition.conversionMultiplier
+                        : BigDecimal.ONE;
+        this.conversionOffset =
+                definition.conversionOffset != null ? definition.conversionOffset : BigDecimal.ZERO;
         this.symbol = definition.symbol;
         this.currencyCode = definition.currencyCode;
         this.currencyNumber = definition.currencyNumber;
@@ -225,8 +234,8 @@ public class Unit extends SelfSmuggler {
         if (this.conversionOffsetDiffers(toUnit)) {
             throw new IllegalArgumentException(
                     String.format(
-                            "Cannot convert from %s to %s just by multiplication as their conversion offsets differ",
-                            this, toUnit));
+                            "Cannot convert from %s to %s just by multiplication as their conversion offsets differ (%s vs %s)",
+                            this, toUnit, this.conversionOffset, toUnit.conversionOffset));
         }
         BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(BigDecimal.ONE);
         BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);

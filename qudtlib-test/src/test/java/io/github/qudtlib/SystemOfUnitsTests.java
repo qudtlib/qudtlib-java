@@ -1,11 +1,15 @@
 package io.github.qudtlib;
 
+import static io.github.qudtlib.Qudt.correspondingUnitsInSystem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.qudtlib.model.SystemOfUnits;
 import io.github.qudtlib.model.SystemsOfUnits;
 import io.github.qudtlib.model.Unit;
+import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
@@ -111,6 +115,53 @@ public class SystemOfUnitsTests {
                         .collect(Collectors.joining(", ")));
     }
 
+    @Test
+    public void testFindSIConversionBaseUnit() {
+        assertEquals(
+                Qudt.Units.CentiM,
+                Qudt.correspondingUnitInSystem(Qudt.Units.IN, Qudt.SystemsOfUnits.SI).get());
+        assertEquals(
+                Qudt.Units.DeciM,
+                Qudt.correspondingUnitInSystem(Qudt.Units.FT, Qudt.SystemsOfUnits.SI).get());
+        assertEquals(
+                Qudt.Units.DeciM2,
+                Qudt.correspondingUnitInSystem(Qudt.Units.FT2, Qudt.SystemsOfUnits.SI).get());
+        assertEquals(
+                Qudt.Units.K,
+                Qudt.correspondingUnitInSystem(Qudt.Units.DEG_F, Qudt.SystemsOfUnits.SI).get());
+        assertEquals(
+                Qudt.Units.MilliRAD,
+                Qudt.correspondingUnitInSystem(Qudt.Units.DEG, Qudt.SystemsOfUnits.SI).get());
+    }
+
+    @Test
+    @Disabled
+    public void testCorrespondingSIUnitsForImperial() {
+        Set<Unit> imperialUnits =
+                Qudt.getUnitsMap().values().stream()
+                        .filter(u -> SystemsOfUnits.IMPERIAL.allowsUnit(u))
+                        .collect(Collectors.toSet());
+        for (Unit toReplace : imperialUnits) {
+            List<Unit> siUnitsToUse = correspondingUnitsInSystem(toReplace, Qudt.SystemsOfUnits.SI);
+            System.out.println(
+                    String.format(
+                            "Replacing imperial unit %s (m:%s) with SI units %s ",
+                            toReplace,
+                            toReplace.getConversionMultiplier().get(),
+                            siUnitsToUse.stream()
+                                    .map(
+                                            u ->
+                                                    String.format(
+                                                            "%s (m:%s)",
+                                                            u.toString(),
+                                                            u.getConversionMultiplier()
+                                                                    .orElse(new BigDecimal("1.0"))
+                                                                    .toString()))
+                                    .collect(Collectors.joining(",", "[", "]"))));
+        }
+    }
+
+    @Test
     public void testSIUnits() {
         Set<String> siUnitIris =
                 Qudt.getUnitsMap().values().stream()
