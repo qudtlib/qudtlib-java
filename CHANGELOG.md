@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- Updated QUDT to [v2.1.25](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.25)
+## [4.2.0] - 2023-03-03
 
 ### Added
 
 - Add qudt namespace to Qudt.NAMESPACES
+
+### Changed
+
+- Updated QUDT to [v2.1.25](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.25)
 
 ## [4.1.0] - 2023-02-13
 
@@ -130,7 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v4.2.0...HEAD
+[4.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v3.1.0...v4.0.0
 [3.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v3.0.2...v3.1.0
