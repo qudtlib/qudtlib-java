@@ -12,6 +12,8 @@ unit:TON_Metric qudt:isScalingOf unit:GM .
 unit:TONNE qudt:isScalingOf unit:GM .
 unit:MIN qudt:isScalingOf unit:SEC .
 unit:HR qudt:isScalingOf unit:SEC .
+unit:HR_Sidereal qudt:isScalingOf unit:SEC .
+unit:MIN_Sidereal qudt:isScalingOf unit:SEC .
 unit:DAY qudt:isScalingOf unit:SEC .
 unit:DAY_Sidereal qudt:isScalingOf unit:SEC .
 unit:WK qudt:isScalingOf unit:SEC .
