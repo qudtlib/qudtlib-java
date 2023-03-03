@@ -80,6 +80,38 @@ public class SystemOfUnitsTests {
 
     @Test
     @Disabled
+    public void testGenerateSystemOfUnitTriples() {
+        System.out.println(
+                String.format(
+                        "@prefix %s: <%s> .",
+                        Qudt.NAMESPACES.unit.getAbbreviationPrefix(),
+                        Qudt.NAMESPACES.unit.getBaseIri()));
+        System.out.println(
+                String.format(
+                        "@prefix %s: <%s> .",
+                        Qudt.NAMESPACES.systemOfUnits.getAbbreviationPrefix(),
+                        Qudt.NAMESPACES.systemOfUnits.getBaseIri()));
+        System.out.println(
+                String.format(
+                        "@prefix %s: <%s> .",
+                        Qudt.NAMESPACES.qudt.getAbbreviationPrefix(),
+                        Qudt.NAMESPACES.qudt.getBaseIri()));
+        for (SystemOfUnits sou : Qudt.allSystemsOfUnits()) {
+            for (Unit unit : Qudt.allUnits()) {
+                if (sou.allowsUnit(unit)) {
+                    System.out.println(
+                            String.format(
+                                    "%s %s %s .",
+                                    Qudt.NAMESPACES.unit.abbreviate(unit.getIri()),
+                                    "qudt:isUnitOfSystem",
+                                    Qudt.NAMESPACES.systemOfUnits.abbreviate(sou.getIri())));
+                }
+            }
+        }
+    }
+
+    @Test
+    @Disabled
     public void testImperialRelatedUnits() {
         Set<Unit> explicitlyAssociated =
                 Qudt.getUnitsMap().values().stream()
@@ -168,6 +200,10 @@ public class SystemOfUnitsTests {
                         .filter(u -> SystemsOfUnits.SI.allowsUnit(u))
                         .map(Unit::getIri)
                         .collect(Collectors.toSet());
+        // no longer true in 2.1.25
+        // assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A_Ab")));
+        // assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A_Ab-CentiM2")));
+        // assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A_Ab-PER-CentiM2")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A-HR")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A-M2")));
@@ -186,9 +222,6 @@ public class SystemOfUnitsTests {
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:AT")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:AT-PER-M")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:AU")));
-        assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A_Ab")));
-        assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A_Ab-CentiM2")));
-        assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:A_Ab-PER-CentiM2")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:AttoC")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:AttoFARAD")));
         assertTrue(siUnitIris.contains(Qudt.NAMESPACES.unit.expand("unit:AttoJ")));
