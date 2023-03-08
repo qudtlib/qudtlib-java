@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added currency symbols for major currencies
+
 ## [4.2.0] - 2023-03-03
 
 ### Added
