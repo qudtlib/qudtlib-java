@@ -115,6 +115,10 @@ public class Qudt {
         return unitRequired(unitIriFromLocalname(localname));
     }
 
+    public static Unit currencyFromLocalnameRequired(String localname) {
+        return unitRequired(currencyIriFromLocalname(localname));
+    }
+
     /**
      * Returns the first unit found whose label matches the specified label after replacing any
      * underscore with space and ignoring case (US locale). If more intricate matching is needed,
@@ -160,6 +164,10 @@ public class Qudt {
      */
     public static String unitIriFromLocalname(String localname) {
         return NAMESPACES.unit.makeIriInNamespace(localname);
+    }
+
+    public static String currencyIriFromLocalname(String localname) {
+        return NAMESPACES.currency.makeIriInNamespace(localname);
     }
 
     public static Unit scale(String prefixLabel, String baseUnitLabel) {

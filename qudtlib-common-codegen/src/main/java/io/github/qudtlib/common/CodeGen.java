@@ -49,11 +49,20 @@ public abstract class CodeGen {
             String iri,
             String typeName,
             String symbol,
+            String constantName,
             SafeStringMapper constantNameMapper) {
         String label = labels.stream().findFirst().map(LangString::getString).orElse("[no label]");
         String iriLocalName = iri.replaceAll("^.+[/|#]", "");
-        String codeConstantName = constantNameMapper.applyMapping(iriLocalName);
-        return new Constant(codeConstantName, iriLocalName, label, iri, typeName, symbol);
+        String codeConstantName = constantNameMapper.applyMapping(constantName);
+        String valueFactory =
+                typeName.substring(0, 1).toLowerCase()
+                        + typeName.substring(1)
+                        + "FromLocalnameRequired";
+        if (typeName.equals("Unit") && codeConstantName.endsWith("_Currency")) {
+            valueFactory = "currencyFromLocalnameRequired";
+        }
+        return new Constant(
+                codeConstantName, iriLocalName, label, iri, typeName, symbol, valueFactory);
     }
 
     public static SafeStringMapper javaConstantMapper() {

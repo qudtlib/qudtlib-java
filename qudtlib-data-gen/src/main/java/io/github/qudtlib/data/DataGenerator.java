@@ -29,6 +29,8 @@ public class DataGenerator {
     private final Path outputDir;
     // QUDT files
     private static final String UNITS_FILE = "qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL-v2.1.ttl";
+    private static final String CURRENCIES_FILE =
+            "qudt/vocab/currency/VOCAB_QUDT-UNITS-CURRENCY-v2.1.ttl";
     private static final String PREFIXES_FILE = "qudt/vocab/prefixes/VOCAB_QUDT-PREFIXES-v2.1.ttl";
     private static final String QUANTITYKINDS_FILE =
             "qudt/vocab/quantitykinds/VOCAB_QUDT-QUANTITY-KINDS-ALL-v2.1.ttl";
@@ -129,6 +131,7 @@ public class DataGenerator {
             try (RepositoryConnection outputCon = outputRepo.getConnection()) {
                 // start with the original units data in the INPUT repo
                 RdfOps.addStatementsFromFile(inputCon, UNITS_FILE);
+                RdfOps.addStatementsFromFile(inputCon, CURRENCIES_FILE);
                 // deal with kg
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
                 // add missing triples

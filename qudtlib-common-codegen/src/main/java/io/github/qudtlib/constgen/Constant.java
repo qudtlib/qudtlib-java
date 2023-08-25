@@ -19,6 +19,7 @@ public class Constant {
     private final String typeName;
 
     private final String symbol;
+    private final String valueFactory;
 
     public Constant(
             String codeConstantName,
@@ -26,18 +27,21 @@ public class Constant {
             String label,
             String iri,
             String typeName,
-            String symbol) {
+            String symbol,
+            String valueFactory) {
         Objects.requireNonNull(codeConstantName);
         Objects.requireNonNull(iriLocalname);
         Objects.requireNonNull(iri);
         Objects.requireNonNull(label);
         Objects.requireNonNull(typeName);
+        Objects.requireNonNull(valueFactory);
         this.codeConstantName = codeConstantName;
         this.iriLocalname = iriLocalname;
         this.label = label;
         this.iri = iri;
         this.typeName = typeName;
         this.symbol = symbol;
+        this.valueFactory = valueFactory;
     }
 
     public String getCodeConstantName() {
@@ -62,5 +66,9 @@ public class Constant {
 
     public Optional<String> getSymbol() {
         return Optional.ofNullable(symbol);
+    }
+
+    public String getValueFactory() {
+        return valueFactory;
     }
 }

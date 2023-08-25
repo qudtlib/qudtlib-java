@@ -130,8 +130,22 @@ public class ConstantsGenerator {
                                     .map(Value::stringValue)
                                     .map(s -> s.isBlank() ? null : s)
                                     .orElse(null);
+                    String valueFactory =
+                            typeName.substring(0, 1).toLowerCase()
+                                    + typeName.substring(1)
+                                    + "FromLocalnameRequired";
+                    if (typeName.equals("Unit") && constName.endsWith("_Currency")) {
+                        valueFactory = "currencyFromLocalnameRequired";
+                    }
                     Constant constant =
-                            new Constant(constName, localName, label, iri, typeName, symbol);
+                            new Constant(
+                                    constName,
+                                    localName,
+                                    label,
+                                    iri,
+                                    typeName,
+                                    symbol,
+                                    valueFactory);
                     constants.add(constant);
                 }
                 templateVars.put("constants", constants);
@@ -156,9 +170,7 @@ public class ConstantsGenerator {
         templateVars.put("type", type);
         templateVars.put("typePlural", typePlural);
         templateVars.put("package", DESTINATION_PACKAGE);
-        templateVars.put(
-                "valueFactory",
-                type.substring(0, 1).toLowerCase() + type.substring(1) + "FromLocalnameRequired");
+
         File outFile = new File(packageFile, typePlural + ".java");
         CodeGen.generateFileFromTemplate(config, TEMPLATE_FILE, templateVars, outFile);
     }

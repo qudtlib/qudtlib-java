@@ -3,7 +3,7 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?constName ?localName ?label (?sou as ?iri) ("System of Units" as ?typeName) ?symbol
+SELECT DISTINCT ?constName ?localName ?label (?sou as ?iri) ("SystemOfUnits" as ?typeName) ?symbol
 where
 {
     ?sou a qudt:SystemOfUnits .

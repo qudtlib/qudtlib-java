@@ -3,7 +3,7 @@
 </#if>
 package ${package};
 
-import static io.github.qudtlib.Qudt.${valueFactory};
+import static io.github.qudtlib.Qudt.*;
 
 import io.github.qudtlib.model.${type};
 
@@ -16,7 +16,7 @@ public abstract class ${typePlural} {
     /**
      * QUDT ${constant.typeName} constant <a href="${constant.iri}">${constant.iriLocalname}</a>: ${constant.label}<#if constant.symbol.isPresent()> (${constant.symbol.get()})</#if>
     **/
-    public static final ${type} ${constant.codeConstantName} = ${valueFactory}("${constant.iriLocalname}");
+    public static final ${type} ${constant.codeConstantName} = ${constant.valueFactory}("${constant.iriLocalname}");
 
 </#list>
 
