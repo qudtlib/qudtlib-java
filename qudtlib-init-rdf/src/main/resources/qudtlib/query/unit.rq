@@ -5,8 +5,13 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT * where
 {
-    ?unit a qudt:Unit;
-       rdfs:label ?label .
+    {
+        ?unit a qudt:Unit;
+        rdfs:label ?label .
+    } UNION {
+        ?unit a qudt:CurrencyUnit;
+        rdfs:label ?label .
+    }
     optional {
        ?unit qudt:hasQuantityKind ?quantityKind
     }
@@ -14,8 +19,8 @@ SELECT * where
        ?unit qudt:conversionMultiplier ?conversionMultiplier
     }
     optional {
-           ?unit qudt:conversionOffset ?conversionOffset
-        }
+        ?unit qudt:conversionOffset ?conversionOffset
+    }
     optional {
        ?unit qudt:symbol ?symbol
     }
@@ -35,6 +40,6 @@ SELECT * where
         ?unit qudt:currencyNumber ?currencyNumber
     }
     optional {
-        ?unit qudt:systemOfUnit|qudt:baseUnitOfSystem|qudt:derivedCoherentUnitOfSystem|qudt:derivedNonCoherentUnitOfSystem|qudt:derivedUnitOfSystem|qudt:coherentUnitOfSystem|qudt:definedUnitOfSystem|qudt:allowedUnitOfSystem ?systemOfUnits
+        ?unit qudt:applicableSystem|qudt:systemOfUnit|qudt:baseUnitOfSystem|qudt:derivedCoherentUnitOfSystem|qudt:derivedNonCoherentUnitOfSystem|qudt:derivedUnitOfSystem|qudt:coherentUnitOfSystem|qudt:definedUnitOfSystem|qudt:allowedUnitOfSystem ?systemOfUnits
     }
 } order by ?unit

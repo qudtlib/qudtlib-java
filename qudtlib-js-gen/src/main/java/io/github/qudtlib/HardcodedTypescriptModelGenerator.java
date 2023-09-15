@@ -5,6 +5,7 @@ import freemarker.template.TemplateException;
 import io.github.qudtlib.common.CodeGen;
 import io.github.qudtlib.common.safenames.SafeStringMapper;
 import io.github.qudtlib.constgen.Constant;
+import io.github.qudtlib.model.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -64,48 +65,82 @@ public class HardcodedTypescriptModelGenerator {
         templateVars.put("units", new TreeMap<>(Qudt.getUnitsMap()));
         templateVars.put("systemsOfUnits", new TreeMap<>(Qudt.getSystemsOfUnitsMap()));
         Set<Constant> unitConstants =
-                Qudt.getUnitsMap().values().stream()
+                Arrays.stream(Units.class.getDeclaredFields())
                         .map(
-                                u ->
-                                        CodeGen.makeConstant(
-                                                u.getLabels(),
-                                                u.getIri(),
+                                f -> {
+                                    String name = f.getName();
+                                    try {
+                                        Unit unit = (Unit) f.get(Unit.class);
+                                        return CodeGen.makeConstant(
+                                                unit.getLabels(),
+                                                unit.getIri(),
                                                 "Unit",
-                                                u.getSymbol().orElse(null),
-                                                this.constantNameMapper))
+                                                unit.getSymbol().orElse(null),
+                                                name,
+                                                this.constantNameMapper);
+                                    } catch (IllegalAccessException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                })
                         .collect(Collectors.toSet());
         Set<Constant> quantityKindConstants =
-                Qudt.getQuantityKindsMap().values().stream()
+                Arrays.stream(QuantityKinds.class.getDeclaredFields())
                         .map(
-                                q ->
-                                        CodeGen.makeConstant(
-                                                q.getLabels(),
-                                                q.getIri(),
-                                                "Quantity Kind",
-                                                q.getSymbol().orElse(null),
-                                                this.constantNameMapper))
+                                f -> {
+                                    String name = f.getName();
+                                    try {
+                                        QuantityKind quantityKind =
+                                                (QuantityKind) f.get(QuantityKind.class);
+                                        return CodeGen.makeConstant(
+                                                quantityKind.getLabels(),
+                                                quantityKind.getIri(),
+                                                "QuantityKind",
+                                                quantityKind.getSymbol().orElse(null),
+                                                name,
+                                                this.constantNameMapper);
+                                    } catch (IllegalAccessException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                })
                         .collect(Collectors.toSet());
         Set<Constant> prefixConstants =
-                Qudt.getPrefixesMap().values().stream()
+                Arrays.stream(Prefixes.class.getDeclaredFields())
                         .map(
-                                p ->
-                                        CodeGen.makeConstant(
-                                                p.getLabels(),
-                                                p.getIri(),
+                                f -> {
+                                    String name = f.getName();
+                                    try {
+                                        Prefix prefix = (Prefix) f.get(Prefix.class);
+                                        return CodeGen.makeConstant(
+                                                prefix.getLabels(),
+                                                prefix.getIri(),
                                                 "Prefix",
-                                                p.getSymbol(),
-                                                this.constantNameMapper))
+                                                prefix.getSymbol(),
+                                                name,
+                                                this.constantNameMapper);
+                                    } catch (IllegalAccessException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                })
                         .collect(Collectors.toSet());
         Set<Constant> systemOfUnitConstants =
-                Qudt.getSystemsOfUnitsMap().values().stream()
+                Arrays.stream(SystemsOfUnits.class.getDeclaredFields())
                         .map(
-                                p ->
-                                        CodeGen.makeConstant(
-                                                p.getLabels(),
-                                                p.getIri(),
-                                                "System of Units",
-                                                p.getAbbreviation().orElse(null),
-                                                this.constantNameMapper))
+                                f -> {
+                                    String name = f.getName();
+                                    try {
+                                        SystemOfUnits systemOfUnits =
+                                                (SystemOfUnits) f.get(SystemOfUnits.class);
+                                        return CodeGen.makeConstant(
+                                                systemOfUnits.getLabels(),
+                                                systemOfUnits.getIri(),
+                                                "SystemOfUnits",
+                                                systemOfUnits.getAbbreviation().orElse(null),
+                                                name,
+                                                this.constantNameMapper);
+                                    } catch (IllegalAccessException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                })
                         .collect(Collectors.toSet());
         templateVars.put("unitConstants", unitConstants);
         templateVars.put("quantityKindConstants", quantityKindConstants);

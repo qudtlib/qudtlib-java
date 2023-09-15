@@ -41,9 +41,9 @@ public class QudtTests {
     @Test
     public void testUnit() {
         Unit metre = Qudt.Units.M;
-        Assertions.assertTrue(metre.hasLabel("Metre"));
+        Assertions.assertTrue(metre.hasLabel("metre"));
         Assertions.assertTrue(metre.hasLabel("Meter"));
-        Assertions.assertEquals("Metre", metre.getLabelForLanguageTag("en").get().getString());
+        Assertions.assertEquals("metre", metre.getLabelForLanguageTag("en").get().getString());
         Assertions.assertEquals(Qudt.unitRequired(metre.getIri()), metre);
         Assertions.assertEquals(Qudt.unitRequired(metre.getIri()), metre);
     }
@@ -51,7 +51,7 @@ public class QudtTests {
     @Test
     public void testQuantityKind() {
         QuantityKind length = Qudt.QuantityKinds.Length;
-        Assertions.assertTrue(length.hasLabel("Length"));
+        Assertions.assertTrue(length.hasLabel("length"));
         Assertions.assertEquals(Qudt.quantityKindRequired(length.getIri()), length);
         Assertions.assertEquals(Qudt.quantityKindRequired(length.getIri()), length);
     }

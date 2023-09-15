@@ -3,27 +3,46 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?constName ?localName ?label (?unit as ?iri) ("Unit" as ?typeName) ?symbol
-where
-{
-    ?unit a qudt:Unit .
+SELECT DISTINCT ?constName ?localName ?label ?iri ?typeName ?symbol where {
     {
-        select ?unit (MIN(STR(?labelVal)) as ?label) where {
-            ?unit a qudt:Unit .
-            optional {
-                ?unit rdfs:label ?labelVal .
-                FILTER(LANG(?labelVal) = "en")
+        SELECT DISTINCT ?unitType ?label (?unit as ?iri) ("Unit" as ?typeName) ?symbol {
+            {
+                ?unit a qudt:Unit .
+                BIND("Unit" as ?unitType)
+            } UNION {
+                ?unit a qudt:CurrencyUnit .
+                BIND("CurrencyUnit" as ?unitType)
             }
-        } GROUP BY ?unit
-    }
-{
-            select ?unit (GROUP_CONCAT(STR(?smb); separator=" or ") as ?symbol) where {
-               ?unit a qudt:Unit .
-               optional {
-                ?unit qudt:symbol ?smb .
-               }
-           } GROUP BY ?unit
+            {
+                select ?unit (MIN(STR(?labelVal)) as ?label) where {
+                    {
+                        ?unit a qudt:Unit .
+                        BIND("Unit" as ?unitType)
+                    } UNION {
+                        ?unit a qudt:CurrencyUnit .
+                        BIND("CurrencyUnit" as ?unitType)
+                    } optional {
+                        ?unit rdfs:label ?labelVal .
+                        FILTER(LANG(?labelVal) = "en")
+                    }
+                } GROUP BY ?unit
+            }
+            {
+                select ?unit (GROUP_CONCAT(STR(?smb); separator=" or ") as ?symbol) where {
+                    {
+                        ?unit a qudt:Unit .
+                        BIND("Unit" as ?unitType)
+                    } UNION {
+                        ?unit a qudt:CurrencyUnit .
+                        BIND("CurrencyUnit" as ?unitType)
+                    } optional {
+                        ?unit qudt:symbol ?smb .
+                    }
+                } GROUP BY ?unit
+            }
         }
-    BIND(REPLACE(STR(?unit), "^.+/", "") as ?localName)
-    BIND(REPLACE(?localName, "-", "__") as ?constName)
-} order by ?unit
+    }
+    BIND(REPLACE(STR(?iri), "^.+/", "") as ?localName)
+    BIND(REPLACE(?localName, "-", "__") as ?constNameTmp)
+    BIND(IF(?unitType = "CurrencyUnit", CONCAT(?constNameTmp, "_Currency"), ?constNameTmp) as ?constName)
+} order by ?iri
