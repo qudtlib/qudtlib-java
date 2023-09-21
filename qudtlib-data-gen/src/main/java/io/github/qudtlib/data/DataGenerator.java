@@ -117,6 +117,8 @@ public class DataGenerator {
         Repository outputRepo = new SailRepository(new MemoryStore());
         try (RepositoryConnection outputCon = outputRepo.getConnection()) {
             RdfOps.addStatementsFromFile(outputCon, QUANTITYKINDS_FILE);
+            // the currencies file contains the qk:Currency definition:
+            RdfOps.addStatementsFromFile(outputCon, CURRENCIES_FILE);
             // add missing triples
             RdfOps.addStatementsFromFile(outputCon, TRIPLES_TO_ADD_TO_QUANTITYKINDS);
             RdfOps.writeTurtleFile(outputCon, outFile(QUANTITYKINDS_OUTFILE));

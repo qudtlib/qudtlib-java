@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `quantitykind:Currency` was missing in 5.0.0. Its definition was moved to the currencies file in the QUDT repo
+  which used to be ingested only for units code generation. Now it is also used for quantity kinds code generation.
+
 ## [5.0.0] - 2023-09-15
 
 ### Changed
