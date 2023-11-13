@@ -24,7 +24,7 @@ public class Unit extends SelfSmuggler {
         return new Definition(iri);
     }
 
-    static Definition definition(Unit product) {
+    public static Definition definition(Unit product) {
         return new Definition(product);
     }
 
@@ -39,96 +39,144 @@ public class Unit extends SelfSmuggler {
         private Set<LangString> labels = new HashSet<>();
         private Builder<Unit> scalingOf;
         private String dimensionVectorIri;
+
         private List<Builder<FactorUnit>> factorUnits = new ArrayList<>();
         private String currencyCode;
         private Integer currencyNumber;
-        private Set<Builder<SystemOfUnits>> unitOfSystems = new HashSet<>();
 
-        Definition(String iri) {
+        private Set<Builder<Unit>> exactMatches = new HashSet<>();
+        private Set<Builder<SystemOfUnits>> systemsOfUnits = new HashSet<>();
+
+        protected Definition(String iri) {
             super(iri);
             this.iri = iri;
         }
 
-        Definition(Unit product) {
+        protected Definition(Unit product) {
             super(product.getIri(), product);
             this.iri = product.iri;
         }
 
-        public Definition conversionMultiplier(BigDecimal conversionMultiplier) {
+        public <T extends Definition> T conversionMultiplier(BigDecimal conversionMultiplier) {
             this.conversionMultiplier = conversionMultiplier;
-            return this;
+            return (T) this;
         }
 
-        public Definition conversionOffset(BigDecimal conversionOffset) {
+        public <T extends Definition> T conversionOffset(BigDecimal conversionOffset) {
             this.conversionOffset = conversionOffset;
-            return this;
+            return (T) this;
         }
 
-        public Definition symbol(String symbol) {
+        public <T extends Definition> T symbol(String symbol) {
             this.symbol = symbol;
-            return this;
+            return (T) this;
         }
 
-        Definition addLabel(String label, String languageTag) {
+        <T extends Definition> T addLabel(String label, String languageTag) {
             if (label != null) {
                 return this.addLabel(new LangString(label, languageTag));
             }
-            return this;
+            return (T) this;
         }
 
-        public Definition addLabel(LangString label) {
+        public <T extends Definition> T addLabel(LangString label) {
             doIfPresent(label, l -> this.labels.add(l));
-            return this;
+            return (T) this;
         }
 
-        Definition addLabels(Collection<LangString> labels) {
+        public <T extends Definition> T addLabels(Collection<LangString> labels) {
             this.labels.addAll(labels);
-            return this;
+            return (T) this;
         }
 
-        public Definition dimensionVectorIri(String dimensionVectorIri) {
+        public <T extends Definition> T dimensionVectorIri(String dimensionVectorIri) {
             this.dimensionVectorIri = dimensionVectorIri;
-            return this;
+            return (T) this;
         }
 
-        public Definition addFactorUnit(FactorUnit.Builder factorUnit) {
+        public <T extends Definition> T addExactMatch(Builder<Unit> unit) {
+            doIfPresent(unit, u -> this.exactMatches.add(u));
+            return (T) this;
+        }
+
+        public <T extends Definition> T addExactMatch(Unit unit) {
+            doIfPresent(unit, u -> this.exactMatches.add(Unit.definition(u)));
+            return (T) this;
+        }
+
+        public <T extends Definition> T addFactorUnit(FactorUnit.Builder factorUnit) {
             doIfPresent(factorUnit, f -> this.factorUnits.add(f));
-            return this;
+            return (T) this;
         }
 
-        Definition addFactorUnit(FactorUnit factorUnit) {
+        public <T extends Definition> T addFactorUnit(FactorUnit factorUnit) {
             doIfPresent(factorUnit, f -> this.factorUnits.add(FactorUnit.builder(f)));
-            return this;
+            return (T) this;
         }
 
-        public Definition currencyCode(String currencyCode) {
+        public <T extends Definition> T addFactorUnits(FactorUnits factorUnits) {
+            doIfPresent(factorUnits, f -> this.addFactorUnits(f.getFactorUnits()));
+            return (T) this;
+        }
+
+        public <T extends Definition> T addFactorUnits(Collection<FactorUnit> factorUnits) {
+            doIfPresent(
+                    factorUnits, f -> factorUnits.stream().forEach(fu -> this.addFactorUnit(fu)));
+            return (T) this;
+        }
+
+        public <T extends Definition> T currencyCode(String currencyCode) {
             this.currencyCode = currencyCode;
-            return this;
+            return (T) this;
         }
 
-        public Definition currencyNumber(Integer currencyNumber) {
+        public <T extends Definition> T currencyNumber(Integer currencyNumber) {
             this.currencyNumber = currencyNumber;
-            return this;
+            return (T) this;
         }
 
-        public Definition addUnitOfSystem(Builder<SystemOfUnits> systemOfUnits) {
-            doIfPresent(systemOfUnits, s -> this.unitOfSystems.add(systemOfUnits));
-            return this;
+        public <T extends Definition> T addSystemOfUnits(Builder<SystemOfUnits> systemOfUnits) {
+            doIfPresent(systemOfUnits, s -> this.systemsOfUnits.add(systemOfUnits));
+            return (T) this;
         }
 
-        public Definition prefix(Builder<Prefix> prefix) {
+        public <T extends Definition> T addSystemOfUnits(SystemOfUnits systemOfUnits) {
+            doIfPresent(
+                    systemOfUnits,
+                    s -> this.systemsOfUnits.add(SystemOfUnits.definition(systemOfUnits)));
+            return (T) this;
+        }
+
+        public <T extends Definition> T prefix(Builder<Prefix> prefix) {
             this.prefix = prefix;
-            return this;
+            return (T) this;
         }
 
-        public Definition scalingOf(Builder<Unit> scalingOf) {
+        public <T extends Definition> T prefix(Prefix prefix) {
+            this.prefix = Prefix.definition(prefix);
+            return (T) this;
+        }
+
+        public <T extends Definition> T scalingOf(Builder<Unit> scalingOf) {
             this.scalingOf = scalingOf;
-            return this;
+            return (T) this;
         }
 
-        public Definition addQuantityKind(Builder<QuantityKind> quantityKind) {
+        public <T extends Definition> T scalingOf(Unit scalingOf) {
+            this.scalingOf = Unit.definition(scalingOf);
+            return (T) this;
+        }
+
+        public <T extends Definition> T addQuantityKind(Builder<QuantityKind> quantityKind) {
             doIfPresent(quantityKind, q -> this.quantityKinds.add(quantityKind));
-            return this;
+            return (T) this;
+        }
+
+        public <T extends Definition> T addQuantityKind(QuantityKind quantityKind) {
+            doIfPresent(
+                    quantityKind,
+                    q -> this.quantityKinds.add(QuantityKind.definition(quantityKind)));
+            return (T) this;
         }
 
         public Unit doBuild() {
@@ -145,22 +193,21 @@ public class Unit extends SelfSmuggler {
     private final LangStrings labels;
     private final Unit scalingOf;
     private final String dimensionVectorIri;
+    private final Set<Unit> exactMatches;
     private final List<FactorUnit> factorUnits;
     private final String currencyCode;
     private final Integer currencyNumber;
     private final Set<SystemOfUnits> unitOfSystems;
 
-    private Unit(Definition definition) {
+    protected Unit(Definition definition) {
         super(definition);
         Objects.requireNonNull(definition.iri);
         Objects.requireNonNull(definition.labels);
         Objects.requireNonNull(definition.factorUnits);
         Objects.requireNonNull(definition.quantityKinds);
         if (definition.dimensionVectorIri == null) {
-            definition.dimensionVectorIri = "missing:dimensionvector:iri";
             System.err.println("warning: no dimension vector present for unit " + definition.iri);
         }
-        Objects.requireNonNull(definition.dimensionVectorIri);
         this.iri = definition.iri;
         this.dimensionVectorIri = definition.dimensionVectorIri;
         if (definition.conversionMultiplier != null
@@ -180,9 +227,10 @@ public class Unit extends SelfSmuggler {
         this.labels = new LangStrings(definition.labels);
         this.prefix = definition.prefix == null ? null : definition.prefix.build();
         this.scalingOf = definition.scalingOf == null ? null : definition.scalingOf.build();
+        this.exactMatches = buildSet(definition.exactMatches);
         this.quantityKinds = buildSet(definition.quantityKinds);
         this.factorUnits = buildList(definition.factorUnits);
-        this.unitOfSystems = buildSet(definition.unitOfSystems);
+        this.unitOfSystems = buildSet(definition.systemsOfUnits);
     }
 
     static boolean isUnitless(Unit unit) {
@@ -382,6 +430,11 @@ public class Unit extends SelfSmuggler {
         return labels.getLangStringForLanguageTag(languageTag, null, true);
     }
 
+    public Optional<String> getLabelForLanguageTag(
+            String language, String fallbackLanguage, boolean allowAnyIfNoMatch) {
+        return labels.getStringForLanguageTag(language, fallbackLanguage, allowAnyIfNoMatch);
+    }
+
     public boolean hasLabel(String label) {
         return labels.containsString(label);
     }
@@ -395,7 +448,11 @@ public class Unit extends SelfSmuggler {
     }
 
     public Set<QuantityKind> getQuantityKinds() {
-        return quantityKinds;
+        return Collections.unmodifiableSet(quantityKinds);
+    }
+
+    void addQuantityKind(QuantityKind quantityKind) {
+        this.quantityKinds.add(quantityKind);
     }
 
     public List<FactorUnit> getFactorUnits() {
@@ -413,7 +470,21 @@ public class Unit extends SelfSmuggler {
     }
 
     public Set<SystemOfUnits> getUnitOfSystems() {
-        return unitOfSystems;
+        return Collections.unmodifiableSet(unitOfSystems);
+    }
+
+    void addSystemOfUnits(SystemOfUnits systemOfUnits) {
+        Objects.requireNonNull(systemOfUnits);
+        this.unitOfSystems.add(systemOfUnits);
+    }
+
+    public Set<Unit> getExactMatches() {
+        return Collections.unmodifiableSet(this.exactMatches);
+    }
+
+    void addExactMatch(Unit exactMatch) {
+        Objects.requireNonNull(exactMatch);
+        this.exactMatches.add(exactMatch);
     }
 
     @Override

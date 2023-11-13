@@ -122,6 +122,11 @@ public class Prefix extends SelfSmuggler {
         return labels.getLangStringForLanguageTag(languageTag, null, false);
     }
 
+    public Optional<String> getLabelForLanguageTag(
+            String language, String fallbackLanguage, boolean allowAnyIfNoMatch) {
+        return labels.getStringForLanguageTag(language, fallbackLanguage, allowAnyIfNoMatch);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

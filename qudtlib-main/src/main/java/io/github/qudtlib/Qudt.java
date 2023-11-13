@@ -8,6 +8,8 @@ import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.exception.NotFoundException;
 import io.github.qudtlib.init.Initializer;
 import io.github.qudtlib.model.*;
+import io.github.qudtlib.support.fractional.FractionalDimensionVector;
+import io.github.qudtlib.support.fractional.FractionalUnits;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -391,6 +393,20 @@ public class Qudt {
                 matchingUnits.stream()
                         .max((l, r) -> (int) Math.signum(scores.get(l) - scores.get(r)))
                         .get());
+    }
+
+    public static List<Unit> unitsWithSameFractionalDimensionVector(Unit unit) {
+        Objects.requireNonNull(unit);
+        FractionalDimensionVector fdv = FractionalUnits.getFractionalDimensionVector(unit);
+        return Qudt.units.values().stream()
+                .filter(u -> {
+                    try {
+                        return fdv.equals(FractionalUnits.getFractionalDimensionVector(u));
+                    } catch (Exception e){
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     private static Double matchScore(Unit unit, FactorUnits requested) {
@@ -1047,5 +1063,13 @@ public class Qudt {
             u2Log10 = Log10BigDecimal.log10(u2Log10);
         }
         return u1Log10.doubleValue() - u2Log10.doubleValue();
+    }
+
+    static void addQuantityKind(QuantityKind quantityKind) {
+        quantityKinds.put(quantityKind.getIri(), quantityKind);
+    }
+
+    static void addUnit(Unit unit) {
+        units.put(unit.getIri(), unit);
     }
 }

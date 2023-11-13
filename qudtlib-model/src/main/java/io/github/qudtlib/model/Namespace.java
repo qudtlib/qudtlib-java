@@ -82,4 +82,8 @@ public class Namespace {
     public String makeIriInNamespace(String localName) {
         return this.baseIri + localName;
     }
+
+    public String getLocalName(String fullIri) {
+        return fullIri.replaceFirst(this.baseIri, "");
+    }
 }

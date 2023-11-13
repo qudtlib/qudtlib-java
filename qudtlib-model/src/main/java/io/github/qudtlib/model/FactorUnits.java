@@ -2,6 +2,7 @@ package io.github.qudtlib.model;
 
 import static java.util.stream.Collectors.toList;
 
+import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
@@ -24,6 +25,44 @@ public class FactorUnits {
     public static FactorUnits ofUnit(Unit unit) {
         return new FactorUnits(
                 List.of(FactorUnit.builder().unit(Unit.definition(unit)).exponent(1).build()));
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private List<FactorUnit> factorUnits = new ArrayList<>();
+        private BigDecimal scale = BigDecimal.ONE;
+
+        private Builder() {}
+
+        public Builder factor(Unit unit, int exponent) {
+            Objects.requireNonNull(unit);
+            this.factor(new FactorUnit(unit, exponent));
+            return this;
+        }
+
+        public Builder factor(FactorUnit factorUnit) {
+            this.factorUnits.add(factorUnit);
+            return this;
+        }
+
+        public Builder factor(Unit unit) {
+            Objects.requireNonNull(unit);
+            this.factor(new FactorUnit(unit, 1));
+            return this;
+        }
+
+        public Builder scaleFactor(BigDecimal scaleFactor) {
+            Objects.requireNonNull(scaleFactor);
+            this.scale = scaleFactor;
+            return this;
+        }
+
+        public FactorUnits build() {
+            return new FactorUnits(this.factorUnits, this.scale);
+        }
     }
 
     /**
@@ -133,5 +172,196 @@ public class FactorUnits {
         return new FactorUnits(
                 normalized.getFactorUnits(),
                 normalized.getScaleFactor().multiply(this.scaleFactor));
+    }
+
+    public String getDimensionVectorIri() {
+        if (this.factorUnits == null || this.factorUnits.isEmpty()) {
+            return null;
+        }
+        if (this.factorUnits.stream()
+                .anyMatch(fu -> fu.getUnit().getDimensionVectorIri().isEmpty())) {
+            throw new RuntimeException(
+                    "Cannot compute dimension vector of factor units as not all units have a dimension vector: "
+                            + this.toString());
+        }
+        DimensionVector dv =
+                this.factorUnits.stream()
+                        .map(
+                                fu ->
+                                        fu.getUnit()
+                                                .getDimensionVectorIri()
+                                                .map(dviri -> DimensionVector.of(dviri))
+                                                .orElse(new DimensionVector())
+                                                .multiply(fu.exponent))
+                        .reduce((d1, d2) -> d1.combine(d2))
+                        .get();
+        return dv.getDimensionVectorIri();
+    }
+
+    public FactorUnits numerator() {
+        return new FactorUnits(
+                this.factorUnits.stream().filter(fu -> fu.exponent > 0).collect(toList()));
+    }
+
+    public FactorUnits denominator() {
+        return new FactorUnits(
+                this.factorUnits.stream().filter(fu -> fu.exponent < 0).collect(toList()));
+    }
+
+    public boolean hasQkdvDenominatorIri(String dimensionVectorIri) {
+        return denominator().getDimensionVectorIri().equals(dimensionVectorIri);
+    }
+
+    public boolean hasQkdvNumeratorIri(String dimensionVectorIri) {
+        return numerator().getDimensionVectorIri().equals(dimensionVectorIri);
+    }
+
+    public BigDecimal conversionFactor(Unit other) {
+        if (!other.getDimensionVectorIri()
+                .map(dv -> dv.equals(this.getDimensionVectorIri()))
+                .orElse(false)) {
+            throw new InconvertibleQuantitiesException(
+                    String.format(
+                            "Cannot convert from %s to %s: dimension vectors differ (%s vs %s)",
+                            this.toString(),
+                            other.getIri(),
+                            this.getDimensionVectorIri(),
+                            other.getDimensionVectorIri().orElse("[no dimension vector]")));
+        }
+        FactorUnits otherFactorUnits =
+                other.hasFactorUnits()
+                        ? new FactorUnits(other.getFactorUnits())
+                        : FactorUnits.ofUnit(other);
+        FactorUnits myFactors = this.normalize();
+        FactorUnits otherFactors = otherFactorUnits.normalize();
+        List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.getFactorUnits());
+        List<FactorUnit> otherFactorUnitList = new ArrayList<>(otherFactors.getFactorUnits());
+        FactorUnit processed = null;
+        BigDecimal factor =
+                myFactors.scaleFactor.divide(otherFactors.scaleFactor, MathContext.DECIMAL128);
+
+        for (FactorUnit myFactor : myFactorUnitList) {
+            for (FactorUnit otherFactor : otherFactorUnitList) {
+                if (myFactor.unit.isConvertible(otherFactor.unit)
+                        && myFactor.exponent == otherFactor.exponent) {
+                    factor =
+                            factor.multiply(
+                                    myFactor.unit
+                                            .getConversionMultiplier(otherFactor.unit)
+                                            .pow(myFactor.exponent, MathContext.DECIMAL128));
+                    processed = otherFactor;
+                    break;
+                }
+            }
+            if (processed != null) {
+                otherFactorUnitList.remove(processed);
+                processed = null;
+            }
+        }
+        if (!otherFactorUnitList.isEmpty()) {
+            throw new RuntimeException(
+                    String.format(
+                            "Cannot calculate conversion factor beween factor units %s and %s: %s is unmatched on the right-hand side",
+                            myFactors, otherFactors, otherFactorUnitList));
+        }
+        return factor;
+    }
+
+    public String getSymbol() {
+        StringBuilder sb = new StringBuilder();
+        boolean hasDenominator = false;
+        for (FactorUnit fu : this.factorUnits) {
+            if (fu.exponent > 0) {
+                sb.append(fu.unit.getSymbol().orElse(fu.unit.getIri()))
+                        .append(getExponentString(fu.exponent))
+                        .append("\u00B7");
+            } else {
+                hasDenominator = true;
+            }
+        }
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (hasDenominator) {
+            StringBuilder sbDenom = new StringBuilder();
+            int cnt = 0;
+            for (FactorUnit fu : this.factorUnits) {
+                if (fu.exponent < 0) {
+                    sbDenom.append(fu.unit.getSymbol().orElse(fu.unit.getIri()));
+                    sbDenom.append(getExponentString(fu.exponent));
+                    sbDenom.append("\u00B7");
+                    cnt++;
+                }
+            }
+            if (sbDenom.length() > 0) {
+                sbDenom.deleteCharAt(sbDenom.length() - 1);
+            }
+            if (cnt > 1) {
+                sbDenom
+                    .insert(0,"(")
+                    .append(")");
+            }
+            sb.append("/");
+            sb.append(sbDenom);
+        }
+        return sb.toString();
+    }
+
+    public String getLocalname() {
+        StringBuilder sb = new StringBuilder();
+        boolean hasDenominator = false;
+        for (FactorUnit fu : this.factorUnits) {
+            if (fu.exponent > 0) {
+                sb.append(getLocalname(fu.unit.getIri()));
+                if (fu.exponent > 1) {
+                    sb.append(fu.exponent);
+                }
+                sb.append("-");
+            } else {
+                hasDenominator = true;
+            }
+        }
+        if (hasDenominator) {
+            sb.append("PER-");
+        }
+        for (FactorUnit fu : this.factorUnits) {
+            if (fu.exponent < 0) {
+                sb.append(getLocalname(fu.unit.getIri()));
+                if (fu.exponent < -1) {
+                    sb.append(Math.abs(fu.exponent));
+                }
+                sb.append("-");
+            }
+        }
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.toString();
+    }
+
+    private String getExponentString(int exponent) {
+        int absExp = Math.abs(exponent);
+        switch (absExp) {
+            case 1:
+                return "";
+            case 2:
+                return "²";
+            case 3:
+                return "³";
+            case 4:
+                return "\u2074";
+            case 5:
+                return "\u2075";
+            case 6:
+                return "\u2076";
+            case 7:
+                return "\u2077";
+            default:
+                return "m";
+        }
+    }
+
+    private String getLocalname(String iri) {
+        return iri.replaceAll("^.+[/|#]", "");
     }
 }

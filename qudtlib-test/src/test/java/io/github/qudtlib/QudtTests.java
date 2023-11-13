@@ -1,24 +1,34 @@
 package io.github.qudtlib;
 
+import static io.github.qudtlib.model.QuantityKinds.*;
+import static io.github.qudtlib.model.Units.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.qudtlib.algorithm.AssignmentProblem;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.model.*;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.AggregateWith;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.aggregator.ArgumentsAggregationException;
+import org.junit.jupiter.params.aggregator.ArgumentsAggregator;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.platform.commons.util.Preconditions;
 
 /**
  * Unit tests for QUDTLib functionality.
@@ -112,7 +122,7 @@ public class QudtTests {
         Assertions.assertEquals(Qudt.Units.LUX, Qudt.unitFromLabelRequired("Lux"));
         Assertions.assertEquals(Qudt.Units.LM, Qudt.unitFromLabelRequired("Lumen"));
         Assertions.assertEquals(Qudt.Units.CD, Qudt.unitFromLabelRequired("Candela"));
-        Assertions.assertEquals(Qudt.Units.PA, Qudt.unitFromLabelRequired("Pascal"));
+        Assertions.assertEquals(PA, Qudt.unitFromLabelRequired("Pascal"));
         Assertions.assertEquals(Qudt.Units.RAD, Qudt.unitFromLabelRequired("Radian"));
         Assertions.assertEquals(Qudt.Units.J, Qudt.unitFromLabelRequired("Joule"));
         Assertions.assertEquals(Qudt.Units.K, Qudt.unitFromLabelRequired("Kelvin"));
@@ -769,13 +779,13 @@ public class QudtTests {
                         Units.J__PER__KiloGM__K__PA,
                         new Object[][] {
                             {Units.J__PER__KiloGM__K__PA, 1},
-                            {Units.J, 1, Units.GM, -1, Units.K, -1, Units.PA, -1},
-                            {Units.N, 1, Units.M, 1, Units.GM, -1, Units.K, -1, Units.PA, -1},
+                            {Units.J, 1, Units.GM, -1, Units.K, -1, PA, -1},
+                            {Units.N, 1, Units.M, 1, Units.GM, -1, Units.K, -1, PA, -1},
                             {
                                 Units.GM, 1, Units.M, 2, Units.SEC, -2, Units.GM, -1, Units.K, -1,
-                                Units.PA, -1,
+                                PA, -1,
                             },
-                            {Units.M, 2, Units.SEC, -2, Units.K, -1, Units.PA, -1},
+                            {Units.M, 2, Units.SEC, -2, Units.K, -1, PA, -1},
                             {Units.J, 1, Units.GM, -1, Units.K, -1, Units.N, -1, Units.M, 2},
                             {
                                 Units.J, 1, Units.GM, -2, Units.K, -1, Units.M, -1, Units.SEC, 2,
@@ -803,5 +813,60 @@ public class QudtTests {
                                 Units.SEC, 2,
                             },
                         }));
+    }
+
+    @MethodSource
+    @ParameterizedTest
+    public void testExactMatches(@AggregateWith(VarargsAggregator.class) Unit... units) {
+        for (int i = 0; i < units.length; i++) {
+            for (int j = i + 1; j < units.length; j++) {
+                Unit u1 = units[i];
+                Unit u2 = units[j];
+                if (i != j) {
+                    assertTrue(
+                            u1.getExactMatches().contains(u2),
+                            String.format(
+                                    "(%s).getExactMatches().contains(%s)",
+                                    Qudt.NAMESPACES.unit.abbreviate(u1.getIri()),
+                                    Qudt.NAMESPACES.unit.abbreviate(u2.getIri())));
+                    assertTrue(
+                            u2.getExactMatches().contains(u1),
+                            String.format(
+                                    "(%s).getExactMatches().contains(%s)",
+                                    Qudt.NAMESPACES.unit.abbreviate(u2.getIri()),
+                                    Qudt.NAMESPACES.unit.abbreviate(u1.getIri())));
+                }
+            }
+        }
+    }
+
+    public static Stream<Arguments> testExactMatches() {
+        return Stream.of(
+                Arguments.of(S__PER__M, KiloGM__PER__M2__PA__SEC),
+                Arguments.of(KiloGM__PER__M2__SEC, KiloGM__PER__SEC__M2),
+                Arguments.of(KiloTONNE, KiloTON_Metric),
+                Arguments.of(LB_F__PER__IN2, PSI),
+                Arguments.of(MHO, S),
+                Arguments.of(MHO_Stat, S_Stat),
+                Arguments.of(MIN_Angle, ARCMIN),
+                Arguments.of(MI_N__PER__HR, KN),
+                Arguments.of(MegaGM__PER__HA, TONNE__PER__HA, TON_Metric__PER__HA),
+                Arguments.of(MilliARCSEC, RAD),
+                Arguments.of(HectoPA, MilliBAR));
+    }
+
+    static class VarargsAggregator implements ArgumentsAggregator {
+        @Override
+        public Object aggregateArguments(ArgumentsAccessor accessor, ParameterContext context)
+                throws ArgumentsAggregationException {
+            Class<?> parameterType = context.getParameter().getType();
+            Preconditions.condition(
+                    parameterType.isArray(),
+                    () -> "must be an array type, but was " + parameterType);
+            Class<?> componentType = parameterType.getComponentType();
+            return IntStream.range(context.getIndex(), accessor.size())
+                    .mapToObj(index -> accessor.get(index, componentType))
+                    .toArray(size -> (Object[]) Array.newInstance(componentType, size));
+        }
     }
 }

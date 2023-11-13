@@ -55,6 +55,7 @@ export * from "@qudtlib/core";
   unit = new Unit(
     ${q(iri)},
     undefined,
+    undefined,
     ${optStr(unit.dimensionVectorIri)},
     ${optBigDec(unit.conversionMultiplier)},
     ${optBigDec(unit.conversionOffset)},
@@ -71,10 +72,11 @@ export * from "@qudtlib/core";
   unit.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));
     </#list>
     <#list unit.quantityKinds as quantityKind>
-  unit.addQuantityKindIri(
-    ${q(quantityKind.iri)}
-  );
+  unit.addQuantityKindIri(${q(quantityKind.iri)});
     </#list>
+  <#list unit.exactMatches as exactMatch>
+    unit.addExactMatchIri(${q(exactMatch.iri)});
+  </#list>
   config.units.set(${q(iri)}, unit);
 </#list>
 }
@@ -99,6 +101,9 @@ export const Units = {
     </#list>
     <#list quantityKind.broaderQuantityKinds as qk>
   quantityKind.addBroaderQuantityKindIri(${q(qk.iri)});
+    </#list>
+    <#list quantityKind.exactMatches as exactMatch>
+  quantityKind.addExactMatchIri(${q(exactMatch.iri)});
     </#list>
   config.quantityKinds.set(${q(iri)}, quantityKind);
 </#list>
