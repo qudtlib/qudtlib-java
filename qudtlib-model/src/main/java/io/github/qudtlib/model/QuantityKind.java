@@ -5,10 +5,7 @@ import static io.github.qudtlib.nodedef.Builder.buildSet;
 import io.github.qudtlib.nodedef.Builder;
 import io.github.qudtlib.nodedef.NodeDefinitionBase;
 import io.github.qudtlib.nodedef.SelfSmuggler;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a QUDT QuantityKind.
@@ -25,12 +22,24 @@ public class QuantityKind extends SelfSmuggler {
         return new Definition(quantityKind);
     }
 
+    public static Definition definition(FactorUnits factorUnits, String localName) {
+        QuantityKind.Definition def =
+                QuantityKind.definition(QudtNamespaces.quantityKind.makeIriInNamespace(localName));
+        def.dimensionVectorIri(factorUnits.getDimensionVectorIri());
+        return def;
+    }
+
     public static class Definition extends NodeDefinitionBase<String, QuantityKind> {
         private final String iri;
         private Set<LangString> labels = new HashSet<>();
         private Set<Builder<Unit>> applicableUnits = new HashSet<>();
+
         private Set<Builder<QuantityKind>> broaderQuantityKinds = new HashSet<>();
+
+        private Set<Builder<QuantityKind>> exactMatches = new HashSet<>();
         private String dimensionVectorIri;
+        private String qkdvNumeratorIri;
+        private String qkdvDenominatorIri;
         private String symbol;
 
         public Definition(String iri) {
@@ -43,42 +52,74 @@ public class QuantityKind extends SelfSmuggler {
             this.iri = presetProduct.getIri();
         }
 
-        public Definition label(LangString label) {
+        public <T extends Definition> T label(LangString label) {
             doIfPresent(label, l -> this.labels.add(label));
-            return this;
+            return (T) this;
         }
 
-        public Definition dimensionVectorIri(String dimensionVectorIri) {
+        public <T extends Definition> T dimensionVectorIri(String dimensionVectorIri) {
             doIfPresent(dimensionVectorIri, d -> this.dimensionVectorIri = dimensionVectorIri);
-            return this;
+            return (T) this;
         }
 
-        public Definition symbol(String symbol) {
+        public <T extends Definition> T qkdvNumeratorIri(String qkdvNumeratorIri) {
+            doIfPresent(qkdvNumeratorIri, d -> this.qkdvNumeratorIri = qkdvNumeratorIri);
+            return (T) this;
+        }
+
+        public <T extends Definition> T qkdvDenominatorIri(String qkdvDenominatorIri) {
+            doIfPresent(qkdvDenominatorIri, d -> this.qkdvDenominatorIri = qkdvDenominatorIri);
+            return (T) this;
+        }
+
+        public <T extends Definition> T symbol(String symbol) {
             this.symbol = symbol;
-            return this;
+            return (T) this;
         }
 
-        public Definition addLabel(LangString label) {
+        public <T extends Definition> T addLabel(LangString label) {
             doIfPresent(label, l -> this.labels.add(label));
-            return this;
+            return (T) this;
         }
 
-        public Definition addLabel(String label, String languageTag) {
+        public <T extends Definition> T addLabel(String label, String languageTag) {
             if (label != null) {
                 this.labels.add(new LangString(label, languageTag));
             }
-            return this;
+            return (T) this;
         }
 
-        public Definition addApplicableUnit(Builder<Unit> applicableUnit) {
-            doIfPresent(applicableUnit, a -> this.applicableUnits.add(applicableUnit));
-            return this;
+        public <T extends Definition> T addApplicableUnit(Builder<Unit> applicableUnit) {
+            doIfPresent(applicableUnit, a -> this.applicableUnits.add(a));
+            return (T) this;
         }
 
-        public Definition addBroaderQuantityKind(Builder<QuantityKind> broaderQuantityKind) {
+        public <T extends Definition> T addApplicableUnit(Unit applicableUnit) {
+            doIfPresent(applicableUnit, a -> this.applicableUnits.add(Unit.definition(a)));
+            return (T) this;
+        }
+
+        public <T extends Definition> T addBroaderQuantityKind(
+                Builder<QuantityKind> broaderQuantityKind) {
+            doIfPresent(broaderQuantityKind, b -> this.broaderQuantityKinds.add(b));
+            return (T) this;
+        }
+
+        public <T extends Definition> T addBroaderQuantityKind(QuantityKind broaderQuantityKind) {
             doIfPresent(
-                    broaderQuantityKind, b -> this.broaderQuantityKinds.add(broaderQuantityKind));
-            return this;
+                    broaderQuantityKind,
+                    b -> this.broaderQuantityKinds.add(QuantityKind.definition(b)));
+            return (T) this;
+        }
+
+        public <T extends Definition> T addExactMatch(Builder<QuantityKind> exactMatch) {
+            doIfPresent(exactMatch, b -> this.exactMatches.add(b));
+            return (T) this;
+        }
+
+        public <T extends Definition> T addExactMatch(QuantityKind exactMatch) {
+            doIfPresent(exactMatch, b -> this.exactMatches.add(QuantityKind.definition(b)));
+            return (T) this;
         }
 
         @Override
@@ -91,19 +132,28 @@ public class QuantityKind extends SelfSmuggler {
     private final LangStrings labels;
     private final Set<Unit> applicableUnits;
     private final Set<QuantityKind> broaderQuantityKinds;
+
+    private final Set<QuantityKind> exactMatches;
+
     private final String dimensionVectorIri;
+
+    private String qkdvNumeratorIri;
+    private String qkdvDenominatorIri;
     private final String symbol;
 
-    public QuantityKind(Definition definition) {
+    protected QuantityKind(Definition definition) {
         super(definition);
         Objects.requireNonNull(definition.iri);
         Objects.requireNonNull(definition.applicableUnits);
         this.iri = definition.iri;
         this.labels = new LangStrings(definition.labels);
         this.dimensionVectorIri = definition.dimensionVectorIri;
+        this.qkdvDenominatorIri = definition.qkdvDenominatorIri;
+        this.qkdvNumeratorIri = definition.qkdvNumeratorIri;
         this.symbol = definition.symbol;
         this.broaderQuantityKinds = buildSet(definition.broaderQuantityKinds);
         this.applicableUnits = buildSet(definition.applicableUnits);
+        this.exactMatches = buildSet(definition.exactMatches);
     }
 
     public String getIri() {
@@ -111,15 +161,42 @@ public class QuantityKind extends SelfSmuggler {
     }
 
     public Set<Unit> getApplicableUnits() {
-        return this.applicableUnits;
+        return Collections.unmodifiableSet(this.applicableUnits);
+    }
+
+    void addApplicableUnit(Unit unit) {
+        Objects.requireNonNull(unit);
+        this.applicableUnits.add(unit);
     }
 
     public Set<QuantityKind> getBroaderQuantityKinds() {
-        return this.broaderQuantityKinds;
+        return Collections.unmodifiableSet(this.broaderQuantityKinds);
+    }
+
+    void addBroaderQuantityKind(QuantityKind quantityKind) {
+        Objects.requireNonNull(quantityKind);
+        this.broaderQuantityKinds.add(quantityKind);
+    }
+
+    public Set<QuantityKind> getExactMatches() {
+        return Collections.unmodifiableSet(this.exactMatches);
+    }
+
+    void addExactMatches(QuantityKind quantityKind) {
+        Objects.requireNonNull(quantityKind);
+        this.exactMatches.add(quantityKind);
     }
 
     public Optional<String> getDimensionVectorIri() {
         return Optional.ofNullable(dimensionVectorIri);
+    }
+
+    public Optional<String> getQkdvNumeratorIri() {
+        return Optional.ofNullable(qkdvNumeratorIri);
+    }
+
+    public Optional<String> getQkdvDenominatorIri() {
+        return Optional.ofNullable(qkdvDenominatorIri);
     }
 
     public Optional<String> getSymbol() {
@@ -132,6 +209,11 @@ public class QuantityKind extends SelfSmuggler {
 
     public Optional<LangString> getLabelForLanguageTag(String languageTag) {
         return labels.getLangStringForLanguageTag(languageTag, null, false);
+    }
+
+    public Optional<String> getLabelForLanguageTag(
+            String language, String fallbackLanguage, boolean allowAnyIfNoMatch) {
+        return labels.getStringForLanguageTag(language, fallbackLanguage, allowAnyIfNoMatch);
     }
 
     public boolean hasLabel(String label) {

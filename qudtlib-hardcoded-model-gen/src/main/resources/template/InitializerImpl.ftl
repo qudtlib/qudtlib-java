@@ -100,7 +100,10 @@ public class InitializerImpl implements Initializer {
             .addQuantityKind(definitions.expectQuantityKindDefinition(${q(quantityKind.iri)}))
             </#list>
             <#list unit.unitOfSystems as sou>
-            .addUnitOfSystem(definitions.expectSystemOfUnitsDefinition(${q(sou.iri)}))
+            .addSystemOfUnits(definitions.expectSystemOfUnitsDefinition(${q(sou.iri)}))
+            </#list>
+            <#list unit.exactMatches as exactMatch>
+            .addExactMatch(definitions.expectUnitDefinition(${q(exactMatch.iri)}))
             </#list>
             ;
         definitions.addUnitDefinition(def);
@@ -119,6 +122,8 @@ public class InitializerImpl implements Initializer {
             QuantityKind
                 .definition(${q(iri)})
                 .dimensionVectorIri(${optStr(quantityKind.dimensionVectorIri)})
+                .qkdvNumeratorIri(${optStr(quantityKind.qkdvNumeratorIri)})
+                .qkdvDenominatorIri(${optStr(quantityKind.qkdvDenominatorIri)})
                 <#if quantityKind.symbol.isPresent()>
                 .symbol(${optStr(quantityKind.symbol)})
                 </#if>
@@ -130,6 +135,9 @@ public class InitializerImpl implements Initializer {
                 </#list>
                 <#list quantityKind.broaderQuantityKinds as qk>
                 .addBroaderQuantityKind(definitions.expectQuantityKindDefinition(${q(qk.iri)}))
+                </#list>
+                <#list quantityKind.exactMatches as exactMatch>
+                .addExactMatch(definitions.expectQuantityKindDefinition(${q(exactMatch.iri)}))
                 </#list>
                 ;
         definitions.addQuantityKindDefinition(def);

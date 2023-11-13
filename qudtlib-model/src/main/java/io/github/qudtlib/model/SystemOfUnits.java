@@ -13,7 +13,7 @@ public class SystemOfUnits extends SelfSmuggler {
         return new Definition(iri);
     }
 
-    static Definition definition(SystemOfUnits sou) {
+    public static Definition definition(SystemOfUnits sou) {
         return new Definition(sou);
     }
 
@@ -102,8 +102,22 @@ public class SystemOfUnits extends SelfSmuggler {
         return labels.getAll();
     }
 
+    public Optional<LangString> getLabelForLanguageTag(String languageTag) {
+        return labels.getLangStringForLanguageTag(languageTag, null, false);
+    }
+
+    public Optional<String> getLabelForLanguageTag(
+            String language, String fallbackLanguage, boolean allowAnyIfNoMatch) {
+        return labels.getStringForLanguageTag(language, fallbackLanguage, allowAnyIfNoMatch);
+    }
+
     public Set<Unit> getBaseUnits() {
-        return baseUnits;
+        return Collections.unmodifiableSet(baseUnits);
+    }
+
+    void addBaseUnit(Unit unit) {
+        Objects.requireNonNull(unit);
+        this.baseUnits.add(unit);
     }
 
     public boolean hasBaseUnit(Unit toCheck) {

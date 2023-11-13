@@ -41,6 +41,7 @@
         <module>qudtlib-test</module>
         <module>qudtlib-example</module>
         <module>qudtlib-js-gen</module>
+        <module>qudtlib-tools</module>
     </modules>
 
 

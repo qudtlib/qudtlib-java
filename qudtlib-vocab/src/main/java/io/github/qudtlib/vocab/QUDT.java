@@ -290,7 +290,9 @@ public class QUDT {
     /** <code>applicable unit</code> * */
     public static final IRI applicableUnit = create("applicableUnit");
 
-    /** <code>base CGS unit dimensions</code> * */
+    /** <code>applicable System of Units for a unit</code> */
+    public static final IRI applicableSystem = create("applicableSystem");
+    /** /** <code>base CGS unit dimensions</code> * */
     public static final IRI baseCGSUnitDimensions = create("baseCGSUnitDimensions");
 
     /** <code>base dimension enumeration</code> * */
@@ -881,6 +883,11 @@ public class QUDT {
 
     /** <code>Wikipedia</code> * */
     public static final IRI Wikipedia = create("Wikipedia");
+
+    public static final IRI expression = create("expression");
+    public static IRI LatexString = create("LatexString");
+
+    public static IRI UCUMcs = create("UCUMcs");
 
     private static IRI create(String localName) {
         return SimpleValueFactory.getInstance().createIRI(QUDT.NAMESPACE, localName);

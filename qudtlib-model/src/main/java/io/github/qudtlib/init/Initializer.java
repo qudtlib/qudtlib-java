@@ -119,15 +119,13 @@ public interface Initializer {
     Definitions loadData();
 
     default Map<String, Unit> buildUnits(Definitions definitions) {
-        return Collections.unmodifiableMap(
-                definitions.unitDefinitions.entrySet().stream()
-                        .collect(toMap(e -> e.getKey(), e -> e.getValue().build())));
+        return definitions.unitDefinitions.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue().build()));
     }
 
     default Map<String, QuantityKind> buildQuantityKinds(Definitions definitions) {
-        return Collections.unmodifiableMap(
-                definitions.quantityKindDefinitions.entrySet().stream()
-                        .collect(toMap(e -> e.getKey(), e -> e.getValue().build())));
+        return definitions.quantityKindDefinitions.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue().build()));
     }
 
     default Map<String, Prefix> buildPrefixes(Definitions definitions) {

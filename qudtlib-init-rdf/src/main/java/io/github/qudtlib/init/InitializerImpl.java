@@ -107,13 +107,20 @@ public class InitializerImpl implements Initializer {
                                         compose(
                                                 Value::stringValue,
                                                 definitions::expectQuantityKindDefinition)))
-                        .addUnitOfSystem(
+                        .addSystemOfUnits(
                                 getIfPresent(
                                         bs,
                                         "systemOfUnits",
                                         compose(
                                                 Value::stringValue,
-                                                definitions::expectSystemOfUnitsDefinition)));
+                                                definitions::expectSystemOfUnitsDefinition)))
+                        .addExactMatch(
+                                getIfPresent(
+                                        bs,
+                                        "exactMatch",
+                                        compose(
+                                                Value::stringValue,
+                                                definitions::expectUnitDefinition)));
             }
             if (unitDefinition != null) {
                 definitions.addUnitDefinition(unitDefinition);
@@ -169,6 +176,11 @@ public class InitializerImpl implements Initializer {
                     quantityKindDefinition.addApplicableUnit(
                             definitions.expectUnitDefinition(
                                     bs.getValue("applicableUnit").stringValue()));
+                }
+                if (bs.hasBinding("exactMatch")) {
+                    quantityKindDefinition.addExactMatch(
+                            definitions.expectQuantityKindDefinition(
+                                    bs.getValue("exactMatch").stringValue()));
                 }
             }
             if (quantityKindDefinition != null) {
@@ -358,6 +370,8 @@ public class InitializerImpl implements Initializer {
     private static QuantityKind.Definition makeQuantityKindBuilder(BindingSet bs) {
         return QuantityKind.definition(bs.getValue("quantityKind").stringValue())
                 .dimensionVectorIri(getIfPresent(bs, "dimensionVector", Value::stringValue))
+                .qkdvNumeratorIri(getIfPresent(bs, "qkdvNumerator", Value::stringValue))
+                .qkdvDenominatorIri(getIfPresent(bs, "qkdvDenominator", Value::stringValue))
                 .symbol(getIfPresent(bs, "symbol", Value::stringValue));
     }
 

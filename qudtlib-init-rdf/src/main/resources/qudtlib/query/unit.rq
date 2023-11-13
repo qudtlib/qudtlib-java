@@ -13,6 +13,9 @@ SELECT * where
         rdfs:label ?label .
     }
     optional {
+        ?unit qudt:exactMatch ?exactMatch
+    }
+    optional {
        ?unit qudt:hasQuantityKind ?quantityKind
     }
     optional {

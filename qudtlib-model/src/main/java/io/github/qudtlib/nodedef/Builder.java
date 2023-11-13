@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 
 public interface Builder<T> {
     static <T> Set<T> buildSet(Set<Builder<T>> builders) {
-        return builders.stream().map(Builder::build).collect(Collectors.toUnmodifiableSet());
+        return builders.stream().map(Builder::build).collect(Collectors.toSet());
     }
 
     static <T> List<T> buildList(List<Builder<T>> builders) {
-        return builders.stream().map(Builder::build).collect(Collectors.toUnmodifiableList());
+        return builders.stream().map(Builder::build).collect(Collectors.toList());
     }
 
     public T build();

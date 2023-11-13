@@ -4,21 +4,29 @@ PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix skos: <http://www.w3.org/2004/02/skos/core#>
 
-SELECT * where
+SELECT DISTINCT * where
 {
     ?quantityKind a qudt:QuantityKind;
-        rdfs:label ?label .
-
+        qudt:exactMatch?/rdfs:label ?label .
     optional {
-        ?quantityKind qudt:applicableUnit ?applicableUnit
+        ?quantityKind qudt:exactMatch ?exactMatch
     }
     optional {
-        ?quantityKind qudt:hasDimensionVector ?dimensionVector
+        ?quantityKind qudt:exactMatch?/qudt:applicableUnit ?applicableUnit
     }
     optional {
-       ?quantityKind qudt:symbol ?symbol
+        ?quantityKind qudt:exactMatch?/qudt:hasDimensionVector ?dimensionVector
     }
     optional {
-       ?quantityKind skos:broader ?broaderQuantityKind
+            ?quantityKind qudt:exactMatch?/qudt:qkdvNumerator ?qkdvNumerator
+    }
+    optional {
+            ?quantityKind qudt:exactMatch?/qudt:qkdvDenominator ?qkdvDenominator
+    }
+    optional {
+       ?quantityKind qudt:exactMatch?/qudt:symbol ?symbol
+    }
+    optional {
+       ?quantityKind qudt:exactMatch?/skos:broader ?broaderQuantityKind
     }
 } order by ?quantityKind
