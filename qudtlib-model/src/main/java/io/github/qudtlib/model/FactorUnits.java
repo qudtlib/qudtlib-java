@@ -297,9 +297,7 @@ public class FactorUnits {
                 sbDenom.deleteCharAt(sbDenom.length() - 1);
             }
             if (cnt > 1) {
-                sbDenom
-                    .insert(0,"(")
-                    .append(")");
+                sbDenom.insert(0, "(").append(")");
             }
             sb.append("/");
             sb.append(sbDenom);
