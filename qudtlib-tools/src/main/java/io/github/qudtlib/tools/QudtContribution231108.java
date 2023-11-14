@@ -1,10 +1,10 @@
 package io.github.qudtlib.tools;
 
+import static io.github.qudtlib.model.Units.*;
+
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.*;
-import io.github.qudtlib.tools.entitygen.QudtEntityGenerator;
-
-import static io.github.qudtlib.model.Units.*;
+import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
 
 public class QudtContribution231108 {
     public static void main(String[] args) throws Exception {
@@ -57,8 +57,7 @@ public class QudtContribution231108 {
                     // Feuchtigkeitskapazität_kg/kg°K
                     // IFC: unsure. TODO: ask
                     FactorUnits KgPerKgK =
-                            FactorUnits.ofFactorUnitSpec(
-                                    KiloGM, 1, KiloGM, -1, Units.K, -1);
+                            FactorUnits.ofFactorUnitSpec(KiloGM, 1, KiloGM, -1, Units.K, -1);
                     tool.addDerivedUnit(
                             KgPerKgK,
                             unitDef ->
@@ -91,12 +90,16 @@ public class QudtContribution231108 {
                             unitDef ->
                                     unitDef.addSystemOfUnits(Qudt.SystemsOfUnits.SI)
                                             .addQuantityKind(qk));
-                    tool.addDerivedUnit(FactorUnits.ofFactorUnitSpec(L, 1, SEC, -1, W, -1),
-                                    unitDef -> unitDef.addSystemOfUnits(SystemsOfUnits.SI)
-                                                    .addQuantityKind(qk));
-                    tool.addDerivedUnit(FactorUnits.ofFactorUnitSpec(L, 1, SEC, -1, KiloW, -1),
-                                    unitDef -> unitDef.addSystemOfUnits(SystemsOfUnits.SI)
-                                                    .addQuantityKind(qk));
+                    tool.addDerivedUnit(
+                            FactorUnits.ofFactorUnitSpec(L, 1, SEC, -1, W, -1),
+                            unitDef ->
+                                    unitDef.addSystemOfUnits(SystemsOfUnits.SI)
+                                            .addQuantityKind(qk));
+                    tool.addDerivedUnit(
+                            FactorUnits.ofFactorUnitSpec(L, 1, SEC, -1, KiloW, -1),
+                            unitDef ->
+                                    unitDef.addSystemOfUnits(SystemsOfUnits.SI)
+                                            .addQuantityKind(qk));
                 });
         entityGenerator.unitOfWork(
                 tool -> {
@@ -240,8 +243,7 @@ public class QudtContribution231108 {
                     tool.checkQuantityKindExists(
                             FactorUnits.ofFactorUnitSpec(Units.J, 1, Units.GM, -1, Units.K, -1));
                     tool.addDerivedUnit(
-                            FactorUnits.ofFactorUnitSpec(
-                                    Units.J, 1, KiloGM, -1, Units.DEG_C, -1),
+                            FactorUnits.ofFactorUnitSpec(Units.J, 1, KiloGM, -1, Units.DEG_C, -1),
                             unitDef -> unitDef.addSystemOfUnits(SystemsOfUnits.SI));
                     tool.addDerivedUnit(
                             FactorUnits.ofFactorUnitSpec(Units.J, 1, Units.GM, -1, Units.DEG_C, -1),
@@ -256,12 +258,9 @@ public class QudtContribution231108 {
                 });
 
         entityGenerator.unitOfWork(
-                        tool -> {
-                            tool.checkQuantityKindExists(FactorUnits.ofFactorUnitSpec(LM,1, W,-1));
-                        }
-        );
-
-
+                tool -> {
+                    tool.checkQuantityKindExists(FactorUnits.ofFactorUnitSpec(LM, 1, W, -1));
+                });
 
         entityGenerator.writeRdf();
     }

@@ -869,4 +869,10 @@ public class QudtTests {
                     .toArray(size -> (Object[]) Array.newInstance(componentType, size));
         }
     }
+
+    @Test
+    public void testLabel() {
+        Unit u = Qudt.Units.TONNE__PER__M3;
+        Assertions.assertEquals("t/m³", u.getSymbol().get());
+    }
 }

@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.entitygen.model;
+package io.github.qudtlib.tools.contribute.model;
 
 import io.github.qudtlib.vocab.QUDT;
 import org.eclipse.rdf4j.model.IRI;

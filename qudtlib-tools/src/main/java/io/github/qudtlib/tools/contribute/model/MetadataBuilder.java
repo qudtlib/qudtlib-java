@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.entitygen.model;
+package io.github.qudtlib.tools.contribute.model;
 
 public abstract class MetadataBuilder<T extends CommonEntityMetadata> {
     protected T product;

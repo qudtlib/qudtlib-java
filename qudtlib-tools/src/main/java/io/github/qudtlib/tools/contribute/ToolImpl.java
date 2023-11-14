@@ -1,41 +1,60 @@
-package io.github.qudtlib.tools.entitygen;
+package io.github.qudtlib.tools.contribute;
 
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.QudtEntityAtRuntimeAdder;
 import io.github.qudtlib.model.*;
-import io.github.qudtlib.tools.entitygen.model.*;
-import io.github.qudtlib.tools.entitygen.support.QuantityKindTree;
+import io.github.qudtlib.tools.contribute.model.*;
+import io.github.qudtlib.tools.contribute.support.QuantityKindTree;
 import io.github.qudtlib.vocab.QUDT;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.common.exception.ValidationException;
+import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.model.vocabulary.SKOS;
+import org.eclipse.rdf4j.model.vocabulary.*;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
+import org.eclipse.rdf4j.sail.shacl.ShaclSailValidationException;
 
 class ToolImpl implements Tool {
     ToolImpl() {
-        Repository repo = new SailRepository(new MemoryStore());
+        Repository repo = new SailRepository(new ShaclSail(new MemoryStore()));
         con = repo.getConnection();
+        loadShapes(con);
+    }
+
+    private void loadShapes(RepositoryConnection con) {
+        String shaclFile = "/contribute/contribution-shapes.ttl";
+        try {
+            Reader shaclRules =
+                    new InputStreamReader(this.getClass().getResourceAsStream(shaclFile));
+            con.begin();
+            con.add(shaclRules, "", RDFFormat.TURTLE, RDF4J.SHACL_SHAPE_GRAPH);
+        } catch (Exception e) {
+            System.err.println(
+                    String.format(
+                            "Error loading SHACL shapes expected on the classpath at %s",
+                            shaclFile));
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        con.commit();
     }
 
     private RepositoryConnection con;
@@ -43,10 +62,22 @@ class ToolImpl implements Tool {
     private List<UnitForContribution> newUnits = new ArrayList<>();
 
     void writeRdf(OutputStream out) {
-        newQuantityKinds.stream().forEach(qk -> ToolImpl.save(qk, con));
-        newUnits.stream().forEach(u -> ToolImpl.save(u, con));
-        con.commit();
-        ToolImpl.writeOut(con, out);
+        try {
+            newQuantityKinds.stream().forEach(qk -> ToolImpl.save(qk, con));
+            newUnits.stream().forEach(u -> ToolImpl.save(u, con));
+            con.commit();
+            ToolImpl.writeOut(con, out);
+        } catch (RepositoryException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof ShaclSailValidationException) {
+                Model validationReportModel =
+                        ((ValidationException) cause).validationReportAsModel();
+                // use validationReportModel to understand validation violations
+
+                Rio.write(validationReportModel, System.out, RDFFormat.TURTLE);
+            }
+            throw e;
+        }
         con.close();
     }
 

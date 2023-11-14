@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.entitygen;
+package io.github.qudtlib.tools.contribute;
 
 import java.util.function.Consumer;
 

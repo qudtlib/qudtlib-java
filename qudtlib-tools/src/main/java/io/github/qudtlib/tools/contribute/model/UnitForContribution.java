@@ -1,8 +1,8 @@
-package io.github.qudtlib.tools.entitygen.model;
+package io.github.qudtlib.tools.contribute.model;
 
 import io.github.qudtlib.model.FactorUnits;
 import io.github.qudtlib.model.Unit;
-import io.github.qudtlib.tools.entitygen.support.ContributionHelper;
+import io.github.qudtlib.tools.contribute.support.ContributionHelper;
 
 public class UnitForContribution {
 
