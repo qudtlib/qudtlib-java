@@ -72,7 +72,7 @@ public class Unit extends SelfSmuggler {
             return (T) this;
         }
 
-        <T extends Definition> T addLabel(String label, String languageTag) {
+        public <T extends Definition> T addLabel(String label, String languageTag) {
             if (label != null) {
                 return this.addLabel(new LangString(label, languageTag));
             }

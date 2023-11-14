@@ -399,13 +399,14 @@ public class Qudt {
         Objects.requireNonNull(unit);
         FractionalDimensionVector fdv = FractionalUnits.getFractionalDimensionVector(unit);
         return Qudt.units.values().stream()
-                .filter(u -> {
-                    try {
-                        return fdv.equals(FractionalUnits.getFractionalDimensionVector(u));
-                    } catch (Exception e){
-                        return false;
-                    }
-                })
+                .filter(
+                        u -> {
+                            try {
+                                return fdv.equals(FractionalUnits.getFractionalDimensionVector(u));
+                            } catch (Exception e) {
+                                return false;
+                            }
+                        })
                 .collect(Collectors.toList());
     }
 
