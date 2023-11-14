@@ -4,7 +4,7 @@ import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.FactorUnits;
 import io.github.qudtlib.model.QuantityKind;
 import io.github.qudtlib.model.Units;
-import io.github.qudtlib.tools.entitygen.QudtEntityGenerator;
+import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
 
 public class QudtContributionExample {
     public static void main(String[] args) {

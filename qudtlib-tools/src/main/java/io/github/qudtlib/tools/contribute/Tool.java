@@ -1,11 +1,11 @@
-package io.github.qudtlib.tools.entitygen;
+package io.github.qudtlib.tools.contribute;
 
 import io.github.qudtlib.model.DerivedUnitSearchMode;
 import io.github.qudtlib.model.FactorUnits;
 import io.github.qudtlib.model.QuantityKind;
 import io.github.qudtlib.model.Unit;
-import io.github.qudtlib.tools.entitygen.model.QuantityKindMetadata;
-import io.github.qudtlib.tools.entitygen.model.UnitMetadata;
+import io.github.qudtlib.tools.contribute.model.QuantityKindMetadata;
+import io.github.qudtlib.tools.contribute.model.UnitMetadata;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;

@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.entitygen.model;
+package io.github.qudtlib.tools.contribute.model;
 
 public class QuantityKindMetadata extends CommonEntityMetadata {
     public QuantityKindMetadata() {}

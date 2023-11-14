@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.entitygen.model;
+package io.github.qudtlib.tools.contribute.model;
 
 import org.eclipse.rdf4j.model.base.CoreDatatype;
 

@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.entitygen.support;
+package io.github.qudtlib.tools.contribute.support;
 
 import io.github.qudtlib.model.QuantityKind;
 import io.github.qudtlib.model.QudtNamespaces;

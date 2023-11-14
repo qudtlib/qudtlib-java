@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.entitygen.model;
+package io.github.qudtlib.tools.contribute.model;
 
 import io.github.qudtlib.model.FactorUnits;
 import io.github.qudtlib.model.QuantityKind;
