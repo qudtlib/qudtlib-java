@@ -225,13 +225,36 @@ public class Qudt {
 
     /**
      * Returns the base unit of the specified scaled {@code unit}. For example, {@code
-     * unscale(Qudt.Units.KiloM)} returns {@code Qudt.Units.M}
+     * unscale(Qudt.Units.KiloM)} returns {@code Qudt.Units.M}. {@code Qudt.Units.KiloGM} as well as
+     * any unit that does not have a prefix (such as {@code Qudt.Units.HR}) are treated as non-scaled units, i.e. returned
+     * directly.
      *
      * @param unit the scaled unit
      * @return the base unit
      */
     public static Unit unscale(Unit unit) {
+        return unscale(unit, true, true);
+    }
+
+    /**
+     * Returns the base unit of the specified scaled {@code unit}. For example, {@code
+     * unscale(Qudt.Units.KiloM)} returns {@code Qudt.Units.M}. The parameter {@code treatKiloGmAsUnscaled} and {@code treatPrefixlessAsUnscaled} decide
+     * whether {@code Qudt.Units.KiloGM} and units without prefixes (such as {@code Qudt.Units.HR}), respectively, are treated a non-scaled units.
+     * directly.
+     * @param unit
+     * @param treatKiloGmAsUnscaled
+     * @param treatPrefixlessAsUnscaled
+     * @return
+     */
+    public static Unit unscale(
+            Unit unit, boolean treatKiloGmAsUnscaled, boolean treatPrefixlessAsUnscaled) {
         if (unit.getScalingOf().isEmpty()) {
+            return unit;
+        }
+        if (treatPrefixlessAsUnscaled && unit.getPrefix().isEmpty()) {
+            return unit;
+        }
+        if (treatKiloGmAsUnscaled && unit.getIriAbbreviated().equals("unit:KiloGM")) {
             return unit;
         }
         return unit.getScalingOf().get();
