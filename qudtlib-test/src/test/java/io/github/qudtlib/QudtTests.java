@@ -871,8 +871,15 @@ public class QudtTests {
     }
 
     @Test
-    public void testLabel() {
+    public void testSymbol() {
         Unit u = Qudt.Units.TONNE__PER__M3;
         Assertions.assertEquals("t/m³", u.getSymbol().get());
+        Assertions.assertEquals("J/(kg⋅K)", J__PER__KiloGM__K.getSymbol().get());
+    }
+
+    @Test
+    public void testUcumCode() {
+        Assertions.assertEquals("t.m-3", Qudt.Units.TONNE__PER__M3.getUcumCode().get());
+        Assertions.assertEquals("J.kg-1.K-1", J__PER__KiloGM__K.getUcumCode().get());
     }
 }
