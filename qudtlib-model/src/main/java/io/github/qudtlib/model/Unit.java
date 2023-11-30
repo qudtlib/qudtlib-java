@@ -132,6 +132,18 @@ public class Unit extends SelfSmuggler {
             return (T) this;
         }
 
+        public <T extends Definition> T setFactorUnits(FactorUnits factorUnits) {
+            doIfPresent(factorUnits, f -> this.setFactorUnits(f.getFactorUnits()));
+            return (T) this;
+        }
+
+        public <T extends Definition> T setFactorUnits(Collection<FactorUnit> factorUnits) {
+            this.factorUnits = new ArrayList<>();
+            doIfPresent(
+                    factorUnits, f -> factorUnits.stream().forEach(fu -> this.addFactorUnit(fu)));
+            return (T) this;
+        }
+
         public <T extends Definition> T currencyCode(String currencyCode) {
             this.currencyCode = currencyCode;
             return (T) this;
