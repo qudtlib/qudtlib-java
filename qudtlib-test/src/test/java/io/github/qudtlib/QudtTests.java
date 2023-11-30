@@ -1,6 +1,5 @@
 package io.github.qudtlib;
 
-import static io.github.qudtlib.model.QuantityKinds.*;
 import static io.github.qudtlib.model.Units.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -485,7 +484,7 @@ public class QudtTests {
         Assertions.assertNotNull(fahrenheit);
         MatcherAssert.assertThat(
                 fahrenheit.getValue(),
-                Matchers.comparesEqualTo(new BigDecimal("212.0003929999999462664000000000043")));
+                Matchers.comparesEqualTo(new BigDecimal("211.9999999999999462664000000000043")));
         Assertions.assertEquals(Qudt.unitIriFromLocalname("DEG_F"), fahrenheit.getUnit().getIri());
     }
 
@@ -493,14 +492,14 @@ public class QudtTests {
     public void testConvert_Celsius_to_Fahrenheit_2() {
         MatcherAssert.assertThat(
                 Qudt.convert(new BigDecimal("100"), Units.DEG_C, Units.DEG_F),
-                Matchers.comparesEqualTo(new BigDecimal("212.0003929999999462664000000000043")));
+                Matchers.comparesEqualTo(new BigDecimal("211.9999999999999462664000000000043")));
     }
 
     @Test
     public void testConvert_Fahrenheit_to_Celsius() {
         MatcherAssert.assertThat(
                 Qudt.convert(new BigDecimal("100"), Units.DEG_F, Units.DEG_C),
-                Matchers.comparesEqualTo(new BigDecimal("37.7775594444444693186492")));
+                Matchers.comparesEqualTo(new BigDecimal("37.777777777777802652")));
     }
 
     @Test
