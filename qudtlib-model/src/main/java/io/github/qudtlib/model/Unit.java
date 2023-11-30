@@ -533,7 +533,23 @@ public class Unit extends SelfSmuggler {
         if (scalingOf != null && scalingOf.getSymbol().isPresent() && prefix != null) {
             return prefix.getSymbol() + scalingOf.getSymbol().get();
         }
-        return "unit:" + iri.replaceAll(".+/([^/]+)", "$1");
+        return QudtNamespaces.unit.abbreviate(this.iri);
+    }
+
+    public boolean isCurrencyUnit() {
+        return QudtNamespaces.currency.isFullNamespaceIri(this.iri);
+    }
+
+    public String getIriLocalname() {
+        return this.isCurrencyUnit()
+                ? QudtNamespaces.currency.getLocalName(this.iri)
+                : QudtNamespaces.unit.getLocalName(this.iri);
+    }
+
+    public String getIriAbbreviated() {
+        return this.isCurrencyUnit()
+                ? QudtNamespaces.currency.abbreviate(this.iri)
+                : QudtNamespaces.unit.abbreviate(this.iri);
     }
 
     private boolean findInBasesRecursively(Unit toFind) {
