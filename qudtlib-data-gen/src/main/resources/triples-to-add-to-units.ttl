@@ -34,3 +34,383 @@ unit:L qudt:factorUnit [
     qudt:unit unit:DeciM;
     qudt:exponent 3
 ] .
+
+
+# Triples added until upcoming PR is merged
+
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix sou: <http://qudt.org/vocab/sou/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix qk: <http://qudt.org/vocab/quantitykind/> .
+
+unit:KiloN-PER-M a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:LinearForce;
+  qudt:conversionMultiplier 1000.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H0T-2D0>;
+  qudt:symbol "kN/m";
+  qudt:ucumCode "kN.m-1"^^qudt:UCUMcs;
+  rdfs:label "Kilonewton per metre"@en;
+  qudt:plainTextDescription "Scaling of Newton per meter by 1000" .
+
+unit:J-PER-M2-K a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:HeatCapacityPerArea;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H-1T-2D0>;
+  qudt:symbol "J/(m²·K)";
+  qudt:ucumCode "J.m-2.K-1"^^qudt:UCUMcs;
+  rdfs:label "joule per meter persegi  kelvin"@ms, "dżul na  kwadratowymetrokelwin"@pl,
+    "joule por metro quadrado kelvin"@pt, "joule per metrekare kelvin"@tr, "джоуль на метрквадратный -кельвин"@ru,
+    "Joule je Quadratmeter Kelvin"@de, "julio pormetro cuadrado kelvin"@es, "joule pe metru pătrat-kelvin"@ro,
+    "joule na čtvereční metr kelvin"@cs, "joule par mètre carré-kelvin"@fr, "joule per square metre kelvin"@en,
+    "joule al metro quadrato per kelvin"@it, "joule na kvadratni meter kelvin"@sl;
+  qudt:plainTextDescription "TODO " .
+
+unit:KiloGM-PER-KiloGM-K a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:ThermalExpansionCoefficient;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H-1T0D0>;
+  qudt:symbol "kg/(kg·K)";
+  qudt:ucumCode "kg.kg-1.K-1"^^qudt:UCUMcs;
+  rdfs:label "kilogram per kilogram kelvin"@en, "kilogram pe kilogram-kelvin"@ro, "Kilogramm je Kilogramm Kelvin"@de,
+    "kilogram per kilogram kelvin"@ms, "chilogrammo al chilogrammo per kelvin"@it, "kilogramme par kilogramme-kelvin"@fr,
+    "kilogram na kilogram kelvin"@cs, "kilogram na kilogramokelwin"@pl, "quilograma por quilograma kelvin"@pt,
+    "kilogramo porkilogramo kelvin"@es, "kilogram na kilogram kelvin"@sl, "килограмм на килограмм-кельвин"@ru,
+    "kilogram per kilogram kelvin"@tr;
+  qudt:plainTextDescription "TODO " .
+
+unit:M3-PER-W-SEC a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:VolumeFlowRatePerPower;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M-1H0T2D0>;
+  qudt:symbol "m³/(W·s)";
+  qudt:ucumCode "m3.W-1.s-1"^^qudt:UCUMcs;
+  rdfs:label "кубический метр на ватт-секунда"@ru, "kubikMeter je Watt Sekunde"@de,
+    "metru cub pe watt-secundă"@ro, "metro cúbico porvatio segundo"@es, "kubični meter na watt sekunda"@sl,
+    "metr sześcienny na watosekunda"@pl, "metro cubo al watt per secondo"@it, "meter kubik per watt saat"@ms,
+    "metreküp per watt saniye"@tr, "metro cúbico por watt segundo"@pt, "cubic metre per watt second"@en,
+    "mètre cube par watt-seconde"@fr, " krychlovýmetr na watt sekunda"@cs;
+  qudt:plainTextDescription "TODO " .
+
+unit:L-PER-SEC-W a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:VolumeFlowRatePerPower;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M-1H0T2D0>;
+  qudt:symbol "L/(s·W)";
+  qudt:ucumCode "L.s-1.W-1"^^qudt:UCUMcs;
+  rdfs:label "Litre per second watt"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:L-PER-SEC-KiloW a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:VolumeFlowRatePerPower;
+  qudt:conversionMultiplier 0.001;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M-1H0T2D0>;
+  qudt:symbol "L/(s·kW)";
+  qudt:ucumCode "L.s-1.kW-1"^^qudt:UCUMcs;
+  rdfs:label "Litre per second kilowatt"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:KiloN-M-PER-M a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:TorquePerLength;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D0>;
+  qudt:symbol "kN⋅m/m";
+  qudt:ucumCode "kN.m.m-1"^^qudt:UCUMcs;
+  rdfs:label "Kilonewton Metre per metre"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:N-M-PER-DEG a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:TorsionalSpringConstant;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M1H0T-2D-1>;
+  qudt:symbol "N⋅m/°";
+  qudt:ucumCode "N.m.deg-1"^^qudt:UCUMcs;
+  rdfs:label "newton metre per Degree"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:KiloN-M-PER-DEG a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:TorsionalSpringConstant;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M1H0T-2D-1>;
+  qudt:symbol "kN⋅m/°";
+  qudt:ucumCode "kN.m.deg-1"^^qudt:UCUMcs;
+  rdfs:label "Kilonewton Metre per Degree"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:EUR-PER-W-SEC a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:EnergyCostRate;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T2D1>;
+  qudt:symbol "€/(W·s)";
+  rdfs:label "Euro per watt second"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:EUR-PER-W-HR a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:EnergyCostRate;
+  qudt:conversionMultiplier 0.0002777777777777777777777777777777778;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T2D1>;
+  qudt:symbol "€/(W·hr)";
+  rdfs:label "Euro per watt hour"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:CentiM6 a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:WarpingConstant;
+  qudt:conversionMultiplier 0.000000000001;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L6I0M0H0T0D0>;
+  qudt:symbol "cm⁶";
+  qudt:ucumCode "cm6"^^qudt:UCUMcs;
+  rdfs:label "reciprocal null"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:KiloN-PER-M2 a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:ForcePerArea;
+  qudt:conversionMultiplier 1000.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-1I0M1H0T-2D0>;
+  qudt:symbol "kN/m²";
+  qudt:ucumCode "kN.m-2"^^qudt:UCUMcs;
+  rdfs:label "Kilonewton per square metre"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:W-PER-M2-K a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:CoefficientOfHeatTransfer;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H-1T-3D0>;
+  qudt:symbol "W/(m²·K)";
+  qudt:ucumCode "W.m-2.K-1"^^qudt:UCUMcs;
+  rdfs:label "watt na kvadratni meter kelvin"@sl, "watt na čtvereční metr kelvin"@cs,
+    "Watt je Quadratmeter Kelvin"@de, "ватт на метрквадратный -кельвин"@ru, "watt al metro quadrato per kelvin"@it,
+    "watt per square metre kelvin"@en, "watt per metrekare kelvin"@tr, "watt per meter persegi  kelvin"@ms,
+    "watt pe metru pătrat-kelvin"@ro, "wat na  kwadratowymetrokelwin"@pl, "watt par mètre carré-kelvin"@fr,
+    "vatio pormetro cuadrado kelvin"@es, "watt por metro quadrado kelvin"@pt;
+  qudt:plainTextDescription "TODO ", "TODO: plain text description in English" .
+
+unit:J-PER-KiloGM-DEG_C a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:SpecificHeatCapacity;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
+  qudt:symbol "J/(kg·°C)";
+  qudt:ucumCode "J.kg-1.Cel-1"^^qudt:UCUMcs;
+  rdfs:label "joule por quilograma grau celsius"@pt, "joule na kilogram stopinja celzija"@sl,
+    "Joule je Kilogramm Grad Celsius"@de, "joule per kilogram celsius"@tr, "julio porkilogramo grado celsius"@es,
+    "joule na kilogram stupně celsia"@cs, "joule per kilogram darjah celsius"@ms, "joule per kilogram degree celsius"@en,
+    "joule par kilogramme-degré celsius"@fr, "джоуль на килограмм-градус цельсия"@ru,
+    "joule al chilogrammo per grado celsius"@it, "dżul na kilogramostopień celsjusza"@pl,
+    "joule pe kilogram-grad celsius"@ro;
+  qudt:plainTextDescription "TODO " .
+
+unit:J-PER-GM-DEG_C a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:SpecificHeatCapacity;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
+  qudt:symbol "J/(g·°C)";
+  qudt:ucumCode "J.g-1.Cel-1"^^qudt:UCUMcs;
+  rdfs:label "joule per gram degree celsius"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:J-PER-GM-K a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:SpecificHeatCapacity;
+  qudt:conversionMultiplier 1000.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
+  qudt:symbol "J/(g·K)";
+  qudt:ucumCode "J.g-1.K-1"^^qudt:UCUMcs;
+  rdfs:label "joule per gram kelvin"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:M2-PER-SEC2-K a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:SpecificHeatCapacity;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
+  qudt:symbol "m²/(s²·K)";
+  qudt:ucumCode "m2.s2-1.K-1"^^qudt:UCUMcs;
+  rdfs:label "square metre per square second kelvin"@en;
+  qudt:plainTextDescription "TODO " .
+
+unit:M2-PER-W a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:New_Quantity_Kind_for_M2-PER-W;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M-1H0T3D0>;
+  qudt:symbol "m²/W";
+  qudt:ucumCode "m2.W-1"^^qudt:UCUMcs;
+  rdfs:label "square metre per watt"@en, "metru pătrat pe watt"@ro, "meter persegi per watt"@ms,
+    "kvadratni meter na watt"@sl, "metro cuadrado porvatio"@es, "metrekare per watt"@tr,
+    "metro quadrado por watt"@pt, "Quadratmeter je Watt"@de, "квадратный метр на ватт"@ru,
+    "metro quadrato al watt"@it, "mètre carré par watt"@fr, "čtvereční metr na watt"@cs,
+    "metr kwadratowy na wat"@pl;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:PER-DEG_C a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:ThermalExpansionCoefficient;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H-1T0D0>;
+  qudt:symbol "/°C";
+  qudt:ucumCode ".Cel-1"^^qudt:UCUMcs;
+  rdfs:label "darjah celsius"@ms, "grad celsius"@ro, "grado celsius"@es, "degré celsius"@fr,
+    "grado celsius"@it, "reciprocal degree Celsius"@en, "celsius"@tr, "Grad Celsius"@de,
+    "grau celsius"@pt, "stupně celsia"@cs, "градус Цельсия"@ru, "stopinja Celzija"@sl,
+    "stopień celsjusza"@pl;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:EUR-PER-M2 a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:New_Quantity_Kind_for_EUR-PER-M2;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M0H0T0D1>;
+  qudt:symbol "€/m²";
+  rdfs:label "Euro per square metre"@en;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:KiloGM-PER-SEC3-K a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:CoefficientOfHeatTransfer;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H-1T-3D0>;
+  qudt:symbol "kg/(s³·K)";
+  qudt:ucumCode "kg.s-3.K-1"^^qudt:UCUMcs;
+  rdfs:label "kilogram na kubični sekunda kelvin"@sl, "kilogram per saniyeküp kelvin"@tr,
+    "quilograma por segundo cúbico kelvin"@pt, "kilogram per saat kubik kelvin"@ms, "kilogram na  krychlovýsekunda kelvin"@cs,
+    "chilogrammo al secondo cubo per kelvin"@it, "kilogramo porsegundo cúbico kelvin"@es,
+    "килограмм на кубический секунда-кельвин"@ru, "kilogram per cubic second kelvin"@en,
+    "kilogramme par seconde cube-kelvin"@fr, "Kilogramm je Kubiksekunde Kelvin"@de, "kilogram na sekunda sześciennyokelwin"@pl,
+    "kilogram pe secundă cub-kelvin"@ro;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:M2-PER-KiloW a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:New_Quantity_Kind_for_M2-PER-W;
+  qudt:conversionMultiplier 0.001;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M-1H0T3D0>;
+  qudt:symbol "m²/kW";
+  qudt:ucumCode "m2.kW-1"^^qudt:UCUMcs;
+  rdfs:label "square metre per Kilowatt"@en;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:KiloN-PER-M3 a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:SpecificWeight;
+  qudt:conversionMultiplier 1000.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M1H0T-2D0>;
+  qudt:symbol "kN/m³";
+  qudt:ucumCode "kN.m-3"^^qudt:UCUMcs;
+  rdfs:label "Kilonewton per cubic metre"@en;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:L-PER-SEC-M3 a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:New_Quantity_Kind_For_L-PER-SEC-M3;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H0T-1D0>;
+  qudt:symbol "L/(s·m³)";
+  qudt:ucumCode "L.s-1.m-3"^^qudt:UCUMcs;
+  rdfs:label "Litre per second cubic metre"@en;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:KiloN-M-PER-DEG-M a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:New_Quantity_Kind_for_N-M-PER-DEG-M;
+  qudt:conversionMultiplier 1000.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D-1>;
+  qudt:symbol "kN·m/(°·m)";
+  qudt:ucumCode "kN.m.deg-1.m-1"^^qudt:UCUMcs;
+  rdfs:label "kilonewton metre per degree metre"@en;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:EUR-PER-W a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:New_Quantity_Kind_for_EUR-PER-W;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T3D1>;
+  qudt:symbol "€/W";
+  rdfs:label "Euro per watt"@en;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+unit:M2-PER-M a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind qk:AreaPerLength;
+  qudt:conversionMultiplier 1.0;
+  qudt:conversionOffset 0.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M0H0T0D0>;
+  qudt:symbol "m²/m";
+  qudt:ucumCode "m2.m-1"^^qudt:UCUMcs;
+  rdfs:label "meter persegi per meter"@ms, "kvadratni meter na meter"@sl, "Quadratmeter je Meter"@de,
+    "metro quadrato al metro"@it, "čtvereční metr na metr"@cs, "metro cuadrado pormetro"@es,
+    "square metre per metre"@en, "metru pătrat pe metru"@ro, "квадратный метр на метр"@ru,
+    "metro quadrado por metro"@pt, "mètre carré par mètre"@fr, "metr kwadratowy na metr"@pl,
+    "metrekare per metre"@tr;
+  qudt:plainTextDescription "TODO: plain text description in English" .
+
+
