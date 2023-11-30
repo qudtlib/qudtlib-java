@@ -31,6 +31,9 @@ CONSTRUCT {
     FILTER NOT EXISTS {
         ?unit a qudt:Unit
     }
+    FILTER NOT EXISTS {
+        ?unit a qudt:CurrencyUnit
+    }
     OPTIONAL {
         ?unit qudt:isScalingOf/qudt:hasDimensionVector ?dimensionVector .
     }
