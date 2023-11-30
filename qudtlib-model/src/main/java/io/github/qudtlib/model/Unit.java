@@ -36,6 +36,8 @@ public class Unit extends SelfSmuggler {
         private BigDecimal conversionOffset;
         private Set<Builder<QuantityKind>> quantityKinds = new HashSet<>();
         private String symbol;
+
+        private String ucumCode;
         private Set<LangString> labels = new HashSet<>();
         private Builder<Unit> scalingOf;
         private String dimensionVectorIri;
@@ -69,6 +71,11 @@ public class Unit extends SelfSmuggler {
 
         public <T extends Definition> T symbol(String symbol) {
             this.symbol = symbol;
+            return (T) this;
+        }
+
+        public <T extends Definition> T ucumCode(String ucumCode) {
+            this.ucumCode = ucumCode;
             return (T) this;
         }
 
@@ -190,6 +197,7 @@ public class Unit extends SelfSmuggler {
     private final BigDecimal conversionOffset;
     private final Set<QuantityKind> quantityKinds;
     private final String symbol;
+    private final String ucumCode;
     private final LangStrings labels;
     private final Unit scalingOf;
     private final String dimensionVectorIri;
@@ -222,6 +230,7 @@ public class Unit extends SelfSmuggler {
         this.conversionOffset =
                 definition.conversionOffset != null ? definition.conversionOffset : BigDecimal.ZERO;
         this.symbol = definition.symbol;
+        this.ucumCode = definition.ucumCode;
         this.currencyCode = definition.currencyCode;
         this.currencyNumber = definition.currencyNumber;
         this.labels = new LangStrings(definition.labels);
@@ -420,6 +429,10 @@ public class Unit extends SelfSmuggler {
 
     public Optional<String> getSymbol() {
         return Optional.ofNullable(symbol);
+    }
+
+    public Optional<String> getUcumCode() {
+        return Optional.ofNullable(ucumCode);
     }
 
     public Set<LangString> getLabels() {
