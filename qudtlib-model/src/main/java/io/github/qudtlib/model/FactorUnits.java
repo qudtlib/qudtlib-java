@@ -6,6 +6,7 @@ import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -379,6 +380,63 @@ public class FactorUnits {
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.toString();
+    }
+
+    public List<String> generateAllLocalnamePossibilities() {
+        List<String> numeratorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() > 0);
+        List<String> denominatorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() < 0);
+        List<String> completeOptions = new ArrayList<>();
+        for (String numeratorOption : numeratorOptions) {
+            for (String denominatorOption : denominatorOptions) {
+                StringBuilder completeOption = new StringBuilder();
+                if (numeratorOption.length() > 0) {
+                    completeOption.append(numeratorOption);
+                }
+                if (denominatorOption.length() > 0) {
+                    if (completeOption.length() > 0) {
+                        completeOption.append("-");
+                    }
+                    completeOption.append("PER-");
+                    completeOption.append(denominatorOption);
+                }
+                completeOptions.add(completeOption.toString());
+            }
+        }
+        return completeOptions;
+    }
+
+    private List<String> permutateFactorUnitLocalnames(Predicate<FactorUnit> factorUnitPredicate) {
+        return permutate(
+                        this.factorUnits.stream()
+                                .filter(factorUnitPredicate)
+                                .map(
+                                        fu ->
+                                                getLocalname(fu.unit.getIri())
+                                                        + (Math.abs(fu.exponent) > 1
+                                                                ? Math.abs(fu.exponent)
+                                                                : ""))
+                                .collect(toList()))
+                .stream()
+                .map(strings -> strings.stream().collect(Collectors.joining("-")))
+                .collect(toList());
+    }
+
+    private List<List<String>> permutate(List<String> strings) {
+        List<List<String>> ret = new ArrayList<>();
+        if (strings.size() <= 1) {
+            ret.add(strings);
+            return ret;
+        }
+        for (int i = 0; i < strings.size(); i++) {
+            List<String> otherElements = new ArrayList<>(strings);
+            otherElements.remove(i);
+            List<List<String>> othersPermutated = permutate(otherElements);
+            for (List<String> otherPermutated : othersPermutated) {
+                otherPermutated.add(0, strings.get(i));
+            }
+            ret.addAll(othersPermutated);
+        }
+        return ret;
     }
 
     private String getExponentString(int exponent) {
