@@ -121,6 +121,10 @@ public class Qudt {
         return unitRequired(currencyIriFromLocalname(localname));
     }
 
+    public static Optional<Unit> currencyFromLocalname(String localname) {
+        return unit(currencyIriFromLocalname(localname));
+    }
+
     /**
      * Returns the first unit found whose label matches the specified label after replacing any
      * underscore with space and ignoring case (US locale). If more intricate matching is needed,
