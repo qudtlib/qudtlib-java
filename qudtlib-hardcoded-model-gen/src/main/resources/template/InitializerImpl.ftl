@@ -87,6 +87,9 @@ public class InitializerImpl implements Initializer {
             <#if unit.symbol.isPresent()>
             .symbol(${optStr(unit.symbol)})
             </#if>
+            <#if unit.ucumCode.isPresent()>
+            .ucumCode(${optStr(unit.ucumCode)})
+            </#if>
             <#if unit.currencyCode.isPresent()>
             .currencyCode(${optStr(unit.currencyCode)})
             </#if>
