@@ -28,6 +28,9 @@ SELECT * where
        ?unit qudt:symbol ?symbol
     }
     optional {
+       ?unit qudt:ucumCode ?ucumCode
+    }
+    optional {
         ?unit qudt:prefix ?prefix
     }
     optional {
