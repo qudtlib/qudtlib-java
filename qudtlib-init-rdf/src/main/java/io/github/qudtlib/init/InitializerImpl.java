@@ -352,6 +352,7 @@ public class InitializerImpl implements Initializer {
                                 "conversionOffset",
                                 compose(Value::stringValue, s -> new BigDecimal(s))))
                 .symbol(getIfPresent(bs, "symbol", Value::stringValue))
+                .ucumCode(getIfPresent(bs, "ucumCode", Value::stringValue))
                 .currencyCode(getIfPresent(bs, "currencyCode", Value::stringValue))
                 .currencyNumber(
                         getIfPresent(bs, "currencyNumber", v -> ((SimpleLiteral) v).intValue()))
