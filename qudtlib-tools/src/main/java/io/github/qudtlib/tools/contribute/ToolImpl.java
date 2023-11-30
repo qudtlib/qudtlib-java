@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.eclipse.rdf4j.common.exception.ValidationException;
@@ -33,10 +34,24 @@ import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailValidationException;
 
 class ToolImpl implements Tool {
-    ToolImpl() {
-        Repository repo = new SailRepository(new ShaclSail(new MemoryStore()));
-        con = repo.getConnection();
-        loadShapes(con);
+
+    private boolean performShaclValidation;
+
+    public ToolImpl() {
+        this(true);
+    }
+
+    ToolImpl(boolean performShaclValidation) {
+        this.performShaclValidation = performShaclValidation;
+        Repository repo;
+        if (this.performShaclValidation) {
+            repo = new SailRepository(new ShaclSail(new MemoryStore()));
+            con = repo.getConnection();
+            loadShapes(con);
+        } else {
+            repo = new SailRepository(new MemoryStore());
+            con = repo.getConnection();
+        }
     }
 
     private void loadShapes(RepositoryConnection con) {
@@ -61,12 +76,12 @@ class ToolImpl implements Tool {
     private List<QuantityKindForContribution> newQuantityKinds = new ArrayList<>();
     private List<UnitForContribution> newUnits = new ArrayList<>();
 
-    void writeRdf(OutputStream out) {
+    void writeRdf(OutputStream out, Predicate<Statement> statementPredicate) {
         try {
             newQuantityKinds.stream().forEach(qk -> ToolImpl.save(qk, con));
             newUnits.stream().forEach(u -> ToolImpl.save(u, con));
             con.commit();
-            ToolImpl.writeOut(con, out);
+            ToolImpl.writeOut(con, out, statementPredicate);
         } catch (RepositoryException e) {
             Throwable cause = e.getCause();
             if (cause instanceof ShaclSailValidationException) {
@@ -81,7 +96,8 @@ class ToolImpl implements Tool {
         con.close();
     }
 
-    private static void writeOut(RepositoryConnection con, OutputStream out) {
+    private static void writeOut(
+            RepositoryConnection con, OutputStream out, Predicate<Statement> statementPredicate) {
         RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
         writer.startRDF();
         writer.handleNamespace(
@@ -97,7 +113,40 @@ class ToolImpl implements Tool {
                 QudtNamespaces.quantityKind.getBaseIri());
         try {
             for (Statement st : con.getStatements(null, null, null)) {
-                writer.handleStatement(st);
+                if (statementPredicate.test(st)) {
+                    writer.handleStatement(st);
+                }
+            }
+            writer.endRDF();
+        } catch (RDFHandlerException e) {
+            // oh no, do something!
+        }
+    }
+
+    private static void writeOut(Model model, OutputStream out) {
+        writeOut(model, out, s -> true);
+    }
+
+    private static void writeOut(
+            Model model, OutputStream out, Predicate<Statement> statementPredicate) {
+        RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
+        writer.startRDF();
+        writer.handleNamespace(
+                QudtNamespaces.qudt.getAbbreviationPrefix(), QudtNamespaces.qudt.getBaseIri());
+        writer.handleNamespace(
+                QudtNamespaces.unit.getAbbreviationPrefix(), QudtNamespaces.unit.getBaseIri());
+        writer.handleNamespace(
+                QudtNamespaces.systemOfUnits.getAbbreviationPrefix(),
+                QudtNamespaces.systemOfUnits.getBaseIri());
+        writer.handleNamespace("rdfs", RDFS.NAMESPACE);
+        writer.handleNamespace(
+                QudtNamespaces.quantityKind.getAbbreviationPrefix(),
+                QudtNamespaces.quantityKind.getBaseIri());
+        try {
+            for (Statement st : model.getStatements(null, null, null)) {
+                if (statementPredicate.test(st)) {
+                    writer.handleStatement(st);
+                }
             }
             writer.endRDF();
         } catch (RDFHandlerException e) {
@@ -176,6 +225,34 @@ class ToolImpl implements Tool {
             }
             return true;
         }
+    }
+
+    public Set<Unit> findUnitBySymbolOrUcumCode(String symbol) {
+        Set<Unit> units =
+                Qudt.allUnits().stream()
+                        .filter(
+                                u ->
+                                        u.getSymbol().map(s -> s.equals(symbol)).orElse(false)
+                                                || u.getUcumCode()
+                                                        .map(uc -> uc.equals(symbol))
+                                                        .orElse(false))
+                        .collect(Collectors.toSet());
+        System.err.println(
+                String.format(
+                        "Checking if a unit exists in Qudt with symbol or ucumCode '%s'", symbol));
+        if (units.isEmpty()) {
+            System.err.println("  --> none found");
+        } else {
+            System.err.println("  --> found these:");
+            for (Unit unit : units) {
+                printQuantityKinds(
+                        "    " + QudtNamespaces.unit.abbreviate(unit.getIri()),
+                        "   quantity kinds:\n"
+                                + QuantityKindTree.formatQuantityKindForest(
+                                        unit.getQuantityKinds()));
+            }
+        }
+        return units;
     }
 
     @Override
@@ -259,6 +336,166 @@ class ToolImpl implements Tool {
         return List.of();
     }
 
+    @Override
+    public String generateJavaCodeStringForFactorUnits(FactorUnits factorUnits) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("FactorUnits.ofFactorUnitSpec(");
+        for (FactorUnit fu : factorUnits.getFactorUnits()) {
+            String unitConstant = fu.getUnit().getIriLocalname().replaceAll("-", "__");
+            if (fu.getUnit().isCurrencyUnit()) {
+                unitConstant = unitConstant + "_Currency";
+            }
+            sb.append("Qudt.Units.")
+                    .append(unitConstant)
+                    .append(", ")
+                    .append(fu.getExponent())
+                    .append(", ");
+        }
+        sb.deleteCharAt(sb.length() - 2);
+        sb.append(")");
+        return sb.toString();
+    }
+
+    @Override
+    public void addUnitsForUcumCodeBestEffort(String ucumCode, boolean force) {
+        List<FactorUnits> factorUnitsList = parseUcumCodeToFactorUnits(ucumCode);
+        for (FactorUnits factorUnits : factorUnitsList) {
+            addUnitsForFactorUnitsBestEffort(factorUnits, force);
+        }
+    }
+
+    @Override
+    public void addUnitsForFactorUnitsBestEffort(FactorUnits factorUnits, boolean force) {
+        Set<Unit> matchingunits = findExistingQudtUnitsForFactorUnits(factorUnits);
+        if (matchingunits.isEmpty() || force) {
+            System.err.println(String.format("Adding unit for factors %s", factorUnits));
+            FactorUnits unscaled = new FactorUnits(Qudt.unscale(factorUnits.getFactorUnits()));
+            if ((!unscaled.equals(factorUnits))
+                    && Qudt.derivedUnitsFromFactorUnits(
+                                    DerivedUnitSearchMode.BEST_MATCH, unscaled.getFactorUnits())
+                            .isEmpty()) {
+                addDerivedUnitBestEffort(unscaled);
+            }
+            addDerivedUnitBestEffort(factorUnits);
+        } else {
+            System.err.println(
+                    String.format(
+                            "Not adding unit for factors %s - unit already exists: %s",
+                            factorUnits, matchingunits.stream().findFirst().get()));
+        }
+    }
+
+    @Override
+    public Set<Unit> findExistingQudtUnitsForFactorUnits(FactorUnits factorUnits) {
+        Set<Unit> matchingunits =
+                Qudt.allUnits().stream()
+                        .filter(
+                                u -> {
+                                    FactorUnits factorsOfUnit =
+                                            u.hasFactorUnits()
+                                                    ? new FactorUnits(u.getFactorUnits())
+                                                    : FactorUnits.ofUnit(u);
+                                    return (factorUnits
+                                            .generateAllLocalnamePossibilities()
+                                            .contains(u.getIriLocalname()));
+                                })
+                        .collect(Collectors.toSet());
+        return matchingunits;
+    }
+
+    @Override
+    public List<FactorUnits> parseUcumCodeToFactorUnits(String ucumCode) {
+        Pattern p = Pattern.compile("^([^-]+)(-?\\d)?$");
+        String[] factorUnitUcumCodes = ucumCode.split("\\.");
+        List<List<FactorUnit>> factorUnitLists = new ArrayList<>();
+        factorUnitLists.add(new ArrayList<>());
+        for (String factorUnitUcumCode : factorUnitUcumCodes) {
+            Matcher m = p.matcher(factorUnitUcumCode);
+            if (m.matches()) {
+                String unitStr = m.group(1);
+                int exponent = 1;
+                String exponentStr = m.group(2);
+                if (exponentStr != null) {
+                    exponent = Integer.parseInt(exponentStr);
+                }
+                List<Unit> units =
+                        Qudt.allUnits().stream()
+                                .filter(
+                                        u ->
+                                                u.getUcumCode()
+                                                                .map(s -> s.equals(unitStr))
+                                                                .orElse(false)
+                                                        || u.getSymbol()
+                                                                .map(s -> s.equals(unitStr))
+                                                                .orElse(false))
+                                .collect(Collectors.toList());
+
+                if (units.isEmpty()) {
+                    System.err.println(
+                            String.format(
+                                    "Cannot find QUDT unit for factor unit %s (exp: %d) of %s",
+                                    unitStr, exponent, ucumCode));
+                    break;
+                }
+                List<List<FactorUnit>> newList = new ArrayList<>();
+                for (List<FactorUnit> fus : factorUnitLists) {
+                    for (Unit matchedUnit : units) {
+                        List<FactorUnit> variant = new ArrayList<>(fus);
+                        variant.add(new FactorUnit(matchedUnit, exponent));
+                        newList.add(variant);
+                    }
+                }
+                factorUnitLists = newList;
+            } else {
+                System.err.println(
+                        String.format(
+                                "cannot identify factor unit of %s from this part: %s: ",
+                                ucumCode, factorUnitUcumCode));
+                break;
+            }
+        }
+        return factorUnitLists.stream()
+                .map(ful -> new FactorUnits(ful))
+                .collect(Collectors.toList());
+    }
+
+    private void addDerivedUnitBestEffort(FactorUnits factorUnits) {
+        System.err.println(String.format("\t\t Adding unit for %s", factorUnits));
+        String dimensionVector = factorUnits.getDimensionVectorIri();
+        List<QuantityKind> matchingQks =
+                Qudt.allQuantityKinds().stream()
+                        .filter(
+                                qk ->
+                                        qk.getDimensionVectorIri()
+                                                .map(dv -> dv.equals(dimensionVector))
+                                                .orElse(false))
+                        .collect(Collectors.toList());
+        if (matchingQks.isEmpty()) {
+            QuantityKind newQk =
+                    this.addQuantityKind(
+                            factorUnits,
+                            "New_Quantity_Kind_for_" + factorUnits.getLocalname(),
+                            qk -> qk.addLabel("TODO:label in English", "en"),
+                            meta ->
+                                    meta.plainTextDescription(
+                                                    "TODO:plain text description in English")
+                                            .qudtInformativeReference(
+                                                    "TODO: URI with more information, preferably in English"));
+            matchingQks.add(newQk);
+        }
+        this.addDerivedUnit(
+                factorUnits,
+                unitDef -> {
+                    unitDef.addSystemOfUnits(SystemsOfUnits.SI);
+                    if (matchingQks.isEmpty()) {
+                        unitDef.addQuantityKind(QuantityKinds.Dimensionless);
+                    } else {
+                        matchingQks.forEach(qk -> unitDef.addQuantityKind(qk));
+                    }
+                },
+                meta -> meta.plainTextDescription("TODO: plain text description in English"));
+    }
+
     public List<QuantityKind> searchQuantityKinds(Predicate<QuantityKind> filter) {
         List<QuantityKind> quantityKinds =
                 Qudt.allQuantityKinds().stream().filter(filter).collect(Collectors.toList());
@@ -307,7 +544,10 @@ class ToolImpl implements Tool {
                     ToolImpl.stringLiteral(label.getString(), label.getLanguageTag().orElse(null)));
         }
         saveQuantityKindMetadata(mb, quantityKindForContribution.getQuantityKindMetadata());
-        con.add(mb.build());
+        Model model = mb.build();
+        System.err.println("Adding these triples: ");
+        writeOut(model, System.err);
+        con.add(model);
     }
 
     private static void suggestConnectedQuantityKindsIfIsolated(QuantityKind quantityKind) {
@@ -369,6 +609,12 @@ class ToolImpl implements Tool {
                 QUDT.hasDimensionVector,
                 unit.getDimensionVectorIri().map(ToolImpl::iri).orElse(null));
         addIfPresent(mb, QUDT.symbol, unit.getSymbol().map(ToolImpl::stringLiteral).orElse(null));
+        addIfPresent(
+                mb,
+                QUDT.ucumCode,
+                unit.getUcumCode()
+                        .map(code -> typedLiteral(new TypedLiteral(code, QUDT.UCUMcs.toString())))
+                        .orElse(null));
         for (Unit exactMatch : unit.getExactMatches()) {
             mb.add(QUDT.exactMatch, iri(exactMatch.getIri()));
         }
@@ -378,7 +624,10 @@ class ToolImpl implements Tool {
                     ToolImpl.stringLiteral(label.getString(), label.getLanguageTag().orElse(null)));
         }
         saveCommonMetadata(mb, unitForContribution.getMetadata());
-        con.add(mb.build());
+        Model model = mb.build();
+        System.err.println("Adding these triples: ");
+        writeOut(model, System.err);
+        con.add(model);
     }
 
     private static void saveQuantityKindMetadata(ModelBuilder mb, QuantityKindMetadata metadata) {

@@ -7,6 +7,7 @@ import io.github.qudtlib.model.Unit;
 import io.github.qudtlib.tools.contribute.model.QuantityKindMetadata;
 import io.github.qudtlib.tools.contribute.model.UnitMetadata;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -29,6 +30,8 @@ public interface Tool {
             String localname,
             Consumer<QuantityKind.Definition> quantityKindConfigurer);
 
+    Set<Unit> findUnitBySymbolOrUcumCode(String symbol);
+
     boolean checkUnitExists(FactorUnits factorUnits);
 
     boolean checkUnitExists(FactorUnits factorUnits, DerivedUnitSearchMode mode);
@@ -38,6 +41,16 @@ public interface Tool {
     boolean checkQuantityKindExists(FactorUnits factorUnits);
 
     List<QuantityKind> searchQuantityKinds(String nameRegex);
+
+    String generateJavaCodeStringForFactorUnits(FactorUnits factorUnits);
+
+    void addUnitsForUcumCodeBestEffort(String ucumCode, boolean force);
+
+    void addUnitsForFactorUnitsBestEffort(FactorUnits factorUnits, boolean force);
+
+    Set<Unit> findExistingQudtUnitsForFactorUnits(FactorUnits factorUnits);
+
+    List<FactorUnits> parseUcumCodeToFactorUnits(String ucumCode);
 
     List<QuantityKind> searchQuantityKinds(Predicate<QuantityKind> filter);
 }
