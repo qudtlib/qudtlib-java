@@ -267,14 +267,14 @@ public class FactorUnits {
         return factor;
     }
 
-    public String getSymbol() {
+    public Optional<String> getSymbol() {
         StringBuilder sb = new StringBuilder();
         boolean hasDenominator = false;
         for (FactorUnit fu : this.factorUnits) {
             if (fu.exponent > 0) {
-                sb.append(fu.unit.getSymbol().orElse(fu.unit.getIri()))
-                        .append(getExponentString(fu.exponent))
-                        .append("\u00B7");
+                String symbol = fu.unit.getSymbol().orElse(null);
+                if (symbol == null) return Optional.empty();
+                sb.append(symbol).append(getExponentString(fu.exponent)).append("\u00B7");
             } else {
                 hasDenominator = true;
             }
@@ -287,7 +287,9 @@ public class FactorUnits {
             int cnt = 0;
             for (FactorUnit fu : this.factorUnits) {
                 if (fu.exponent < 0) {
-                    sbDenom.append(fu.unit.getSymbol().orElse(fu.unit.getIri()));
+                    String symbol = fu.unit.getSymbol().orElse(null);
+                    if (symbol == null) return Optional.empty();
+                    sbDenom.append(symbol);
                     sbDenom.append(getExponentString(fu.exponent));
                     sbDenom.append("\u00B7");
                     cnt++;
@@ -302,7 +304,49 @@ public class FactorUnits {
             sb.append("/");
             sb.append(sbDenom);
         }
-        return sb.toString();
+        return Optional.of(sb.toString());
+    }
+
+    /**
+     * Returns the UCUM code if it can be generated (i.e. if the constituent units have ucum codes).
+     *
+     * @return the ucum code
+     */
+    public Optional<String> getUcumCode() {
+        StringBuilder sb = new StringBuilder();
+        boolean hasDenominator = false;
+        for (FactorUnit fu : this.factorUnits) {
+            if (fu.exponent > 0) {
+                String symbol = fu.unit.getUcumCode().orElse(null);
+                if (symbol == null) return Optional.empty();
+                sb.append(symbol).append(fu.exponent > 1 ? fu.exponent : "").append(".");
+            } else {
+                hasDenominator = true;
+            }
+        }
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (hasDenominator) {
+            StringBuilder sbDenom = new StringBuilder();
+            int cnt = 0;
+            for (FactorUnit fu : this.factorUnits) {
+                if (fu.exponent < 0) {
+                    String symbol = fu.unit.getUcumCode().orElse(null);
+                    if (symbol == null) return Optional.empty();
+                    sbDenom.append(symbol);
+                    sbDenom.append(fu.exponent);
+                    sbDenom.append(".");
+                    cnt++;
+                }
+            }
+            if (sbDenom.length() > 0) {
+                sbDenom.deleteCharAt(sbDenom.length() - 1);
+            }
+            sb.append(".");
+            sb.append(sbDenom);
+        }
+        return Optional.of(sb.toString());
     }
 
     public String getLocalname() {
