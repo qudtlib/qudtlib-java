@@ -8,42 +8,100 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
-# Added until upstream PR https://github.com/qudt/qudt-public-repo/pull/631 and is merged and released
+# Triples added until upcoming PR is merged
 
-quantitykind:Count
-  a qudt:QuantityKind ;
-  qudt:plainTextDescription "\"Count\" is the value of a count of items." ;
-  qudt:applicableUnit unit:UNITLESS ;
-  qudt:hasDimensionVector qkdv:A0E0L0I0M0H0T0D1 ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind> ;
-  rdfs:label "Count"@en ;
-  skos:broader quantitykind:Dimensionless ;
-.
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix sou: <http://qudt.org/vocab/sou/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix qk: <http://qudt.org/vocab/quantitykind/> .
 
-# Added until upstream PR https://github.com/qudt/qudt-public-repo/pull/630 and is merged and released
+qk:HeatCapacityPerArea a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H-1T-2D0>;
+  rdfs:label "Wärmekapazität je Fläche"@de, "heat capacity per area"@en;
+  qudt:informativeReference "https://help.autodesk.com/view/RVT/2022/ENU/?guid=GUID-F92A3954-CCF4-44D0-8066-B8DFC129E4D9"^^<http://www.w3.org/2001/XMLSchema#anyURI>,
+    "https://de.wikipedia.org/wiki/W%C3%A4rmekapazit%C3%A4t"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "The heat capacity per area denotes the amount of heat to be supplied to an object to produce a unit change in its temperature, per unit area" .
 
-quantitykind:PositiveLength
-  a qudt:QuantityKind ;
-  qudt:hasDimensionVector qkdv:A0E0L1I0M0H0T0D0 ;
-  qudt:plainTextDescription "\"PositiveLength\" is a measure of length strictly greater than zero." ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind> ;
-  rdfs:label "Positive Length"@en ;
-  skos:broader quantitykind:NonNegativeLength ;
-.
-quantitykind:NonNegativeLength
-  a qudt:QuantityKind ;
-  qudt:hasDimensionVector qkdv:A0E0L1I0M0H0T0D0 ;
-  qudt:plainTextDescription "\"NonNegativeLength\" is a measure of length greater than or equal to zero." ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind> ;
-  rdfs:label "Positive Length"@en ;
-  skos:broader quantitykind:Length ;
-.
-quantitykind:PositivePlaneAngle
-  a qudt:QuantityKind ;
-  qudt:hasDimensionVector qkdv:A0E0L0I0M0H0T0D1 ;
-  qudt:informativeReference "http://www.thefreedictionary.com/plane+angle"^^xsd:anyURI ;
-  qudt:plainTextDescription "A \"PositivePlaneAngle\" is a plane angle strictly greater than zero." ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind> ;
-  rdfs:label "Positive Plane Angle"@en ;
-  skos:broader quantitykind:PlaneAngle ;
-.
+qk:VolumeFlowRatePerPower a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M-1H0T2D0>;
+  rdfs:label "volume flow rate per power"@en, "Volumenstrom pro Leistung"@de;
+  qudt:informativeReference "https://help.autodesk.com/view/RVTLT/2023/ENU/?guid=GUID-7E5F7EEA-5EBA-45A7-9CE5-6E9FF1B15053"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "The flow rate per power is the volume of fluid which passes per unit time, relative to unit power, for example the power required to pump the fluid." .
+
+qk:TorsionalSpringConstant a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M1H0T-2D-1>;
+  rdfs:label "Federkonstante Drehfeder"@de, "torsional spring constant"@en;
+  qudt:informativeReference "TODO"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "A torsional spring constant is a measure of the stiffness of a torsional spring, which is a type of spring that experiences twisting or torque rather than compression or extension. It is typically measured in newton-meters per radian (N·m/rad) and is used to calculate the amount of torque required to twist a spring a certain amount. It is related to the spring's geometry, material properties, and manufacturing process." .
+
+qk:EnergyCostRate a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T2D1>;
+  rdfs:label "Energiekostensatz"@de, "energy cost rate"@en;
+  qudt:informativeReference "https://help.autodesk.com/view/RVTLT/2023/ENU/?guid=GUID-7E5F7EEA-5EBA-45A7-9CE5-6E9FF1B15053"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "The monetary cost of a unit of energy" .
+
+qk:AreaPerHeatingLoad a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H-1T-3D0>;
+  rdfs:label "Fläche pro Heizlast"@de, "area per heating load"@en;
+  qudt:plainTextDescription "TODO" .
+
+qk:AreaPerLength a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M0H0T0D0>;
+  qudt:qkdvNumerator <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H0T0D0>;
+  qudt:qkdvDenominator <http://qudt.org/vocab/dimensionvector/A0E0L1I0M0H0T0D0>;
+  rdfs:label "TODO:label in English"@en;
+  qudt:informativeReference "TODO: URI with more information, preferably in English"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "TODO:plain text description in English" .
+
+
+qk:New_Quantity_Kind_for_M2-PER-W a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M-1H0T3D0>;
+  rdfs:label "TODO:label in English"@en;
+  qudt:informativeReference "TODO: URI with more information, preferably in English"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "TODO:plain text description in English" .
+
+qk:New_Quantity_Kind_for_EUR-PER-M2 a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M0H0T0D1>;
+  rdfs:label "TODO:label in English"@en;
+  qudt:informativeReference "TODO: URI with more information, preferably in English"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "TODO:plain text description in English" .
+
+qk:New_Quantity_Kind_for_N-M-PER-DEG-M a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D-1>;
+  rdfs:label "TODO:label in English"@en;
+  qudt:informativeReference "TODO: URI with more information, preferably in English"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "TODO:plain text description in English" .
+
+qk:New_Quantity_Kind_for_EUR-PER-W a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T3D1>;
+  rdfs:label "TODO:label in English"@en;
+  qudt:informativeReference "TODO: URI with more information, preferably in English"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "TODO:plain text description in English" .
+
+qk:New_Quantity_Kind_For_L-PER-SEC-M3 a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H0T-1D0>;
+  qudt:qkdvNumerator <http://qudt.org/vocab/dimensionvector/A0E0L3I0M0H0T0D0>;
+  qudt:qkdvDenominator <http://qudt.org/vocab/dimensionvector/A0E0L3I0M0H0T1D0>;
+  rdfs:label "TODO:label in English"@en;
+  qudt:informativeReference "TODO: URI with more information, preferably in English"^^<http://www.w3.org/2001/XMLSchema#anyURI> ;
+  qudt:plainTextDescription "TODO:plain text description in English" .
+
+qk:SpecificWeight a qudt:QuantityKind;
+    rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+    qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M1H0T-2D0>;
+    rdfs:label "specific weight"@en;
+    qudt:informativeReference "TODO: URI with more information, preferably in English"^^<http://www.w3.org/2001/XMLSchema#anyURI> ;
+    qudt:plainTextDescription "TODO:plain text description in English" .
+
