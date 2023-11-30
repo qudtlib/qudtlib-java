@@ -160,6 +160,10 @@ public class QuantityKind extends SelfSmuggler {
         return iri;
     }
 
+    public String getIriLocalname() {
+        return QudtNamespaces.quantityKind.getLocalName(this.iri);
+    }
+
     public Set<Unit> getApplicableUnits() {
         return Collections.unmodifiableSet(this.applicableUnits);
     }
