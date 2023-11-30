@@ -7,53 +7,49 @@ prefix skos: <http://www.w3.org/2004/02/skos/core#>
 SELECT DISTINCT * where
 {
     ?quantityKind a qudt:QuantityKind;
-        rdfs:label ?label .
-    optional {
-        ?quantityKind qudt:exactMatch ?exactMatch
+        {
+            optional {
+                ?quantityKind rdfs:label ?label .
+            }
+            optional {
+                ?quantityKind qudt:applicableUnit ?applicableUnit
+            }
+            optional {
+                ?quantityKind qudt:hasDimensionVector ?dimensionVector
+            }
+            optional {
+                ?quantityKind qudt:qkdvNumerator ?qkdvNumerator
+            }
+            optional {
+                ?quantityKind qudt:qkdvDenominator ?qkdvDenominator
+            }
+            optional {
+               ?quantityKind qudt:symbol ?symbol
+            }
+            optional {
+               ?quantityKind skos:broader ?broaderQuantityKind
+            }
+        } UNION {
+            optional {
+                ?quantityKind qudt:exactMatch ?exactMatch
+                optional {
+                    ?exactMatch qudt:applicableUnit ?applicableUnit
+                }
+                optional {
+                    ?exactMatch qudt:hasDimensionVector ?dimensionVector
+                }
+                optional {
+                    ?exactMatch qudt:qkdvNumerator ?qkdvNumerator
+                }
+                optional {
+                    ?exactMatch qudt:qkdvDenominator ?qkdvDenominator
+                }
+                optional {
+                   ?exactMatch qudt:symbol ?symbol
+                }
+                optional {
+                   ?exactMatch skos:broader ?broaderQuantityKind
+                }
+            }
     }
-
-    optional {
-        ?quantityKind qudt:applicableUnit ?applicableUnit
-    }
-    optional {
-            ?exactMatch qudt:applicableUnit ?applicableUnit
-    }
-
-    optional {
-        ?quantityKind qudt:hasDimensionVector ?dimensionVector
-    }
-    optional {
-            ?exactMatch qudt:hasDimensionVector ?dimensionVector
-    }
-
-    optional {
-            ?quantityKind qudt:qkdvNumerator ?qkdvNumerator
-    }
-    optional {
-                ?exactMatch qudt:qkdvNumerator ?qkdvNumerator
-    }
-
-    optional {
-            ?quantityKind qudt:qkdvDenominator ?qkdvDenominator
-    }
-    optional {
-                ?exactMatch qudt:qkdvDenominator ?qkdvDenominator
-    }
-
-    optional {
-       ?quantityKind qudt:symbol ?symbol
-    }
-    optional {
-           ?exactMatch qudt:symbol ?symbol
-    }
-
-    optional {
-       ?quantityKind skos:broader ?broaderQuantityKind
-    }
-    optional {
-           ?exactMatch skos:broader ?broaderQuantityKind
-    }
-
-
-
 } order by ?quantityKind
