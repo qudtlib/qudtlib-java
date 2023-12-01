@@ -4,7 +4,7 @@ PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT
+SELECT DISTINCT
       ?derivedUnit
       ?factorUnit
       ?exponent
@@ -15,6 +15,7 @@ WHERE
         qudt:unit ?factorUnit ;
         qudt:exponent ?exponent .
 }
+ORDER BY ?derivedUnit ?factorUnit
 
 
 
