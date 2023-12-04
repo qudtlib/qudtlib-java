@@ -4,7 +4,8 @@ import io.github.qudtlib.Qudt;
 import io.github.qudtlib.QudtEntityAtRuntimeAdder;
 import io.github.qudtlib.model.*;
 import io.github.qudtlib.tools.contribute.model.*;
-import io.github.qudtlib.tools.contribute.support.QuantityKindTree;
+import io.github.qudtlib.tools.contribute.support.tree.QuantityKindTree;
+import io.github.qudtlib.tools.contribute.support.tree.UnitTree;
 import io.github.qudtlib.vocab.QUDT;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -12,6 +13,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -457,6 +459,17 @@ class ToolImpl implements Tool {
         return factorUnitLists.stream()
                 .map(ful -> new FactorUnits(ful))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void printFactorUnitTree(Unit unit) {
+        printFactorUnitTree(unit, null);
+    }
+
+    @Override
+    public void printFactorUnitTree(Unit unit, Function<FactorUnit, String> unitFormatter) {
+        System.err.println("factor unit tree for unit " + unit.toString());
+        System.err.println(UnitTree.formatFactorUnitTree(unit, unitFormatter));
     }
 
     private void addDerivedUnitBestEffort(FactorUnits factorUnits) {
