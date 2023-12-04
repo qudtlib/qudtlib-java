@@ -1,5 +1,13 @@
 package io.github.qudtlib.model;
 
+/**
+ * Represents the QUDT dimension vector and allows for converting between a dimension vector IRI and
+ * the numeric values, as well as for some manipulations.
+ *
+ * <p>Note that the last value, the 'D' dimension is special: it is only an indicator that the
+ * dimension vector represents a ratio (causing all other dimensions to cancel each other out). It
+ * never changes by multiplication, and its value is only 1 iff all other dimensions are 0.
+ */
 public class DimensionVector {
     private String dimensionVectorIri;
 
@@ -69,17 +77,31 @@ public class DimensionVector {
 
     public DimensionVector multiply(int by) {
         int[] mult = new int[8];
-        for (int i = 0; i < 8; i++) {
+        boolean isRatio = true;
+        for (int i = 0; i < 7; i++) {
             mult[i] = this.values[i] * by;
+            if (mult[i] != 0) {
+                isRatio = false;
+            }
         }
+        setRatio(isRatio);
         return new DimensionVector(mult);
+    }
+
+    private void setRatio(boolean isRatio) {
+        this.values[7] = isRatio ? 1 : 0;
     }
 
     public DimensionVector combine(DimensionVector other) {
         int[] combined = new int[8];
+        boolean isRatio = true;
         for (int i = 0; i < 8; i++) {
             combined[i] = this.values[i] + other.getValues()[i];
+            if (combined[i] != 0) {
+                isRatio = false;
+            }
         }
+        setRatio(isRatio);
         return new DimensionVector(combined);
     }
 }
