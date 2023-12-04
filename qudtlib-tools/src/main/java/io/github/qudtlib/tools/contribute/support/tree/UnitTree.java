@@ -20,9 +20,10 @@ public class UnitTree {
                             if (optionalFormatter != null) {
                                 stringBuilder.append(optionalFormatter.apply(node.getData()));
                             } else {
+                                String asString = String.format("%-10s", node.getData().toString());
                                 stringBuilder
-                                        .append(node.getData().toString())
-                                        .append("   ")
+                                        .append(asString)
+                                        .append(" ")
                                         .append(
                                                 node.getData()
                                                         .getDimensionVectorIri()
