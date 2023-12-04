@@ -17,7 +17,7 @@ public class ContributionHelper {
             def = Unit.definition(QudtNamespaces.unit.makeIriInNamespace(localname));
             FactorUnits base = getBaseFactorUnits(factorUnits);
             if (base.equals(factorUnits)) {
-                def.conversionMultiplier(BigDecimal.ONE);
+                def.conversionMultiplier(findMultiplier(factorUnits));
             } else {
                 Set<Unit> units =
                         Qudt.derivedUnitsFromFactorUnits(
@@ -31,7 +31,10 @@ public class ContributionHelper {
                                     base.getFactorUnits().toString()));
                 }
                 Unit scalingOf = units.stream().findFirst().get();
-                def.conversionMultiplier(factorUnits.conversionFactor(scalingOf));
+                def.conversionMultiplier(
+                        factorUnits
+                                .conversionFactor(scalingOf)
+                                .multiply(scalingOf.getConversionMultiplier().get()));
                 def.scalingOf(scalingOf);
             }
             def.addFactorUnits(factorUnits).dimensionVectorIri(factorUnits.getDimensionVectorIri());
@@ -42,9 +45,15 @@ public class ContributionHelper {
             FactorUnits base = getBaseFactorUnits(factorUnits);
             if (existingUnit.getScalingOf().isPresent()) {
                 finalDef.scalingOf(existingUnit.getScalingOf().get());
-                existingUnit
-                        .getConversionMultiplier()
-                        .ifPresent(c -> finalDef.conversionMultiplier(c));
+                finalDef.conversionMultiplier(
+                        factorUnits
+                                .conversionFactor(existingUnit.getScalingOf().get())
+                                .multiply(
+                                        existingUnit
+                                                .getScalingOf()
+                                                .get()
+                                                .getConversionMultiplier()
+                                                .get()));
                 existingUnit.getConversionOffset().ifPresent(co -> finalDef.conversionOffset(co));
             } else {
                 Set<Unit> baseUnits =
@@ -52,10 +61,13 @@ public class ContributionHelper {
                                 DerivedUnitSearchMode.BEST_MATCH, base.getFactorUnits());
                 Optional<Unit> newBase = baseUnits.stream().findFirst();
                 if (newBase.isEmpty() || newBase.get().equals(existingUnit)) {
-                    finalDef.conversionMultiplier(BigDecimal.ONE);
+                    finalDef.conversionMultiplier(findMultiplier(factorUnits));
                 } else {
                     finalDef.scalingOf(newBase.get());
-                    finalDef.conversionMultiplier(factorUnits.conversionFactor(newBase.get()));
+                    finalDef.conversionMultiplier(
+                            factorUnits
+                                    .conversionFactor(newBase.get())
+                                    .multiply(newBase.get().getConversionMultiplier().get()));
                 }
             }
             existingUnit.getUcumCode().ifPresent(ucum -> finalDef.ucumCode(ucum));
@@ -66,6 +78,43 @@ public class ContributionHelper {
                 .ucumCode(factorUnits.getUcumCode().orElse(null))
                 .addLabels(LabelCombiner.forFactorUnits(factorUnits));
         return def;
+    }
+
+    private static BigDecimal findMultiplier(FactorUnits factorUnits) {
+        String dimensionVectorIri = factorUnits.getDimensionVectorIri();
+        Set<Unit> possibleBases =
+                Qudt.allUnits().stream()
+                        .filter(
+                                u ->
+                                        u.getDimensionVectorIri()
+                                                .map(dv -> dv.equals(dimensionVectorIri))
+                                                .orElse(false))
+                        .filter(
+                                u ->
+                                        !factorUnits
+                                                .generateAllLocalnamePossibilities()
+                                                .contains(u.getIriLocalname()))
+                        .filter(
+                                u ->
+                                        u.getConversionMultiplier().get().compareTo(BigDecimal.ONE)
+                                                == 0)
+                        .collect(Collectors.toSet());
+        if (possibleBases.isEmpty()) {
+            return BigDecimal.ONE;
+        }
+        for (Unit base : possibleBases) {
+            try {
+                return factorUnits.conversionFactor(base);
+            } catch (Exception e) {
+            }
+        }
+        throw new RuntimeException(
+                String.format(
+                        "Unable to calculate conversion factor from these factor units %s to any of these bases %s",
+                        factorUnits.toString(),
+                        possibleBases.stream()
+                                .map(Unit::getIriAbbreviated)
+                                .collect(Collectors.joining(", "))));
     }
 
     private static Unit findUnitByLocalName(FactorUnits factorUnits) {
