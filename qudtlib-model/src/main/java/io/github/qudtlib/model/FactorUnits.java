@@ -74,7 +74,7 @@ public class FactorUnits {
      * @return true if the specified unit/exponent combination identifies this unit.
      *     (overspecification is counted as a match)
      */
-    public static FactorUnits ofFactorUnitSpec(Object... factorUnitSpec) {
+    public static FactorUnits ofFactorUnitSpec(BigDecimal scaleFactor, Object... factorUnitSpec) {
         if (factorUnitSpec.length % 2 != 0) {
             throw new IllegalArgumentException("An even number of arguments is required");
         }
@@ -93,11 +93,15 @@ public class FactorUnits {
                             .exponent(requestedExponent)
                             .build());
         }
-        return new FactorUnits(factorUnits);
+        return new FactorUnits(factorUnits, scaleFactor);
+    }
+
+    public static FactorUnits ofFactorUnitSpec(Object... factorUnitSpec) {
+        return ofFactorUnitSpec(BigDecimal.ONE, factorUnitSpec);
     }
 
     public static FactorUnits ofFactorUnitSpec(
-            Collection<Map.Entry<String, Integer>> factorUnitSpec) {
+            BigDecimal scaleFactor, Collection<Map.Entry<String, Integer>> factorUnitSpec) {
         Object[] arr = new Object[factorUnitSpec.size() * 2];
         return FactorUnits.ofFactorUnitSpec(
                 factorUnitSpec.stream()
@@ -138,6 +142,9 @@ public class FactorUnits {
     }
 
     public FactorUnits pow(int exponent) {
+        if (exponent == 0) {
+            return new FactorUnits(List.of());
+        }
         return new FactorUnits(
                 this.factorUnits.stream().map(fu -> fu.pow(exponent)).collect(toList()),
                 this.scaleFactor.pow(exponent, MathContext.DECIMAL128));
@@ -157,7 +164,8 @@ public class FactorUnits {
     public boolean isRatioOfSameUnits() {
         return this.factorUnits.size() == 2
                 && this.factorUnits.get(0).getUnit().equals(this.factorUnits.get(1).getUnit())
-                && this.factorUnits.get(0).getExponent() == this.factorUnits.get(1).getExponent();
+                && this.factorUnits.get(0).getExponent()
+                        == -1 * this.factorUnits.get(1).getExponent();
     }
 
     public FactorUnits reduceExponents() {
@@ -177,25 +185,22 @@ public class FactorUnits {
 
     public String getDimensionVectorIri() {
         if (this.factorUnits == null || this.factorUnits.isEmpty()) {
-            return null;
+            return QudtNamespaces.dimensionVector.makeIriInNamespace("A0E0L0I0M0H0T0D1");
         }
-        if (this.factorUnits.stream()
-                .anyMatch(fu -> fu.getUnit().getDimensionVectorIri().isEmpty())) {
-            throw new RuntimeException(
-                    "Cannot compute dimension vector of factor units as not all units have a dimension vector: "
-                            + this.toString());
+        DimensionVector dv = null;
+        for (FactorUnit fu : this.factorUnits) {
+            Optional<String> fudvOpt = fu.getDimensionVectorIri();
+            if (fudvOpt.isEmpty()) {
+                throw new RuntimeException(
+                        "Cannot compute dimension vector of factor units as not all units have a dimension vector: "
+                                + this.toString());
+            }
+            if (dv == null) {
+                dv = DimensionVector.of(fudvOpt.get());
+            } else {
+                dv = dv.combine(DimensionVector.of(fudvOpt.get()));
+            }
         }
-        DimensionVector dv =
-                this.factorUnits.stream()
-                        .map(
-                                fu ->
-                                        fu.getUnit()
-                                                .getDimensionVectorIri()
-                                                .map(dviri -> DimensionVector.of(dviri))
-                                                .orElse(new DimensionVector())
-                                                .multiply(fu.exponent))
-                        .reduce((d1, d2) -> d1.combine(d2))
-                        .get();
         return dv.getDimensionVectorIri();
     }
 
@@ -206,7 +211,10 @@ public class FactorUnits {
 
     public FactorUnits denominator() {
         return new FactorUnits(
-                this.factorUnits.stream().filter(fu -> fu.exponent < 0).collect(toList()));
+                this.factorUnits.stream()
+                        .filter(fu -> fu.exponent < 0)
+                        .map(fu -> fu.pow(-1))
+                        .collect(toList()));
     }
 
     public boolean hasQkdvDenominatorIri(String dimensionVectorIri) {
