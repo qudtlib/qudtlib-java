@@ -84,12 +84,12 @@ public class DimensionVector {
                 isRatio = false;
             }
         }
-        setRatio(isRatio);
+        setRatio(mult, isRatio);
         return new DimensionVector(mult);
     }
 
-    private void setRatio(boolean isRatio) {
-        this.values[7] = isRatio ? 1 : 0;
+    private void setRatio(int[] values, boolean isRatio) {
+        values[7] = isRatio ? 1 : 0;
     }
 
     public DimensionVector combine(DimensionVector other) {
@@ -101,7 +101,7 @@ public class DimensionVector {
                 isRatio = false;
             }
         }
-        setRatio(isRatio);
+        setRatio(combined, isRatio);
         return new DimensionVector(combined);
     }
 }

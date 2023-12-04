@@ -10,4 +10,6 @@ public class QudtNamespaces {
     public static final Namespace systemOfUnits =
             new Namespace("http://qudt.org/vocab/sou/", "sou");
     public static final Namespace qudt = new Namespace("http://qudt.org/schema/qudt/", "qudt");
+    public static final Namespace dimensionVector =
+            new Namespace("http://qudt.org/vocab/dimensionvector/", "qkdv");
 }
