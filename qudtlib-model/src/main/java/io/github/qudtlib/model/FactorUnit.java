@@ -243,4 +243,12 @@ public class FactorUnit {
     public FactorUnit pow(int exponent) {
         return new FactorUnit(this.unit, this.exponent * exponent);
     }
+
+    public Optional<String> getDimensionVectorIri() {
+        if (this.unit.getDimensionVectorIri().isEmpty()) {
+            return Optional.empty();
+        }
+        DimensionVector dv = new DimensionVector(this.unit.getDimensionVectorIri().get());
+        return Optional.of(dv.multiply(this.exponent).getDimensionVectorIri());
+    }
 }
