@@ -7,12 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Fixed
+### Added
 
+- Add (crude) tools for inspecting QUDT units/quantitykinds and for generating triples for unit/quantitykind contributions
+- Add simple SHACL validation for contribution
+- Add some units/quantitykinds for the construction domain
+- Generate all possible localnames from factor units for checking if one of them is used for a unit
+- Add Unit.getIriLocalname()
+- Add member ucumCode with getters/setters and builder
+- Add setFactorUnits() to Unit.Definition
+- Add Qudt.currencyFromLocalname()
+- Add Qudt.isBroaderQuantityKind()
+- Add FactorUnits.getDimensionVectorIri()
+- Add inspection of Factor unit tree in qudtlib-tools
+
+### Changed
+
+- Make getSymbol() return Optional
+
+### Fixed
+
+- handling of currency units such that they can now also be factor units
+- Exclude unit:Kilo-FT3 from QUDTLib because it breaks unit localname parsing
 - Implement a not so recent change in QUDTLib whereby quantitykinds are no longer skos:broader but
   qudt:exactMatch in certain conditions. See https://github.com/qudtlib/qudtlib-java/issues/61. The change
   adds an `exactMatch` property to the `QuantityKind` and `Unit` classes and uses the exactMatch property
   where appropriate in algorithms.
+- Improve quantitykind extraction query
+- Fix use of Unit constructor
 
 ## [5.0.1] - 2023-09-21
 
