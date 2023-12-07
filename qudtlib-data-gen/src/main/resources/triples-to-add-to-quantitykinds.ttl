@@ -8,35 +8,28 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
-# Triples added until upcoming PR is merged
-
-@prefix qudt: <http://qudt.org/schema/qudt/> .
-@prefix unit: <http://qudt.org/vocab/unit/> .
-@prefix sou: <http://qudt.org/vocab/sou/> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix qk: <http://qudt.org/vocab/quantitykind/> .
-
-qk:ElectricityCost a qudt:QuantityKind;
+# Triples added until https://github.com/qudt/qudt-public-repo/pull/830 is merged
+quantitykind:CostPerUnitEnergy a qudt:QuantityKind;
   rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T2D0>;
-  rdfs:label "Stromgestehungskosten"@de, "electricity cost"@en;
+  rdfs:label "Energiekosten"@de, "energy cost"@en;
   qudt:informativeReference "https://en.wikipedia.org/wiki/Cost_of_electricity_by_source"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
-  qudt:plainTextDescription "The monetary cost of a unit of electricity" .
+  qudt:plainTextDescription "The monetary cost of a unit of energy" .
 
-qk:AreaPerHeatingLoad a qudt:QuantityKind;
+quantitykind:AreaPerPower a qudt:QuantityKind;
   rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M-1H0T3D0>;
   rdfs:label "Fläche pro Heizlast"@de, "area per heating load"@en;
-  qudt:plainTextDescription "The ratio of an area and the load required for maintaining room temperature at a given level" .
+  qudt:plainTextDescription "The ratio of an area and the power required for maintaining room temperature at a given level" .
 
-qk:TorsionalSpringConstant a qudt:QuantityKind;
+quantitykind:TorsionalSpringConstant a qudt:QuantityKind;
   rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M1H0T-2D0>;
   rdfs:label "Federkonstante Drehfeder"@de, "torsional spring constant"@en;
   qudt:informativeReference "https://en.wikipedia.org/wiki/Torsion_spring"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
   qudt:plainTextDescription "A torsional spring constant is a measure of the stiffness of a torsional spring, which is a type of spring that experiences twisting or torque rather than compression or extension. It is typically measured in newton-meters per radian (N·m/rad) and is used to calculate the amount of torque required to twist a spring a certain amount. It is related to the spring's geometry, material properties, and manufacturing process." .
 
-qk:AreaPerLength a qudt:QuantityKind;
+quantitykind:AreaPerLength a qudt:QuantityKind;
   rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M0H0T0D0>;
   qudt:qkdvNumerator <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H0T0D0>;
@@ -46,7 +39,7 @@ qk:AreaPerLength a qudt:QuantityKind;
   qudt:informativeReference "https://www.easysteel.co.nz/web/assets/EasysteelSurfaceAreaofSections-Feb14.pdf"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
   qudt:plainTextDescription "Measure used to indicate the surface area of structural steel per unit length of the steel part." .
 
-qk:CostPerArea a qudt:QuantityKind;
+quantitykind:CostPerArea a qudt:QuantityKind;
   rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M0H0T0D0>;
   rdfs:label "cost per area"@en;
@@ -54,7 +47,7 @@ qk:CostPerArea a qudt:QuantityKind;
   qudt:informativeReference "https://www.designingbuildings.co.uk/wiki/Cost_per_m2_of_gross_internal_floor_area"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
   qudt:plainTextDescription "In the construction industry, cost per area is the unit rate which, when multiplied by the gross internal floor area (GIFA), gives the total building works estimate (i.e.works cost estimate less main contractor’s preliminaries and main contractor’s overheads and profit)." .
 
-qk:CostPerUnitPower a qudt:QuantityKind;
+quantitykind:CostPerUnitPower a qudt:QuantityKind;
   rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T3D0>;
   rdfs:label "cost per power"@en;
@@ -63,7 +56,7 @@ qk:CostPerUnitPower a qudt:QuantityKind;
   qudt:informativeReference "https://en.wikipedia.org/wiki/Photovoltaics"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
   qudt:plainTextDescription "In photovoltaics, cost per power of electricity produced measures the cost of installing the hardware relative to the power produced." .
 
-qk:SpecificWeight a qudt:QuantityKind;
+quantitykind:SpecificWeight a qudt:QuantityKind;
     rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
     qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M1H0T-2D0>;
     rdfs:label "specific weight"@en;
@@ -71,12 +64,12 @@ qk:SpecificWeight a qudt:QuantityKind;
     qudt:symbol "γ";
     qudt:plainTextDescription "The specific weight, also known as the unit weight is a volume-specific quantity defined as the weight per unit volume of a material." .
 
-qk:TemperatureDifference a qudt:QuantityKind;
+quantitykind:TemperatureDifference a qudt:QuantityKind;
     rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
     qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H1T0D0>;
     rdfs:label "temperature difference"@en;
     rdfs:label "Temperaturdifferenz"@de;
     qudt:symbol "ΔT";
     qudt:informativeReference "https://www.merusonline.com/delta-t-temperature/"^^<http://www.w3.org/2001/XMLSchema#anyURI> ;
-    qudt:plainTextDescription "Temperature diffenrence (Delta T) is the difference of temperatures between two measuring points" ;
-    skos:broader qk:Temperature .
+    qudt:plainTextDescription "Temperature difference (Delta T) is the difference of temperatures between two measuring points" ;
+    skos:broader quantitykind:Temperature .
