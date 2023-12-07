@@ -283,7 +283,7 @@ public class FactorUnits {
             if (fu.exponent > 0) {
                 String symbol = fu.unit.getSymbol().orElse(null);
                 if (symbol == null) return Optional.empty();
-                sb.append(symbol).append(getExponentString(fu.exponent)).append("\u00B7");
+                sb.append(symbol).append(getExponentString(fu.exponent)).append("⋅");
             } else {
                 hasDenominator = true;
             }
@@ -300,7 +300,7 @@ public class FactorUnits {
                     if (symbol == null) return Optional.empty();
                     sbDenom.append(symbol);
                     sbDenom.append(getExponentString(fu.exponent));
-                    sbDenom.append("\u00B7");
+                    sbDenom.append("⋅");
                     cnt++;
                 }
             }
