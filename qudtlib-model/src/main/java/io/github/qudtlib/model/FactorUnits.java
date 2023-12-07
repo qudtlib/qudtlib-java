@@ -359,9 +359,13 @@ public class FactorUnits {
     }
 
     public String getLocalname() {
+        return FactorUnits.getLocalname(this.factorUnits);
+    }
+
+    public static String getLocalname(List<FactorUnit> factorUnits) {
         StringBuilder sb = new StringBuilder();
         boolean hasDenominator = false;
-        for (FactorUnit fu : this.factorUnits) {
+        for (FactorUnit fu : factorUnits) {
             if (fu.exponent > 0) {
                 sb.append(getLocalname(fu.unit.getIri()));
                 if (fu.exponent > 1) {
@@ -375,7 +379,7 @@ public class FactorUnits {
         if (hasDenominator) {
             sb.append("PER-");
         }
-        for (FactorUnit fu : this.factorUnits) {
+        for (FactorUnit fu : factorUnits) {
             if (fu.exponent < 0) {
                 sb.append(getLocalname(fu.unit.getIri()));
                 if (fu.exponent < -1) {
@@ -388,6 +392,42 @@ public class FactorUnits {
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.toString();
+    }
+
+    public static List<FactorUnit> sortAccordingToUnitLabel(
+            String unitLabel, List<FactorUnit> factorUnitsList) {
+        FactorUnits factorUnits = new FactorUnits(factorUnitsList);
+        int perIndex = unitLabel.indexOf("PER");
+        List<FactorUnit> numeratorUnits =
+                perIndex == 0
+                        ? List.of()
+                        : sortBy(
+                                factorUnits.numerator(),
+                                perIndex == -1 ? unitLabel : unitLabel.substring(0, perIndex));
+        List<FactorUnit> denominatorUnits =
+                perIndex == -1
+                        ? List.of()
+                        : sortBy(
+                                factorUnits.denominator(),
+                                perIndex == 0 ? unitLabel : unitLabel.substring(perIndex));
+        return Stream.concat(
+                        numeratorUnits.stream(),
+                        new FactorUnits(denominatorUnits).pow(-1).getFactorUnits().stream())
+                .collect(Collectors.toList());
+    }
+
+    private static List<FactorUnit> sortBy(FactorUnits factorUnits, String localName) {
+        Map<FactorUnit, Integer> orderMap =
+                factorUnits.numerator().getFactorUnits().stream()
+                        .collect(
+                                Collectors.toMap(
+                                        fu -> fu,
+                                        fu ->
+                                                localName.indexOf(
+                                                        FactorUnits.getLocalname(List.of(fu)))));
+        return factorUnits.getFactorUnits().stream()
+                .sorted(Comparator.comparing(factorUnit -> orderMap.get(factorUnit)))
+                .collect(Collectors.toList());
     }
 
     public List<String> generateAllLocalnamePossibilities() {
@@ -469,7 +509,7 @@ public class FactorUnits {
         }
     }
 
-    private String getLocalname(String iri) {
+    private static String getLocalname(String iri) {
         return iri.replaceAll("^.+[/|#]", "");
     }
 }
