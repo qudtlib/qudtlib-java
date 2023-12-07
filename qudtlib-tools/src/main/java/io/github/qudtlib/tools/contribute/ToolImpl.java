@@ -7,9 +7,7 @@ import io.github.qudtlib.tools.contribute.model.*;
 import io.github.qudtlib.tools.contribute.support.tree.QuantityKindTree;
 import io.github.qudtlib.tools.contribute.support.tree.UnitTree;
 import io.github.qudtlib.vocab.QUDT;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
@@ -468,8 +466,15 @@ class ToolImpl implements Tool {
 
     @Override
     public void printFactorUnitTree(Unit unit, Function<FactorUnit, String> unitFormatter) {
-        System.err.println("factor unit tree for unit " + unit.toString());
-        System.err.println(UnitTree.formatFactorUnitTree(unit, unitFormatter));
+        printFactorUnitTree(unit, null, System.err);
+    }
+
+    @Override
+    public void printFactorUnitTree(
+            Unit unit, Function<FactorUnit, String> unitFormatter, OutputStream out) {
+        PrintStream writer = new PrintStream(out);
+        writer.println("factor unit tree for unit " + unit.toString());
+        writer.println(UnitTree.formatFactorUnitTree(unit, unitFormatter));
     }
 
     private void addDerivedUnitBestEffort(FactorUnits factorUnits) {
