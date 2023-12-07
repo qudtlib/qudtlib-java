@@ -3,6 +3,7 @@ package io.github.qudtlib.tools.contribute;
 import io.github.qudtlib.model.*;
 import io.github.qudtlib.tools.contribute.model.QuantityKindMetadata;
 import io.github.qudtlib.tools.contribute.model.UnitMetadata;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -37,6 +38,9 @@ public interface Tool {
     void printFactorUnitTree(Unit unit);
 
     void printFactorUnitTree(Unit unit, Function<FactorUnit, String> unitFormatter);
+
+    void printFactorUnitTree(
+            Unit unit, Function<FactorUnit, String> unitFormatter, OutputStream out);
 
     List<Unit> listUnitsWithSameDimensions(Unit unit);
 
