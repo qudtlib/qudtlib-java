@@ -2,7 +2,7 @@ package io.github.qudtlib.tools.contribute.support.tree;
 
 import java.util.function.BiConsumer;
 
-class FormattingNodeVisitor<T> implements NodeVisitor<T> {
+public class FormattingNodeVisitor<T> implements NodeVisitor<T> {
     private final StringBuilder sb;
     String indent;
     int indentSize;
