@@ -1,5 +1,6 @@
 package io.github.qudtlib.tools.contribute.support.tree;
 
+import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.QuantityKind;
 import io.github.qudtlib.model.QudtNamespaces;
 import java.util.*;
@@ -54,6 +55,25 @@ public class QuantityKindTree {
             }
         }
         return resultForest;
+    }
+
+    public static List<Node<Object>> addAssociatedUnitsToQuantityKindForest(List<Node<QuantityKind>> forest){
+        List<Node<Object>> qksWithUnits = new ArrayList<>();
+        for (Node<QuantityKind> node: forest){
+            qksWithUnits.add(addUnits(node));
+        }
+        return qksWithUnits;
+    }
+
+    private static Node<Object> addUnits(Node<QuantityKind> node) {
+        Node<Object> thisNode = new Node<>(node.getData());
+        for (Node<QuantityKind> child: node.getChildren()) {
+            thisNode.addChild(addUnits(child));
+        }
+        Qudt.allUnits().stream().filter(u -> u.getQuantityKinds().contains(node.getData())).forEach(unit -> {
+            thisNode.addChild(new Node<>(unit));
+        });
+        return thisNode;
     }
 
     private static String getShortName(QuantityKind quantityKind) {
