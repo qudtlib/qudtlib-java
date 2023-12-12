@@ -57,9 +57,10 @@ public class QuantityKindTree {
         return resultForest;
     }
 
-    public static List<Node<Object>> addAssociatedUnitsToQuantityKindForest(List<Node<QuantityKind>> forest){
+    public static List<Node<Object>> addAssociatedUnitsToQuantityKindForest(
+            List<Node<QuantityKind>> forest) {
         List<Node<Object>> qksWithUnits = new ArrayList<>();
-        for (Node<QuantityKind> node: forest){
+        for (Node<QuantityKind> node : forest) {
             qksWithUnits.add(addUnits(node));
         }
         return qksWithUnits;
@@ -67,12 +68,15 @@ public class QuantityKindTree {
 
     private static Node<Object> addUnits(Node<QuantityKind> node) {
         Node<Object> thisNode = new Node<>(node.getData());
-        for (Node<QuantityKind> child: node.getChildren()) {
+        for (Node<QuantityKind> child : node.getChildren()) {
             thisNode.addChild(addUnits(child));
         }
-        Qudt.allUnits().stream().filter(u -> u.getQuantityKinds().contains(node.getData())).forEach(unit -> {
-            thisNode.addChild(new Node<>(unit));
-        });
+        Qudt.allUnits().stream()
+                .filter(u -> u.getQuantityKinds().contains(node.getData()))
+                .forEach(
+                        unit -> {
+                            thisNode.addChild(new Node<>(unit));
+                        });
         return thisNode;
     }
 
