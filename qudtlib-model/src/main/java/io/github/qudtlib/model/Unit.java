@@ -252,6 +252,9 @@ public class Unit extends SelfSmuggler {
         this.quantityKinds = buildSet(definition.quantityKinds);
         this.factorUnits = buildList(definition.factorUnits);
         this.unitOfSystems = buildSet(definition.systemsOfUnits);
+        if (this.factorUnits.isEmpty()) {
+            this.factorUnits.addAll(FactorUnits.ofUnit(this).getFactorUnits());
+        }
     }
 
     static boolean isUnitless(Unit unit) {
@@ -367,7 +370,7 @@ public class Unit extends SelfSmuggler {
     }
 
     public boolean hasFactorUnits() {
-        return this.factorUnits != null && !this.factorUnits.isEmpty();
+        return FactorUnits.hasFactorUnits(this.factorUnits);
     }
 
     public boolean isScaled() {
@@ -400,15 +403,15 @@ public class Unit extends SelfSmuggler {
     }
 
     public List<FactorUnit> getLeafFactorUnitsWithCumulativeExponents() {
-        return this.factorUnits == null || this.factorUnits.isEmpty()
-                ? List.of(FactorUnit.ofUnit(this))
-                : factorUnits.stream()
+        return this.hasFactorUnits()
+                ? factorUnits.stream()
                         .flatMap(f -> f.getLeafFactorUnitsWithCumulativeExponents().stream())
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList())
+                : List.of(FactorUnit.ofUnit(this));
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
-        if (!this.hasFactorUnits() || this.factorUnits.isEmpty()) {
+        if (!this.hasFactorUnits()) {
             if (this.isScaled()) {
                 return this.scalingOf.getAllPossibleFactorUnitCombinations();
             }
@@ -482,7 +485,7 @@ public class Unit extends SelfSmuggler {
 
     public List<FactorUnit> getFactorUnits() {
         return factorUnits == null
-                ? Collections.emptyList()
+                ? FactorUnits.ofUnit(this).getFactorUnits()
                 : Collections.unmodifiableList(factorUnits);
     }
 
