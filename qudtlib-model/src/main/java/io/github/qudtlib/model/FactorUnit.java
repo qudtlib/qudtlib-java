@@ -224,7 +224,7 @@ public class FactorUnit {
 
     public List<FactorUnit> getLeafFactorUnitsWithCumulativeExponents() {
         List<FactorUnit> leafFactorUnits = this.unit.getLeafFactorUnitsWithCumulativeExponents();
-        if (!leafFactorUnits.isEmpty()) {
+        if (FactorUnits.hasFactorUnits(leafFactorUnits)) {
             return leafFactorUnits.stream()
                     .map(f -> f.pow(this.getExponent()))
                     .collect(Collectors.toList());

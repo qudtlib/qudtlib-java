@@ -32,6 +32,19 @@ public class FactorUnits {
         return new Builder();
     }
 
+    public static boolean hasFactorUnits(List<FactorUnit> factorUnits) {
+        if (factorUnits == null) {
+            return false;
+        }
+        if (factorUnits.isEmpty()) {
+            return false;
+        }
+        if (factorUnits.size() == 1 && factorUnits.get(0).getExponent() == 1) {
+            return false;
+        }
+        return true;
+    }
+
     public static class Builder {
         private List<FactorUnit> factorUnits = new ArrayList<>();
         private BigDecimal scale = BigDecimal.ONE;
@@ -410,10 +423,16 @@ public class FactorUnits {
                         : sortBy(
                                 factorUnits.denominator(),
                                 perIndex == 0 ? unitLabel : unitLabel.substring(perIndex));
-        return Stream.concat(
-                        numeratorUnits.stream(),
-                        new FactorUnits(denominatorUnits).pow(-1).getFactorUnits().stream())
-                .collect(Collectors.toList());
+        List<FactorUnit> result =
+                Stream.concat(
+                                numeratorUnits.stream(),
+                                new FactorUnits(denominatorUnits).pow(-1).getFactorUnits().stream())
+                        .collect(Collectors.toList());
+        if (result.size() != factorUnitsList.size()) {
+            // we did not find a match for all units in the label, return original list
+            return factorUnitsList;
+        }
+        return result;
     }
 
     private static List<FactorUnit> sortBy(FactorUnits factorUnits, String localName) {

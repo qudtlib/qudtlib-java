@@ -3,10 +3,7 @@ package io.github.qudtlib;
 import static io.github.qudtlib.model.Units.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.qudtlib.model.FactorUnits;
-import io.github.qudtlib.model.QuantityKinds;
-import io.github.qudtlib.model.Unit;
-import io.github.qudtlib.model.Units;
+import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
@@ -370,5 +367,26 @@ public class FactorUnitsTests {
                         FactorUnits.ofFactorUnitSpec(Units.M, 1, Units.KiloGM, 1, Units.SEC, -2),
                         SEC2.getDimensionVectorIri().get(),
                         true));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testSortAccordingToUnitLabel(
+            List<FactorUnit> factorUnits, String label, List<FactorUnit> expectedResult) {
+        assertEquals(expectedResult, FactorUnits.sortAccordingToUnitLabel(label, factorUnits));
+    }
+
+    public static Stream<Arguments> testSortAccordingToUnitLabel() {
+        return Stream.of(
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(Units.M, 1, Units.N, 1).getFactorUnits(),
+                        "N-M",
+                        FactorUnits.ofFactorUnitSpec(Units.N, 1, Units.M, 1).getFactorUnits()),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(Units.SEC, -2, Units.M, 1, Units.KiloGM, 1)
+                                .getFactorUnits(),
+                        "N",
+                        FactorUnits.ofFactorUnitSpec(Units.SEC, -2, Units.M, 1, Units.KiloGM, 1)
+                                .getFactorUnits()));
     }
 }
