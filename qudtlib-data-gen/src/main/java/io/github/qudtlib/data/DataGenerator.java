@@ -50,6 +50,9 @@ public class DataGenerator {
     private static final String TRIPLES_TO_ADD_TO_UNITS = "triples-to-add-to-units.ttl";
     private static final String TRIPLES_TO_ADD_TO_QUANTITYKINDS =
             "triples-to-add-to-quantitykinds.ttl";
+    private static final String TRIPLES_TO_DELETE_FROM_UNITS = "triples-to-delete-from-units.ttl";
+    private static final String TRIPLES_TO_DELETE_FROM_QUANTITYKINDS =
+            "triples-to-delete-from-quantitykinds.ttl";
     private static final String UNITS_EXPECTED_DATA = "tmpExpected/qudt-unit.ttl";
 
     private static final String SYSTEM_OF_UNITS_FILE =
@@ -119,8 +122,11 @@ public class DataGenerator {
             RdfOps.addStatementsFromFile(outputCon, QUANTITYKINDS_FILE);
             // the currencies file contains the qk:Currency definition:
             RdfOps.addStatementsFromFile(outputCon, CURRENCIES_FILE);
+            // remove unwanted individual triples
+            RdfOps.removeStatementsFromFile(outputCon, TRIPLES_TO_DELETE_FROM_QUANTITYKINDS);
             // add missing triples
             RdfOps.addStatementsFromFile(outputCon, TRIPLES_TO_ADD_TO_QUANTITYKINDS);
+
             RdfOps.writeTurtleFile(outputCon, outFile(QUANTITYKINDS_OUTFILE));
         }
     }
@@ -136,6 +142,8 @@ public class DataGenerator {
                 RdfOps.addStatementsFromFile(inputCon, CURRENCIES_FILE);
                 // deal with kg
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
+                // remove unwanted individual triples
+                RdfOps.removeStatementsFromFile(outputCon, TRIPLES_TO_DELETE_FROM_UNITS);
                 // add missing triples
                 RdfOps.addStatementsFromFile(inputCon, TRIPLES_TO_ADD_TO_UNITS);
                 // add SI base units
