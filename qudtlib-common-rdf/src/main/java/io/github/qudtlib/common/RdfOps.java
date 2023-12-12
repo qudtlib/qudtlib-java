@@ -101,6 +101,11 @@ public abstract class RdfOps {
         con.commit();
     }
 
+    public static void removeStatementsFromFile(RepositoryConnection con, String filename) {
+        con.remove(loadTurtleToModel(filename));
+        con.commit();
+    }
+
     public static Model loadTurtleToModel(String classpathTurtleFile) {
         Model model = new LinkedHashModel();
         RDFParser parser = Rio.createParser(RDFFormat.TURTLE);

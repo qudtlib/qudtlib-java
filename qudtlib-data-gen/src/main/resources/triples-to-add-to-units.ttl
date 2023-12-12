@@ -35,7 +35,30 @@ unit:L qudt:factorUnit [
     qudt:unit unit:DeciM;
     qudt:exponent 3
 ] .
+unit:PSI
+  qudt:factorUnit [
+    qudt:unit unit:LB_F ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:IN ;
+         qudt:exponent -2
+  ].
 
+unit:LB_F
+  qudt:factorUnit [
+    qudt:unit unit:SLUG ;
+    qudt:exponent 1
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:FT ;
+    qudt:exponent 1
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:SEC ;
+    qudt:exponent -2
+  ].
+# Triples to until this is merged and released: https://github.com/qudt/qudt-public-repo/pull/837
 
 # Triples added until https://github.com/qudt/qudt-public-repo/pull/830 is merged
 unit:KiloN-PER-M a qudt:Unit;
