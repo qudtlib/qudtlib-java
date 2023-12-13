@@ -171,8 +171,8 @@ public class ContributeCorrectedDimensionVector {
                                                                                                                 node
                                                                                                                         .getData())
                                                                                                         .getIri()));
-                                                            });
-                                            TreeWalker.of(root).walkDepthFirst(formatter);
+                                                            }, node -> node.getData() instanceof QuantityKind ? "==" : "··");
+                                            TreeWalker.of(root, Comparator.comparing(o -> ((Node)o).getData().getClass().getSimpleName()).thenComparing(((Node)o).getData().toString())).walkDepthFirst(formatter);
                                             out.print(stringBuilder.toString());
                                         }
                                         System.out.println(
