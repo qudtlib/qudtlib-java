@@ -26,7 +26,8 @@ public class ContributeCorrectedDimensionVector {
                                     u -> {
                                         String dimVector = null;
                                         FactorUnits factorUnits = null;
-                                        List<FactorUnit> factorUnitList = u.getFactorUnits();
+                                        List<FactorUnit> factorUnitList =
+                                                u.getFactorUnits().getFactorUnits();
                                         factorUnits =
                                                 new FactorUnits(
                                                         FactorUnits.sortAccordingToUnitLabel(

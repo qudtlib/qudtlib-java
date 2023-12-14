@@ -1,6 +1,5 @@
 package io.github.qudtlib.model;
 
-import static io.github.qudtlib.nodedef.Builder.buildList;
 import static io.github.qudtlib.nodedef.Builder.buildSet;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
@@ -42,7 +41,7 @@ public class Unit extends SelfSmuggler {
         private Builder<Unit> scalingOf;
         private String dimensionVectorIri;
 
-        private List<Builder<FactorUnit>> factorUnits = new ArrayList<>();
+        private FactorUnits.Builder factorUnits = FactorUnits.builder();
         private String currencyCode;
         private Integer currencyNumber;
 
@@ -112,17 +111,12 @@ public class Unit extends SelfSmuggler {
         }
 
         public <T extends Definition> T addFactorUnit(FactorUnit.Builder factorUnit) {
-            doIfPresent(factorUnit, f -> this.factorUnits.add(f));
+            doIfPresent(factorUnit, f -> this.factorUnits.factor(factorUnit));
             return (T) this;
         }
 
         public <T extends Definition> T addFactorUnit(FactorUnit factorUnit) {
-            doIfPresent(factorUnit, f -> this.factorUnits.add(FactorUnit.builder(f)));
-            return (T) this;
-        }
-
-        public <T extends Definition> T addFactorUnits(FactorUnits factorUnits) {
-            doIfPresent(factorUnits, f -> this.addFactorUnits(f.getFactorUnits()));
+            doIfPresent(factorUnit, f -> this.factorUnits.factor(factorUnit));
             return (T) this;
         }
 
@@ -132,13 +126,18 @@ public class Unit extends SelfSmuggler {
             return (T) this;
         }
 
+        public <T extends Definition> T setFactorUnits(FactorUnits.Builder factorUnits) {
+            this.factorUnits = factorUnits;
+            return (T) this;
+        }
+
         public <T extends Definition> T setFactorUnits(FactorUnits factorUnits) {
-            doIfPresent(factorUnits, f -> this.setFactorUnits(f.getFactorUnits()));
+            this.factorUnits = FactorUnits.builderOf(factorUnits);
             return (T) this;
         }
 
         public <T extends Definition> T setFactorUnits(Collection<FactorUnit> factorUnits) {
-            this.factorUnits = new ArrayList<>();
+            this.factorUnits = FactorUnits.builder();
             doIfPresent(
                     factorUnits, f -> factorUnits.stream().forEach(fu -> this.addFactorUnit(fu)));
             return (T) this;
@@ -214,7 +213,7 @@ public class Unit extends SelfSmuggler {
     private final Unit scalingOf;
     private final String dimensionVectorIri;
     private final Set<Unit> exactMatches;
-    private final List<FactorUnit> factorUnits;
+    private final FactorUnits factorUnits;
     private final String currencyCode;
     private final Integer currencyNumber;
     private final Set<SystemOfUnits> unitOfSystems;
@@ -225,20 +224,8 @@ public class Unit extends SelfSmuggler {
         Objects.requireNonNull(definition.labels);
         Objects.requireNonNull(definition.factorUnits);
         Objects.requireNonNull(definition.quantityKinds);
-        if (definition.dimensionVectorIri == null) {
-            System.err.println("warning: no dimension vector present for unit " + definition.iri);
-        }
         this.iri = definition.iri;
         this.dimensionVectorIri = definition.dimensionVectorIri;
-        if (definition.conversionMultiplier == null) {
-            System.out.println("warning: conversionMultiplier missing for unit " + this.iri);
-            definition.conversionMultiplier = null;
-        }
-        if (definition.conversionMultiplier != null
-                && definition.conversionMultiplier.compareTo(BigDecimal.ZERO) == 0) {
-            System.out.println("warning: conversionMultiplier 0.0 for unit " + this.iri);
-            definition.conversionMultiplier = null;
-        }
         this.conversionMultiplier = definition.conversionMultiplier;
         this.conversionOffset = definition.conversionOffset;
         this.symbol = definition.symbol;
@@ -250,10 +237,12 @@ public class Unit extends SelfSmuggler {
         this.scalingOf = definition.scalingOf == null ? null : definition.scalingOf.build();
         this.exactMatches = buildSet(definition.exactMatches);
         this.quantityKinds = buildSet(definition.quantityKinds);
-        this.factorUnits = buildList(definition.factorUnits);
         this.unitOfSystems = buildSet(definition.systemsOfUnits);
-        if (this.factorUnits.isEmpty()) {
-            this.factorUnits.addAll(FactorUnits.ofUnit(this).getFactorUnits());
+        FactorUnits fu = definition.factorUnits.build();
+        if (FactorUnits.hasFactorUnits(fu.getFactorUnits())) {
+            this.factorUnits = fu;
+        } else {
+            this.factorUnits = FactorUnits.ofUnit(this);
         }
     }
 
@@ -323,9 +312,13 @@ public class Unit extends SelfSmuggler {
                                         String.format(
                                                 "Cannot convert %s(%s) to %s(%s)",
                                                 this.getIriAbbreviated(),
-                                                this.getConversionMultiplier().isEmpty() ? "no multiplier" :"has multiplier",
+                                                this.getConversionMultiplier().isEmpty()
+                                                        ? "no multiplier"
+                                                        : "has multiplier",
                                                 toUnit.getIriAbbreviated(),
-                                                toUnit.getConversionMultiplier().isEmpty() ? "no multiplier" :"has multiplier")));
+                                                toUnit.getConversionMultiplier().isEmpty()
+                                                        ? "no multiplier"
+                                                        : "has multiplier")));
     }
 
     public boolean conversionOffsetDiffers(Unit other) {
@@ -388,7 +381,7 @@ public class Unit extends SelfSmuggler {
     }
 
     public boolean hasFactorUnits() {
-        return FactorUnits.hasFactorUnits(this.factorUnits);
+        return FactorUnits.hasFactorUnits(this.factorUnits.getFactorUnits());
     }
 
     public boolean isScaled() {
@@ -402,27 +395,16 @@ public class Unit extends SelfSmuggler {
      */
     public FactorUnits normalize() {
         if (this.hasFactorUnits()) {
-            FactorUnits ret =
-                    this.factorUnits.stream()
-                            .map(fu -> fu.normalize())
-                            .reduce((prev, cur) -> cur.combineWith(prev))
-                            .get();
-            if (ret.isRatioOfSameUnits()) {
-                // we don't want to reduce units like M²/M², as such units then match any other unit
-                // if they are
-                // compared by the normalization result
-                return FactorUnits.ofUnit(this);
-            }
-            return ret.reduceExponents();
+            return this.factorUnits.normalize();
         } else if (this.isScaled()) {
             return this.scalingOf.normalize().scale(this.getConversionMultiplier(this.scalingOf));
         }
-        return FactorUnits.ofUnit(this);
+        return this.factorUnits;
     }
 
     public List<FactorUnit> getLeafFactorUnitsWithCumulativeExponents() {
         return this.hasFactorUnits()
-                ? factorUnits.stream()
+                ? factorUnits.getFactorUnits().stream()
                         .flatMap(f -> f.getLeafFactorUnitsWithCumulativeExponents().stream())
                         .collect(Collectors.toList())
                 : List.of(FactorUnit.ofUnit(this));
@@ -436,7 +418,7 @@ public class Unit extends SelfSmuggler {
             return List.of(List.of(FactorUnit.ofUnit(this)));
         }
         List<List<FactorUnit>> result =
-                FactorUnit.getAllPossibleFactorUnitCombinations(this.factorUnits);
+                FactorUnit.getAllPossibleFactorUnitCombinations(this.factorUnits.getFactorUnits());
         List<FactorUnit> thisAsResult = List.of(FactorUnit.ofUnit(this));
         if (!result.contains(thisAsResult)) {
             result.add(thisAsResult);
@@ -501,10 +483,8 @@ public class Unit extends SelfSmuggler {
         this.quantityKinds.add(quantityKind);
     }
 
-    public List<FactorUnit> getFactorUnits() {
-        return factorUnits == null
-                ? FactorUnits.ofUnit(this).getFactorUnits()
-                : Collections.unmodifiableList(factorUnits);
+    public FactorUnits getFactorUnits() {
+        return this.factorUnits;
     }
 
     public Optional<String> getCurrencyCode() {

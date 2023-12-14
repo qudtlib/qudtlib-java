@@ -40,7 +40,8 @@ public class ContributeCorrectedSymbols {
                                             }
                                         }
                                         if (symbol == null) {
-                                            List<FactorUnit> factorUnitList = u.getFactorUnits();
+                                            List<FactorUnit> factorUnitList =
+                                                    u.getFactorUnits().getFactorUnits();
                                             if (factorUnitList.isEmpty()) {
                                                 // System.err.println(String.format("Cannot add
                                                 // symbol for %s: unit has no factor units",

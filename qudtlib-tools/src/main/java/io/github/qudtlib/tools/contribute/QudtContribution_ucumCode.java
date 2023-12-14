@@ -1,7 +1,6 @@
 package io.github.qudtlib.tools.contribute;
 
 import io.github.qudtlib.Qudt;
-import io.github.qudtlib.model.FactorUnit;
 import io.github.qudtlib.model.FactorUnits;
 import io.github.qudtlib.model.Unit;
 import io.github.qudtlib.vocab.QUDT;
@@ -10,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class QudtContribution_ucumCode {
     public static void main(String[] args) throws Exception {
@@ -27,10 +25,7 @@ public class QudtContribution_ucumCode {
                                 .forEach(
                                         u -> {
                                             final String ucumCode = getUcumCode(u).orElse(null);
-                                            FactorUnits factorUnits =
-                                                    u.hasFactorUnits()
-                                                            ? new FactorUnits(u.getFactorUnits())
-                                                            : FactorUnits.ofUnit(u);
+                                            FactorUnits factorUnits = u.getFactorUnits();
                                             try {
                                                 if (ucumCode != null) {
                                                     tool.addDerivedUnit(
@@ -59,20 +54,10 @@ public class QudtContribution_ucumCode {
     }
 
     private static Optional<String> getUcumCode(Unit u) {
-        List<FactorUnit> factorUnitList = u.getFactorUnits();
-        if (!factorUnitList.isEmpty()) {
+        if (u.hasFactorUnits()) {
             // System.err.println(String.format("Cannot add symbol for %s: unit has no factor
             // units", u.getIri()));
-            return new FactorUnits(
-                            factorUnitList.stream()
-                                    .map(
-                                            fu ->
-                                                    new FactorUnit(
-                                                            Qudt.unitRequired(
-                                                                    fu.getUnit().getIri()),
-                                                            fu.getExponent()))
-                                    .collect(Collectors.toList()))
-                    .getUcumCode();
+            return u.getFactorUnits().getUcumCode();
         }
         if (u.isScaled()) {
             String baseUnitSymbol =

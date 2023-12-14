@@ -14,9 +14,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * * if a derived unit has a conversionMultiplier, the base units should have one, too. (just calculate, assuming all involved factors are correct. If more than one missing, manual change required)
- * * if the base units have a conversionMultiplier, the derived units should have one too. (just calculate, assuming all involved factors are correct. If more than one missing, manual change required)
- * * if there is a mismatch between the calculated cM of a derived unit and its actual cM, manual change required
+ * * if a derived unit has a conversionMultiplier, the base units should have one, too. (just
+ * calculate, assuming all involved factors are correct. If more than one missing, manual change
+ * required) * if the base units have a conversionMultiplier, the derived units should have one too.
+ * (just calculate, assuming all involved factors are correct. If more than one missing, manual
+ * change required) * if there is a mismatch between the calculated cM of a derived unit and its
+ * actual cM, manual change required
  */
 public class ContributeCorrectedConversionFactor {
     private static class UnitFactor {
@@ -40,7 +43,8 @@ public class ContributeCorrectedConversionFactor {
                                     u -> {
                                         BigDecimal conversionMultiplier = null;
                                         FactorUnits factorUnits = null;
-                                        List<FactorUnit> factorUnitList = u.getFactorUnits();
+                                        List<FactorUnit> factorUnitList =
+                                                u.getFactorUnits().getFactorUnits();
                                         factorUnits =
                                                 new FactorUnits(
                                                         FactorUnits.sortAccordingToUnitLabel(
@@ -190,7 +194,7 @@ public class ContributeCorrectedConversionFactor {
     }
 
     private static long countSIBaseUnits(Unit l) {
-        return l.getFactorUnits().stream()
+        return l.getFactorUnits().getFactorUnits().stream()
                 .filter(fu -> SystemsOfUnits.SI.hasBaseUnit(fu.getUnit()))
                 .count();
     }

@@ -50,7 +50,7 @@ public class UnitTree {
             }
         }
         if (unitForRecursion.hasFactorUnits()) {
-            for (FactorUnit fu : unitForRecursion.getFactorUnits()) {
+            for (FactorUnit fu : unitForRecursion.getFactorUnits().getFactorUnits()) {
                 node.addChild(buildFactorUnitTree(fu));
             }
         }

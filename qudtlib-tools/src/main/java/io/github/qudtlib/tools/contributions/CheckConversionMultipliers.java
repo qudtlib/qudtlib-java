@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.*;
 
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.DimensionVector;
-import io.github.qudtlib.model.FactorUnits;
 import io.github.qudtlib.model.QudtNamespaces;
 import io.github.qudtlib.model.Unit;
 import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
@@ -55,8 +54,7 @@ public class CheckConversionMultipliers {
                                     Unit to = bases.get(j);
                                     try {
                                         BigDecimal factor =
-                                                new FactorUnits(from.getFactorUnits())
-                                                        .conversionFactor(to);
+                                                from.getFactorUnits().conversionFactor(to);
                                         if (BigDecimal.ONE.compareTo(factor) != 0) {
                                             System.out.println(
                                                     String.format(

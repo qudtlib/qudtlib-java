@@ -119,8 +119,9 @@ public class DerivedUnitTests {
                         DerivedUnitSearchMode.ALL, Qudt.Units.N, 1, Qudt.Units.M, 1);
         assertTrue(units.contains(Qudt.Units.J));
         assertTrue(units.contains(Qudt.Units.N__M));
+        assertTrue(units.contains(Qudt.Units.N__M__PER__RAD));
         assertTrue(units.contains(Qudt.Units.W__SEC));
-        assertEquals(3, units.size());
+        assertEquals(4, units.size());
     }
 
     @Test
