@@ -58,6 +58,29 @@ unit:LB_F
     qudt:unit unit:SEC ;
     qudt:exponent -2
   ].
+
+unit:LA
+  qudt:factorUnitScalar 0.31830988618 ;
+  qudt:factorUnit [
+    qudt:unit unit:CD ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:M ;
+         qudt:exponent -2
+  ].
+
+unit:LA_FT
+  qudt:factorUnitScalar 0.31830988618 ;
+  qudt:factorUnit [
+    qudt:unit unit:CD ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:FT ;
+         qudt:exponent -2
+  ].
+
 # Triples to until this is merged and released: https://github.com/qudt/qudt-public-repo/pull/837
 
 # Triples added until https://github.com/qudt/qudt-public-repo/pull/830 is merged
