@@ -14,19 +14,20 @@ public class QuantityKindTree {
     public static String formatSkosBroaderForest(List<Node<QuantityKind>> forest) {
         StringBuilder sb = new StringBuilder();
         NodeVisitor<QuantityKind> formattingVisitor =
-                new FormattingNodeVisitor<QuantityKind>(
-                        sb,
-                        (stringBuilder, node) -> {
-                            stringBuilder.append(getShortName(node.getData()));
-                            if (!node.getData().getExactMatches().isEmpty()) {
-                                stringBuilder
-                                        .append(" - exact matches: ")
-                                        .append(
-                                                node.getData().getExactMatches().stream()
-                                                        .map(qk -> getShortName(qk))
-                                                        .collect(Collectors.joining(",")));
-                            }
-                        });
+                new FormattingNodeVisitor<QuantityKind>(sb)
+                        .nodeFormatDefault(
+                                node -> {
+                                    StringBuilder ret = new StringBuilder();
+                                    sb.append(getShortName(node.getData()));
+                                    if (!node.getData().getExactMatches().isEmpty()) {
+                                        sb.append(" - exact matches: ")
+                                                .append(
+                                                        node.getData().getExactMatches().stream()
+                                                                .map(qk -> getShortName(qk))
+                                                                .collect(Collectors.joining(",")));
+                                    }
+                                    return sb.toString();
+                                });
         for (Node<QuantityKind> tree : forest) {
             TreeWalker.of(tree).walkDepthFirst(formattingVisitor);
         }
@@ -35,25 +36,37 @@ public class QuantityKindTree {
 
     public static List<Node<QuantityKind>> makeSkosBroaderForest(
             Collection<QuantityKind> quantityKinds) {
-        List<Node<QuantityKind>> resultForest = new ArrayList<>();
-        for (QuantityKind quantityKind : quantityKinds) {
-            boolean foundParent = false;
-            for (Node<QuantityKind> tree : resultForest) {
-                Optional<Node<QuantityKind>> parentOpt =
-                        tree.findFirst(
-                                parentCandidate ->
-                                        quantityKind
-                                                .getBroaderQuantityKinds()
-                                                .contains(parentCandidate));
-                if (parentOpt.isPresent()) {
-                    parentOpt.get().addChild(quantityKind);
-                    foundParent = true;
-                }
+        List<Node<QuantityKind>> resultForest =
+                Node.forestOf(
+                        quantityKinds,
+                        (parentCandidate, childCandidate) ->
+                                childCandidate.getBroaderQuantityKinds().contains(parentCandidate));
+        return resultForest;
+    }
+
+    public static List<Node<QuantityKind>> makeCompleteSkosBroaderForestContaining(
+            Collection<QuantityKind> quantityKinds) {
+        Set<QuantityKind> transitiveHull = new HashSet<>(quantityKinds);
+        int hullSize = -1;
+        while (transitiveHull.size() > hullSize) {
+            hullSize = transitiveHull.size();
+            Set<QuantityKind> toAdd = new HashSet<>();
+            for (QuantityKind qk : transitiveHull) {
+                toAdd.addAll(qk.getBroaderQuantityKinds());
             }
-            if (!foundParent) {
-                resultForest.add(new Node<>(quantityKind));
-            }
+            transitiveHull.addAll(toAdd);
         }
+        Qudt.allQuantityKinds().stream()
+                .filter(
+                        qk ->
+                                qk.getBroaderQuantityKinds().stream()
+                                        .anyMatch(q -> transitiveHull.contains(q)))
+                .forEach(transitiveHull::add);
+        List<Node<QuantityKind>> resultForest =
+                Node.forestOf(
+                        transitiveHull,
+                        (parentCandidate, childCandidate) ->
+                                childCandidate.getBroaderQuantityKinds().contains(parentCandidate));
         return resultForest;
     }
 
@@ -77,6 +90,7 @@ public class QuantityKindTree {
                         unit -> {
                             thisNode.addChild(new Node<>(unit));
                         });
+        // node.getData().getApplicableUnits().forEach(u -> thisNode.addChild(u));
         return thisNode;
     }
 
