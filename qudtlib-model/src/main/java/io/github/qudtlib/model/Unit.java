@@ -230,17 +230,17 @@ public class Unit extends SelfSmuggler {
         }
         this.iri = definition.iri;
         this.dimensionVectorIri = definition.dimensionVectorIri;
+        if (definition.conversionMultiplier == null) {
+            System.out.println("warning: conversionMultiplier missing for unit " + this.iri);
+            definition.conversionMultiplier = null;
+        }
         if (definition.conversionMultiplier != null
                 && definition.conversionMultiplier.compareTo(BigDecimal.ZERO) == 0) {
             System.out.println("warning: conversionMultiplier 0.0 for unit " + this.iri);
             definition.conversionMultiplier = null;
         }
-        this.conversionMultiplier =
-                definition.conversionMultiplier != null
-                        ? definition.conversionMultiplier
-                        : BigDecimal.ONE;
-        this.conversionOffset =
-                definition.conversionOffset != null ? definition.conversionOffset : BigDecimal.ZERO;
+        this.conversionMultiplier = definition.conversionMultiplier;
+        this.conversionOffset = definition.conversionOffset;
         this.symbol = definition.symbol;
         this.ucumCode = definition.ucumCode;
         this.currencyCode = definition.currencyCode;
@@ -309,9 +309,23 @@ public class Unit extends SelfSmuggler {
                             "Cannot convert from %s to %s just by multiplication as their conversion offsets differ (%s vs %s)",
                             this, toUnit, this.conversionOffset, toUnit.conversionOffset));
         }
-        BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(BigDecimal.ONE);
-        BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
-        return fromMultiplier.divide(toMultiplier, MathContext.DECIMAL128);
+        Optional<BigDecimal> fromMultiplier = this.getConversionMultiplier();
+        Optional<BigDecimal> toMultiplier = toUnit.getConversionMultiplier();
+        return fromMultiplier
+                .map(
+                        from ->
+                                toMultiplier
+                                        .map(to -> from.divide(to, MathContext.DECIMAL128))
+                                        .orElse(null))
+                .orElseThrow(
+                        () ->
+                                new InconvertibleQuantitiesException(
+                                        String.format(
+                                                "Cannot convert %s(%s) to %s(%s)",
+                                                this.getIriAbbreviated(),
+                                                this.getConversionMultiplier().isEmpty() ? "no multiplier" :"has multiplier",
+                                                toUnit.getIriAbbreviated(),
+                                                toUnit.getConversionMultiplier().isEmpty() ? "no multiplier" :"has multiplier")));
     }
 
     public boolean conversionOffsetDiffers(Unit other) {
@@ -364,9 +378,13 @@ public class Unit extends SelfSmuggler {
      * @return true if the unit matches the criteria
      */
     public boolean matches(FactorUnits factorUnits) {
-        FactorUnits thisNormalized = this.normalize();
-        FactorUnits selectionNormalized = factorUnits.normalize();
-        return thisNormalized.equals(selectionNormalized);
+        try {
+            FactorUnits thisNormalized = this.normalize();
+            FactorUnits selectionNormalized = factorUnits.normalize();
+            return thisNormalized.equals(selectionNormalized);
+        } catch (InconvertibleQuantitiesException e) {
+            return false;
+        }
     }
 
     public boolean hasFactorUnits() {
