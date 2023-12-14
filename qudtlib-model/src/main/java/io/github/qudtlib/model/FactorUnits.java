@@ -209,9 +209,9 @@ public class FactorUnits {
                                 + this.toString());
             }
             if (dv == null) {
-                dv = DimensionVector.of(fudvOpt.get());
+                dv = DimensionVector.ofRequired(fudvOpt.get());
             } else {
-                dv = dv.combine(DimensionVector.of(fudvOpt.get()));
+                dv = dv.combine(DimensionVector.ofRequired(fudvOpt.get()));
             }
         }
         return dv.getDimensionVectorIri();
@@ -275,16 +275,54 @@ public class FactorUnits {
                     break;
                 }
             }
-            if (processed != null) {
+            if (processed == null) {
+                // no match for myFactor in OtherFactorUnitList. If myFactor is D1, multiply it in
+                // anyway so we get its conversionMultiplier.
+                if (myFactor.getDimensionVectorIri()
+                        .map(dv -> DimensionVector.ofRequired(dv).isDimensionless())
+                        .orElse(false)) {
+                    factor =
+                            factor.multiply(
+                                    myFactor.getUnit()
+                                            .getConversionMultiplier()
+                                            .orElse(BigDecimal.ONE));
+                } else {
+                    throw new RuntimeException(
+                            String.format(
+                                    "Cannot calculate conversion factor beween factor units %s and %s: factor(s) %s of %s is unmatched",
+                                    myFactors, otherFactors, myFactor, myFactorUnitList));
+                }
+            } else {
                 otherFactorUnitList.remove(processed);
                 processed = null;
             }
         }
         if (!otherFactorUnitList.isEmpty()) {
-            throw new RuntimeException(
-                    String.format(
-                            "Cannot calculate conversion factor beween factor units %s and %s: %s is unmatched on the right-hand side",
-                            myFactors, otherFactors, otherFactorUnitList));
+            List<FactorUnit> unmatchedFactors = new ArrayList<>();
+            for (FactorUnit otherFactor : otherFactorUnitList) {
+                // no match for myFactor in OtherFactorUnitList. If myFactor is D1, multiply it in
+                // anyway so we get its conversionMultiplier.
+                if (otherFactor
+                        .getDimensionVectorIri()
+                        .map(dv -> DimensionVector.ofRequired(dv).isDimensionless())
+                        .orElse(false)) {
+                    factor =
+                            factor.divide(
+                                    otherFactor
+                                            .getUnit()
+                                            .getConversionMultiplier()
+                                            .orElse(BigDecimal.ONE),
+                                    MathContext.DECIMAL128);
+                } else {
+                    unmatchedFactors.add(otherFactor);
+                }
+            }
+            if (!unmatchedFactors.isEmpty()) {
+                throw new RuntimeException(
+                        String.format(
+                                "Cannot calculate conversion factor beween factor units %s and %s: factor(s) %s of %s is unmatched ",
+                                myFactors, otherFactors, unmatchedFactors, otherFactors));
+            }
         }
         return factor;
     }
