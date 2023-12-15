@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.0] - 2023-12-15
+
 ### Added
 
 - Add (crude) tools for inspecting QUDT units/quantitykinds and for generating triples for unit/quantitykind contributions
@@ -180,7 +182,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v5.0.1...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.0...HEAD
+[6.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v5.0.1...v6.0.0
 [5.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v4.3.0...v5.0.0
 [4.3.0]: https://github.com/qudtlib/qudtlib-java/compare/v4.2.0...v4.3.0
