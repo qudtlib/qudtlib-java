@@ -146,7 +146,8 @@ public class SystemOfUnits extends SelfSmuggler {
             return allowsUnit(base);
         }
         if (toCheck.hasFactorUnits()) {
-            return toCheck.getFactorUnits().stream().allMatch(fu -> this.allowsUnit(fu.unit));
+            return toCheck.getFactorUnits().getFactorUnits().stream()
+                    .allMatch(fu -> this.allowsUnit(fu.unit));
         }
         return false;
     }

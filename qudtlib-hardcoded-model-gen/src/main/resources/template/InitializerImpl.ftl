@@ -179,17 +179,20 @@ public class InitializerImpl implements Initializer {
         <#if unit.hasFactorUnits()>
         private static void setFactorUnits${iri?counter?c}(Definitions definitions){
             String iri = "${iri}";
+            var builder = FactorUnits.builder();
+            builder.scaleFactor(${bigDec(unit.factorUnits.scaleFactor)});
+            <#list unit.factorUnits.factorUnits as factorUnit>
+            builder.factor(
+                FactorUnit
+                    .builder()
+                    .unit(definitions.expectUnitDefinition("${factorUnit.unit.iri}"))
+                    .exponent(${factorUnit.exponent}));
+            </#list>
             Unit.Definition def =
-                definitions.getUnitDefinition(iri).orElseThrow(exceptionSupplier(iri))
-                <#list unit.factorUnits as factorUnit>
-                .addFactorUnit(
-                    FactorUnit
-                        .builder()
-                        .unit(definitions.expectUnitDefinition("${factorUnit.unit.iri}"))
-                        .exponent(${factorUnit.exponent})
-                )
-                </#list>
-                ;
+                definitions
+                    .getUnitDefinition(iri)
+                    .orElseThrow(exceptionSupplier(iri))
+                    .setFactorUnits(builder);
         }
         </#if>
     </#list>

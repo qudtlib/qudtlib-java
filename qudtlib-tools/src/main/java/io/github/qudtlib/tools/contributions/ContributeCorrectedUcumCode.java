@@ -20,7 +20,8 @@ public class ContributeCorrectedUcumCode {
                             .filter(u -> u.getUcumCode().isEmpty())
                             .forEach(
                                     u -> {
-                                        List<FactorUnit> factorUnitList = u.getFactorUnits();
+                                        List<FactorUnit> factorUnitList =
+                                                u.getFactorUnits().getFactorUnits();
                                         if (factorUnitList.isEmpty()) {
                                             System.err.println(
                                                     String.format(

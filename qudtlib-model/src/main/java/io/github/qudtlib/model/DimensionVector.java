@@ -1,5 +1,9 @@
 package io.github.qudtlib.model;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * Represents the QUDT dimension vector and allows for converting between a dimension vector IRI and
  * the numeric values, as well as for some manipulations.
@@ -9,17 +13,36 @@ package io.github.qudtlib.model;
  * never changes by multiplication, and its value is only 1 iff all other dimensions are 0.
  */
 public class DimensionVector {
-    private String dimensionVectorIri;
-
     private static final char[] dimensions = new char[] {'A', 'E', 'L', 'I', 'M', 'H', 'T', 'D'};
+
+    public static DimensionVector DIMENSIONLESS =
+            new DimensionVector(new int[] {0, 0, 0, 0, 0, 0, 0, 1});
+
+    private String dimensionVectorIri;
 
     private final int[] values;
 
-    public static DimensionVector of(String dimensionVectorIri) {
+    public static Optional<DimensionVector> of(String dimensionVectorIri) {
+        try {
+            return Optional.of(new DimensionVector(dimensionVectorIri));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public static DimensionVector ofRequired(String dimensionVectorIri) {
         return new DimensionVector(dimensionVectorIri);
     }
 
-    public static DimensionVector of(int[] dimensionValues) {
+    public static Optional<DimensionVector> of(int[] dimensionValues) {
+        try {
+            return Optional.of(new DimensionVector(dimensionValues));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public static DimensionVector ofRequired(int[] dimensionValues) {
         return new DimensionVector(dimensionValues);
     }
 
@@ -67,6 +90,10 @@ public class DimensionVector {
         this(new int[8]);
     }
 
+    public boolean isDimensionless() {
+        return this.equals(DIMENSIONLESS);
+    }
+
     public String getDimensionVectorIri() {
         return dimensionVectorIri;
     }
@@ -103,5 +130,21 @@ public class DimensionVector {
         }
         setRatio(combined, isRatio);
         return new DimensionVector(combined);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DimensionVector)) return false;
+        DimensionVector that = (DimensionVector) o;
+        return Objects.equals(getDimensionVectorIri(), that.getDimensionVectorIri())
+                && Arrays.equals(getValues(), that.getValues());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(getDimensionVectorIri());
+        result = 31 * result + Arrays.hashCode(getValues());
+        return result;
     }
 }

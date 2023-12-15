@@ -37,11 +37,14 @@ public class ContributionHelper {
                                 .multiply(scalingOf.getConversionMultiplier().get()));
                 def.scalingOf(scalingOf);
             }
-            def.addFactorUnits(factorUnits).dimensionVectorIri(factorUnits.getDimensionVectorIri());
+            def.setFactorUnits(factorUnits).dimensionVectorIri(factorUnits.getDimensionVectorIri());
         } else {
             def = Unit.definition(existingUnit.getIri());
             final Unit.Definition finalDef = def;
-            existingUnit.getFactorUnits().forEach(fu -> finalDef.addFactorUnit(fu));
+            existingUnit
+                    .getFactorUnits()
+                    .getFactorUnits()
+                    .forEach(fu -> finalDef.addFactorUnit(fu));
             FactorUnits base = getBaseFactorUnits(factorUnits);
             if (existingUnit.getScalingOf().isPresent()) {
                 finalDef.scalingOf(existingUnit.getScalingOf().get());

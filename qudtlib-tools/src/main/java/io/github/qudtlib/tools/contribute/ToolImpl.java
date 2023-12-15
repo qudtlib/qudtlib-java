@@ -391,10 +391,6 @@ class ToolImpl implements Tool {
                 Qudt.allUnits().stream()
                         .filter(
                                 u -> {
-                                    FactorUnits factorsOfUnit =
-                                            u.hasFactorUnits()
-                                                    ? new FactorUnits(u.getFactorUnits())
-                                                    : FactorUnits.ofUnit(u);
                                     return (factorUnits
                                             .generateAllLocalnamePossibilities()
                                             .contains(u.getIriLocalname()));

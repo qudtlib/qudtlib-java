@@ -26,10 +26,7 @@ public class QudtContribution_symbol {
                                 .forEach(
                                         u -> {
                                             final String symbol = getSymbol(u).orElse(null);
-                                            FactorUnits factorUnits =
-                                                    u.hasFactorUnits()
-                                                            ? new FactorUnits(u.getFactorUnits())
-                                                            : FactorUnits.ofUnit(u);
+                                            FactorUnits factorUnits = u.getFactorUnits();
                                             try {
                                                 if (symbol != null) {
                                                     tool.addDerivedUnit(
@@ -57,7 +54,7 @@ public class QudtContribution_symbol {
     }
 
     private static Optional<String> getSymbol(Unit u) {
-        List<FactorUnit> factorUnitList = u.getFactorUnits();
+        List<FactorUnit> factorUnitList = u.getFactorUnits().getFactorUnits();
         if (!factorUnitList.isEmpty()) {
             // System.err.println(String.format("Cannot add symbol for %s: unit has no factor
             // units", u.getIri()));

@@ -37,7 +37,7 @@ public class QudtlibExample {
             System.out.println("unit : " + unit);
         }
         System.out.println("---");
-        List<FactorUnit> myFactorUnits = Qudt.Units.N.getFactorUnits();
+        List<FactorUnit> myFactorUnits = Qudt.Units.N.getFactorUnits().getFactorUnits();
         System.out.println("finding factors of unit " + Qudt.Units.N);
         for (FactorUnit factorUnit : myFactorUnits) {
             System.out.println("factor unit:" + factorUnit);

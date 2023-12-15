@@ -206,7 +206,7 @@ for (const unit of config.units.values()){
 <#list units as iri, unit>
     <#if unit.hasFactorUnits()>
   unit = getUnit("${iri}");
-        <#list unit.factorUnits as factorUnit>
+        <#list unit.factorUnits.factorUnits as factorUnit>
   unit.addFactorUnit(new FactorUnit(getUnit("${factorUnit.unit.iri}"), ${factorUnit.exponent}));
         </#list>
     </#if>
