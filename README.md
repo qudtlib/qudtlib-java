@@ -14,7 +14,15 @@ The library offers
 
 ## Usage
 
-The module clients will want to use is `io.github.qudtlib:qudtlib`. The other modules are merely needed to generate that one from the latest [QUDT release zip](https://github.com/qudt/qudt-public-repo/tags).
+The module clients will want to use is `io.github.qudtlib:qudtlib`. The other modules are merely needed to generate that one from either a [QUDT release zip](https://github.com/qudt/qudt-public-repo/tags) or a QUDT repository branch/tag/revision.
+
+By default, the project uses the **release zip** configured in the project's `qudt.release.version` property.
+
+If the environment variable `scmVersion` is set (e.g. by building with `mvn install -DscmVersion=main`), the **QUDT repository's branch** with the specified name is used.
+
+To build from a **tag** in the QUDT repo, use e.g. `-DscmVersionType=tag -DscmVersion=v2.1.33`
+
+To build from a **revision** in the QUDT repo use e.g. `-DscmVersionType=revision -DscmVersion=c4456d5`
 
 Maven dependency:
 

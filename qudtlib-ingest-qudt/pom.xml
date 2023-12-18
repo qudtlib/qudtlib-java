@@ -11,49 +11,12 @@
     <properties>
         <qudt.unpack.dir>${project.build.directory}/generated-resources/qudt</qudt.unpack.dir>
         <qudtlib.generate.dir>${project.build.directory}/generated-resources/qudtlib</qudtlib.generate.dir>
+        <scmVersionType>branch</scmVersionType>
     </properties>
 
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>download-qudt-release</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                            <url>https://github.com/</url>
-                            <fromFile>qudt/qudt-public-repo/archive/refs/tags/${qudt.release.version}.zip</fromFile>
-                            <toDir>${project.build.directory}/qudt</toDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <target>
-                                <echo message="unzipping file" />
-                                <unzip src="${project.build.directory}/qudt/${qudt.release.version}.zip" dest="${qudt.unpack.dir}">
-                                    <cutdirsmapper dirs="1" />
-                                </unzip>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -94,4 +57,131 @@
     </build>
 
 
+    <profiles>
+        <profile>
+            <id>use-qudt-github-checkout</id>
+            <activation>
+                <property><name>scmVersion</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.ekryd.echo-maven-plugin</groupId>
+                        <artifactId>echo-maven-plugin</artifactId>
+                        <version>2.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>echo-maven-plugin-1</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>echo</goal>
+                                </goals>
+                                <configuration>
+                                    <message>
+                                        ${line.separator}
+                                        Fetching QUDT data via git checkout ${line.separator}
+                                        scmVersionType: ${scmVersionType}
+                                        scmVersion: ${scmVersion}${line.separator}
+                                        Note: you can set scmVersionType to one of 'branch' (default), 'revision', 'tag' by passing e.g. -DversionType=revision
+                                        Note: omitting -DscmVersion will result in using the ${qudt.release.version} release zip (as defined by the ${ qudt.release.version } property).
+                                    </message>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <version>2.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>download-qudt-release</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>checkout</goal>
+                                </goals>
+                                <configuration>
+                                    <checkoutDirectory>${qudt.unpack.dir}</checkoutDirectory>
+                                    <connectionUrl>scm:git:https://github.com/qudt/qudt-public-repo.git</connectionUrl>
+                                    <scmVersion>${scmVersion}</scmVersion>
+                                    <scmVersionType>${scmVersionType}</scmVersionType>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+        </profile>
+        <profile>
+            <id>use-qudt-release-zip</id>
+            <activation>
+                <property><name>!scmVersion</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.ekryd.echo-maven-plugin</groupId>
+                        <artifactId>echo-maven-plugin</artifactId>
+                        <version>2.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>echo-maven-plugin-1</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>echo</goal>
+                                </goals>
+                                <configuration>
+                                    <message>
+                                        ${line.separator}
+                                        Fetching QUDT data release zip download (release: ${qudt.release.version}) ${line.separator}
+
+                                        Note: you can alternatively check out a branch of the QUDT repository by passing, for example '-DscmVersion=main'
+                                    </message>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>wagon-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>download-qudt-release</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>download-single</goal>
+                            </goals>
+                            <configuration>
+                                <url>https://github.com/</url>
+                                <fromFile>qudt/qudt-public-repo/archive/refs/tags/${qudt.release.version}.zip</fromFile>
+                                <toDir>${project.build.directory}/qudt</toDir>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <phase>generate-resources</phase>
+                            <configuration>
+                                <target>
+                                    <echo message="unzipping file" />
+                                    <unzip src="${project.build.directory}/qudt/${qudt.release.version}.zip" dest="${qudt.unpack.dir}">
+                                        <cutdirsmapper dirs="1" />
+                                    </unzip>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
