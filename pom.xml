@@ -5,7 +5,7 @@
     <artifactId>qudtlib-java</artifactId>
     <packaging>pom</packaging>
     <name>qudtlib-java</name>
-    <version>6.1.0-SNAPSHOT</version>
+    <version>6.0.2</version>
     <url>https://github.com/qudtlib/qudtlib-java</url>
     <description>Unit conversion and related functionality for Java based on the QUDT ontology.</description>
     <developers>
@@ -56,7 +56,7 @@
         <connection>scm:git:https://github.com/qudtlib/qudtlib-java.git</connection>
         <developerConnection>scm:git:https://github.com/qudtlib/qudtlib-java.git</developerConnection>
         <url>https://github.com/qudtlib/qudtlib-java/tree/master</url>
-        <tag>qudtlib-java-1.0</tag>
+        <tag>v6.0.2</tag>
     </scm>
 
     <dependencyManagement>
