@@ -1,8 +1,10 @@
 package io.github.qudtlib.model;
 
+import static io.github.qudtlib.math.BigDec.isRelativeDifferenceGreaterThan;
 import static java.util.stream.Collectors.toList;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
+import io.github.qudtlib.math.BigDec;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
@@ -41,6 +43,21 @@ public class FactorUnits {
         builder.scaleFactor(factorUnits.getScaleFactor());
         factorUnits.factorUnits.forEach(fu -> builder.factor(fu));
         return builder;
+    }
+
+    public boolean hasFactorUnits() {
+        if (this.factorUnits == null) {
+            return false;
+        }
+        if (this.factorUnits.isEmpty()) {
+            return false;
+        }
+        if (this.factorUnits.size() == 1
+                && this.factorUnits.get(0).getExponent() == 1
+                && BigDecimal.ONE.compareTo(this.scaleFactor) == 0) {
+            return false;
+        }
+        return true;
     }
 
     public static boolean hasFactorUnits(List<FactorUnit> factorUnits) {
@@ -155,7 +172,8 @@ public class FactorUnits {
         if (o == null || getClass() != o.getClass()) return false;
         FactorUnits that = (FactorUnits) o;
 
-        return scaleFactor.compareTo(that.scaleFactor) == 0
+        return (!isRelativeDifferenceGreaterThan(
+                        scaleFactor, that.scaleFactor, BigDec.ONE_MILLIONTH))
                 && new HashSet<>(factorUnits).equals(new HashSet<>(that.factorUnits));
     }
 
