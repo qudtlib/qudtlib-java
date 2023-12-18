@@ -16,6 +16,9 @@ SELECT * where
         ?unit qudt:exactMatch ?exactMatch
     }
     optional {
+        ?unit qudt:deprecated ?deprecated
+    }
+    optional {
        ?unit qudt:hasQuantityKind ?quantityKind
     }
     optional {
