@@ -12,11 +12,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.github.qudtlib</groupId>
-            <artifactId>qudtlib-ingest-qudt</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>   io.github.qudtlib</groupId>
             <artifactId>qudtlib-init-hardcoded</artifactId>
             <version>${project.version}</version>
