@@ -59,6 +59,34 @@ unit:LB_F
     qudt:exponent -2
   ].
 
+unit:KIP_F
+  qudt:factorUnitScalar 1000.0 ;
+  qudt:factorUnit [
+    qudt:unit unit:LB_f ;
+    qudt:exponent 1
+  ].
+
+unit:LB
+  qudt:factorUnitScalar 0.45359237 ;
+  qudt:factorUnit [
+    qudt:unit unit:KiloGM ;
+    qudt:exponent 1
+  ].
+
+unit:BTU_IT
+  qudt:factorUnitScalar 1055.0559 ;
+  qudt:factorUnit [
+    qudt:unit unit:J ;
+    qudt:exponent 1
+  ].
+
+unit:BTU_TH
+  qudt:factorUnitScalar 1054.35 ;
+  qudt:factorUnit [
+    qudt:unit unit:J ;
+    qudt:exponent 1
+  ].
+
 unit:LA
   qudt:factorUnitScalar 0.31830988618 ;
   qudt:factorUnit [
@@ -67,6 +95,16 @@ unit:LA
   ];
   qudt:factorUnit [
          qudt:unit unit:M ;
+         qudt:exponent -2
+  ].
+
+unit:GALILEO
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:SEC ;
          qudt:exponent -2
   ].
 
@@ -81,350 +119,224 @@ unit:LA_FT
          qudt:exponent -2
   ].
 
-# Triples to until this is merged and released: https://github.com/qudt/qudt-public-repo/pull/837
+unit:FT
+  qudt:factorUnitScalar 0.3048;
+  qudt:factorUnit [
+    qudt:unit unit:M ;
+    qudt:exponent 1
+  ].
 
-# Triples added until https://github.com/qudt/qudt-public-repo/pull/830 is merged
-unit:KiloN-PER-M a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:LinearForce;
-  qudt:conversionMultiplier 1000.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H0T-2D0>;
-  qudt:symbol "kN/m";
-  qudt:ucumCode "kN.m-1"^^qudt:UCUMcs;
-  rdfs:label "Kilonewton per metre"@en;
-  qudt:plainTextDescription "Scaling of Newton per meter" .
+unit:DYN
+  qudt:factorUnitScalar 10.0 ;
+  qudt:factorUnit [
+    qudt:unit unit:MicroN ;
+    qudt:exponent 1
+  ].
 
-unit:N-M-PER-DEG a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:TorsionalSpringConstant;
-  qudt:conversionMultiplier 57.29577957855229894302178227976183;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M1H0T-2D0>;
-  qudt:symbol "N⋅m/°";
-  qudt:ucumCode "N.m.deg-1"^^qudt:UCUMcs;
-  rdfs:label "newton metre per Degree"@en;
-  qudt:plainTextDescription "Unit for expressing the value of the torsional spring constant" .
+unit:ERG
+  qudt:factorUnit [
+    qudt:unit unit:GM ;
+    qudt:exponent 1
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+    qudt:exponent 2
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:SEC ;
+   qudt:exponent -2
+  ].
 
-unit:KiloN-M-PER-DEG a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:TorsionalSpringConstant;
-  qudt:conversionMultiplier 57295.77957855229894302178227976183;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M1H0T-2D0>;
-  qudt:symbol "kN⋅m/°";
-  qudt:ucumCode "kN.m.deg-1"^^qudt:UCUMcs;
-  rdfs:label "Kilonewton Metre per Degree"@en;
-  qudt:plainTextDescription "Unit for expressing the value of the torsional spring constant" .
+unit:THM_US
+  qudt:factorUnitScalar 105.4804 ;
+  qudt:factorUnit [
+    qudt:unit unit:MegaJ ;
+    qudt:exponent 1
+  ].
 
-unit:KiloN-M-PER-M a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:TorquePerLength;
-  qudt:conversionMultiplier 1000.0;
-  qudt:conversionOffset 0.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D0>;
-  qudt:symbol "kN⋅m/m";
-  qudt:ucumCode "kN.m.m-1"^^qudt:UCUMcs;
-  rdfs:label "Kilonewton Metre per metre"@en;
-  qudt:plainTextDescription "Scaling of the base unit for expressing the rolling resistance, nM/m, by a factor of 1000" .
+unit:A_Ab
+  qudt:factorUnitScalar 10.0 ;
+  qudt:factorUnit [
+    qudt:unit unit:A ;
+    qudt:exponent 1
+  ].
 
-unit:EUR-PER-W-SEC a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:CostPerUnitEnergy;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T2D0>;
-  qudt:symbol "€/(W⋅s)";
-  rdfs:label "Euro per watt second"@en;
-  qudt:plainTextDescription "Unit for measuring the cost of electricity." .
-
-unit:EUR-PER-W-HR a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:CostPerUnitEnergy;
-  qudt:conversionMultiplier 0.0002777777777777777777777777777777778;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T2D0>;
-  qudt:symbol "€/(W⋅hr)";
-  rdfs:label "Euro per watt hour"@en;
-  qudt:plainTextDescription "Unit for measuring the cost of electricity." .
-
-unit:EUR-PER-KiloW-HR a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:CostPerUnitEnergy;
-  qudt:conversionMultiplier 0.0000002777777777777777777777777777777778;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T2D0>;
-  qudt:symbol "€/(kW⋅hr)";
-  rdfs:label "Euro per kilowatt hour"@en;
-  qudt:plainTextDescription "Unit for measuring the cost of electricity." .
-
-unit:CentiM6 a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:WarpingConstant;
-  qudt:conversionMultiplier 0.000000000001;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L6I0M0H0T0D0>;
-  qudt:symbol "cm⁶";
-  qudt:ucumCode "cm6"^^qudt:UCUMcs;
-  rdfs:label "Sextic Centieter"@en-us;
-  rdfs:label "Sextic Centietre"@en;
-  qudt:plainTextDescription "Scaling of hexic meter by 10^-12" .
-
-unit:KiloN-PER-M2 a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:ForcePerArea;
-  qudt:conversionMultiplier 1000.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-1I0M1H0T-2D0>;
-  qudt:symbol "kN/m²";
-  qudt:ucumCode "kN.m-2"^^qudt:UCUMcs;
-  rdfs:label "Kilonewton per square metre"@en;
-  qudt:plainTextDescription "Scaling of the base SI unit of pressure, N/m², by a factor of 1000" .
-
-unit:J-PER-KiloGM-DEG_C a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:SpecificHeatCapacity;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
-  qudt:symbol "J/(kg⋅°C)";
-  qudt:ucumCode "J.kg-1.Cel-1"^^qudt:UCUMcs;
-  rdfs:label "joule por quilograma grau celsius"@pt, "joule na kilogram stopinja celzija"@sl,
-    "Joule je Kilogramm Grad Celsius"@de, "joule per kilogram celsius"@tr, "julio porkilogramo grado celsius"@es,
-    "joule na kilogram stupně celsia"@cs, "joule per kilogram darjah celsius"@ms, "joule per kilogram degree celsius"@en,
-    "joule par kilogramme-degré celsius"@fr, "джоуль на килограмм-градус цельсия"@ru,
-    "joule al chilogrammo per grado celsius"@it, "dżul na kilogramostopień celsjusza"@pl,
-    "joule pe kilogram-grad celsius"@ro;
-  qudt:plainTextDescription "Unit for expressing the specific heat capacity." .
-
-unit:J-PER-GM-DEG_C a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:SpecificHeatCapacity;
-  qudt:conversionMultiplier 1000.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
-  qudt:symbol "J/(g⋅°C)";
-  qudt:ucumCode "J.g-1.Cel-1"^^qudt:UCUMcs;
-  rdfs:label "joule per gram degree celsius"@en;
-  qudt:plainTextDescription "Unit for expressing the specific heat capacity." .
-
-unit:J-PER-GM-K a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:SpecificHeatCapacity;
-  qudt:conversionMultiplier 1000.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
-  qudt:symbol "J/(g⋅K)";
-  qudt:ucumCode "J.g-1.K-1"^^qudt:UCUMcs;
-  rdfs:label "joule per gram kelvin"@en;
-  qudt:plainTextDescription "Unit for expressing the specific heat capacity." .
-
-unit:M2-PER-SEC2-K a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:SpecificHeatCapacity;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H-1T-2D0>;
-  qudt:symbol "m²/(s²⋅K)";
-  qudt:ucumCode "m2.s2-1.K-1"^^qudt:UCUMcs;
-  rdfs:label "square metre per square second kelvin"@en;
-  qudt:plainTextDescription "Unit for expressing the specific heat capacity." .
-
-unit:M2-PER-W a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:AreaPerPower;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M-1H0T3D0>;
-  qudt:symbol "m²/W";
-  qudt:ucumCode "m2.W-1"^^qudt:UCUMcs;
-  rdfs:label "square metre per watt"@en, "metru pătrat pe watt"@ro, "meter persegi per watt"@ms,
-    "kvadratni meter na watt"@sl, "metro cuadrado porvatio"@es, "metrekare per watt"@tr,
-    "metro quadrado por watt"@pt, "Quadratmeter je Watt"@de, "квадратный метр на ватт"@ru,
-    "metro quadrato al watt"@it, "mètre carré par watt"@fr, "čtvereční metr na watt"@cs,
-    "metr kwadratowy na wat"@pl;
-  qudt:plainTextDescription "A common unit for measuring area per power" .
-
-unit:PER-DEG_C a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:ThermalExpansionCoefficient;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H-1T0D0>;
-  qudt:symbol "/°C";
-  qudt:ucumCode ".Cel-1"^^qudt:UCUMcs;
-  rdfs:label "reciprocal degree Celsius"@en;
-  qudt:plainTextDescription "Unit for expressing the change of some quantity relative to a unit change in temperature." .
-
-unit:EUR-PER-M2 a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:CostPerArea;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M0H0T0D0>;
-  qudt:symbol "€/m²";
-  rdfs:label "Euro per square metre"@en;
-  qudt:plainTextDescription "Unit for expressing cost per square metre" .
-
-unit:KiloGM-PER-SEC3-K a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:CoefficientOfHeatTransfer;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M1H-1T-3D0>;
-  qudt:symbol "kg/(s³⋅K)";
-  qudt:ucumCode "kg.s-3.K-1"^^qudt:UCUMcs;
-  rdfs:label "kilogram na kubični sekunda kelvin"@sl, "kilogram per saniyeküp kelvin"@tr,
-    "quilograma por segundo cúbico kelvin"@pt, "kilogram per saat kubik kelvin"@ms, "kilogram na  krychlovýsekunda kelvin"@cs,
-    "chilogrammo al secondo cubo per kelvin"@it, "kilogramo porsegundo cúbico kelvin"@es,
-    "килограмм на кубический секунда-кельвин"@ru, "kilogram per cubic second kelvin"@en,
-    "kilogramme par seconde cube-kelvin"@fr, "Kilogramm je Kubiksekunde Kelvin"@de, "kilogram na sekunda sześciennyokelwin"@pl,
-    "kilogram pe secundă cub-kelvin"@ro;
-  qudt:plainTextDescription "Unit commonly used for the coefficient of heat transfer" .
-
-unit:M2-PER-KiloW a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:AreaPerPower;
-  qudt:conversionMultiplier 0.001;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M-1H0T3D0>;
-  qudt:symbol "m²/kW";
-  qudt:ucumCode "m2.kW-1"^^qudt:UCUMcs;
-  rdfs:label "square metre per Kilowatt"@en;
-  qudt:plainTextDescription "A common unit for measuring area per power" .
-
-unit:KiloN-PER-M3 a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:SpecificWeight;
-  qudt:conversionMultiplier 1000.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M1H0T-2D0>;
-  qudt:symbol "kN/m³";
-  qudt:ucumCode "kN.m-3"^^qudt:UCUMcs;
-  rdfs:label "Kilonewton per cubic metre"@en;
-  qudt:plainTextDescription "Scaling of N/m³ by a factor of 1000" .
-
-unit:N-M-PER-DEG-M a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:ModulusOfRotationalSubgradeReaction;
-  qudt:conversionMultiplier 1.0;
-
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D0>;
-  qudt:symbol "N⋅m/(°·m)";
-  qudt:ucumCode "N.m.deg-1.m-1"^^qudt:UCUMcs;
-  rdfs:label "newton metre per degree metre"@en;
-  qudt:plainTextDescription "A common unit for measuring the modulus of rotational subgrade reaction." .
+unit:MHO
+  qudt:factorUnitScalar 1.0 ;
+  qudt:factorUnit [
+    qudt:unit unit:S ;
+    qudt:exponent 1
+  ].
 
 
-unit:KiloN-M-PER-DEG-M a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:ModulusOfRotationalSubgradeReaction;
-  qudt:conversionMultiplier 1000.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D0>;
-  qudt:symbol "kN⋅m/(°·m)";
-  qudt:ucumCode "kN.m.deg-1.m-1"^^qudt:UCUMcs;
-  rdfs:label "kilonewton metre per degree metre"@en;
-  qudt:plainTextDescription "A common unit for measuring the modulus of rotational subgrade reaction." .
+unit:V_Ab
+  qudt:factorUnitScalar 0.00000001 ;
+  qudt:factorUnit [
+    qudt:unit unit:V ;
+    qudt:exponent 1
+  ].
 
-unit:EUR-PER-W a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:CostPerUnitPower;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T3D0>;
-  qudt:symbol "€/W";
-  rdfs:label "Euro per watt"@en;
-  qudt:plainTextDescription "Unit for measuring the hardware cost of a power generation unit relative to the generated power" .
+unit:FARAD_Ab
+  qudt:factorUnitScalar 1000000000.0 ;
+  qudt:factorUnit [
+    qudt:unit unit:F ;
+    qudt:exponent 1
+  ].
 
-unit:EUR-PER-KiloW a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:CostPerUnitPower;
-  qudt:conversionMultiplier 0.001;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-2I0M-1H0T3D0>;
-  qudt:symbol "€/W";
-  rdfs:label "Euro per kilowatt"@en;
-  qudt:plainTextDescription "Unit for measuring the hardware cost of a power generation unit relative to the generated power" .
+unit:H_Stat
+  qudt:factorUnitScalar 898755200000.0 ;
+  qudt:factorUnit [
+    qudt:unit unit:H ;
+    qudt:exponent 1
+  ].
 
-
-unit:M2-PER-M a qudt:Unit;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
-  qudt:applicableSystem sou:SI;
-  qudt:hasQuantityKind qk:AreaPerLength;
-  qudt:conversionMultiplier 1.0;
-  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M0H0T0D0>;
-  qudt:symbol "m²/m";
-  qudt:ucumCode "m2.m-1"^^qudt:UCUMcs;
-  rdfs:label "meter persegi per meter"@ms, "kvadratni meter na meter"@sl, "Quadratmeter je Meter"@de,
-    "metro quadrato al metro"@it, "čtvereční metr na metr"@cs, "metro cuadrado pormetro"@es,
-    "square metre per metre"@en, "metru pătrat pe metru"@ro, "квадратный метр на метр"@ru,
-    "metro quadrado por metro"@pt, "mètre carré par mètre"@fr, "metr kwadratowy na metr"@pl,
-    "metrekare per metre"@tr;
-  qudt:plainTextDescription "square metre divided by metre: plain text description in English" .
+unit:C_Stat
+  qudt:factorUnit [
+    qudt:unit unit:GM ;
+    qudt:exponent 1 # actually: 1/2
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+    qudt:exponent 1 # actually: 3/2
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:SEC ;
+   qudt:exponent -1
+  ].
 
 
+unit:CAL_TH
+  qudt:factorUnitScalar  4.184 ;
+  qudt:factorUnit [
+    qudt:unit unit:J ;
+    qudt:exponent 1
+  ].
+
+unit:CAL_IT
+  qudt:factorUnitScalar  4.1868 ;
+  qudt:factorUnit [
+    qudt:unit unit:J ;
+    qudt:exponent 1
+  ].
+
+unit:CAL_15_DEG_C
+  qudt:factorUnitScalar  4.1855 ;
+  qudt:factorUnit [
+    qudt:unit unit:J ;
+    qudt:exponent 1
+  ].
+
+unit:CAL_MEAN
+  qudt:factorUnitScalar  4.19 ;
+  qudt:factorUnit [
+    qudt:unit unit:J ;
+    qudt:exponent 1
+  ].
+
+unit:BAR
+  qudt:factorUnitScalar  100000 ;
+  qudt:factorUnit [
+    qudt:unit unit:PA ;
+    qudt:exponent 1
+  ].
+
+unit:DIOPTER
+   qudt:factorUnit [
+     qudt:unit unit:M ;
+     qudt:exponent -1
+   ].
+
+unit:KiloCAL
+    qudt:factorUnitScalar  4184.0 ;
+    qudt:factorUnit [
+        qudt:unit unit:J ;
+        qudt:exponent 1
+    ] .
+
+unit:GRAIN
+    qudt:factorUnitScalar  64.79891 ;
+    qudt:factorUnit [
+        qudt:unit unit:MilliGM ;
+        qudt:exponent 1
+    ] .
+
+unit:GAL_US
+    qudt:factorUnitScalar  231 ;
+    qudt:factorUnit [
+        qudt:unit unit:IN ;
+        qudt:exponent 3
+    ] .
+
+unit:QT_US
+    qudt:factorUnitScalar  0.25 ;
+    qudt:factorUnit [
+        qudt:unit unit:GAL_US ;
+        qudt:exponent 1
+    ] .
+
+unit:PINT_US
+    qudt:factorUnitScalar  0.5 ;
+    qudt:factorUnit [
+        qudt:unit unit:QT_US ;
+        qudt:exponent 1
+    ] .
+
+unit:GAL_US_DRY
+    qudt:factorUnitScalar  0.125 ;
+    qudt:factorUnit [
+        qudt:unit unit:BU_US ;
+        qudt:exponent 1
+    ] .
 
 
+unit:GAL_UK
+    qudt:factorUnitScalar  4.54609 ;
+    qudt:factorUnit [
+        qudt:unit unit:L ;
+        qudt:exponent 1
+    ] .
 
-unit:BTU_IT-PER-MOL_LB
-  a qudt:DerivedUnit ;
-  a qudt:Unit ;
-  dcterms:description "\\({\\bf BTU \\, per \\, Pound \\,Mole}\\) is an Imperial unit for 'Energy And Work Per Mass Amount Of Substance' expressed as \\(Btu/(lb-mol)\\)."^^qudt:LatexString ;
-  qudt:applicableSystem sou:IMPERIAL ;
-  qudt:applicableSystem sou:USCS ;
-  qudt:expression "\\(Btu/(lb-mol)\\)"^^qudt:LatexString ;
-  qudt:hasDimensionVector qkdv:A-1E0L2I0M1H0T-2D0 ;
-  qudt:hasQuantityKind qk:EnergyPerMassAmountOfSubstance ;
-  qudt:symbol "Btu{IT}/(mol-lb)" ;
-  qudt:ucumCode "[Btu_IT].[mol_lb]-1"^^qudt:UCUMcs ;
-  qudt:ucumCode "[Btu_IT]/[mol_lb]"^^qudt:UCUMcs ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit> ;
-  rdfs:label "BTU per Pound Mole"@en ;
-.
+unit:QT_UK
+    qudt:factorUnitScalar  0.25 ;
+    qudt:factorUnit [
+        qudt:unit unit:GAL_UK ;
+        qudt:exponent 1
+    ] .
 
-unit:BTU_IT-PER-MOL_LB-DEG_F
-  a qudt:DerivedUnit ;
-  a qudt:Unit ;
-  dcterms:description "\\({\\bf BTU \\, per \\, Pound \\, Mole \\, Degree \\, Fahrenheit}\\) is an Imperial unit for 'Molar Heat Capacity' expressed as \\(Btu/(lb-mol-degF)\\)."^^qudt:LatexString ;
-  qudt:applicableSystem sou:IMPERIAL ;
-  qudt:applicableSystem sou:USCS ;
-  qudt:definedUnitOfSystem sou:IMPERIAL ;
-  qudt:expression "\\(Btu/(lb-mol-degF)\\)"^^qudt:LatexString ;
-  qudt:hasDimensionVector qkdv:A-1E0L2I0M1H-1T-2D0 ;
-  qudt:hasQuantityKind qk:MolarHeatCapacity ;
-  qudt:symbol "Btu{IT}/(lb-mol⋅°F)" ;
-  qudt:ucumCode "[Btu_IT].[mol_lb]-1.[degF]-1"^^qudt:UCUMcs ;
-  qudt:ucumCode "[Btu_IT]/([mol_lb].[degF])"^^qudt:UCUMcs ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit> ;
-  rdfs:label "BTU per Pound Mole Degree Fahrenheit"@en ;
-.
+unit:PINT_UK
+    qudt:factorUnitScalar  0.5 ;
+    qudt:factorUnit [
+        qudt:unit unit:QT_UK ;
+        qudt:exponent 1
+    ] .
 
-unit:MOL_LB
-  a qudt:DerivedUnit ;
-  a qudt:Unit ;
-  dcterms:description "<p><strong>Pound Mole</strong> is a unit for \\textit{'Mass Amount Of Substance'} expressed as \\(lb-mol\\).</p>."^^qudt:LatexString ;
-  qudt:conversionMultiplier 0.45359237 ;
-  qudt:expression "\\(lb-mol\\)"^^qudt:LatexString ;
-  qudt:hasDimensionVector qkdv:A1E0L0I0M0H0T0D0 ;
-  qudt:hasQuantityKind qk:MassAmountOfSubstance ;
-  qudt:symbol "lb-mol" ;
-  qudt:ucumCode "[mol_lb]"^^qudt:UCUMcs ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit> ;
-  rdfs:label "Pound Mole"@en ;
-.
+unit:BU_US
+    qudt:factorUnitScalar 2150.42 ;
+    qudt:factorUnit [
+        qudt:unit unit:IN ;
+        qudt:exponent 3
+    ] .
 
-unit:MOL_LB-DEG_F
-  a qudt:DerivedUnit ;
-  a qudt:Unit ;
-  dcterms:description "\\(\\textbf{Pound Mole Degree Fahrenheit} is a unit for 'Mass Amount Of Substance Temperature' expressed as \\(lb-mol-degF\\)."^^qudt:LatexString ;
-  qudt:expression "\\(lb-mol-degF\\)"^^qudt:LatexString ;
-  qudt:hasDimensionVector qkdv:A1E0L0I0M0H1T0D0 ;
-  qudt:hasQuantityKind qk:MassAmountOfSubstanceTemperature ;
-  qudt:symbol "lb-mol⋅°F" ;
-  qudt:ucumCode "[mol_lb].[degF]"^^qudt:UCUMcs ;
-  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit> ;
-  rdfs:label "Pound Mole Degree Fahrenheit"@en ;
-.
+unit:ANGSTROM
+    qudt:factorUnitScalar 0.1 ;
+    qudt:factorUnit [
+        qudt:unit unit:NanoM ;
+        qudt:exponent 1
+    ] .
+
+unit:KiloGM_F
+    qudt:factorUnitScalar 9.80665 ;
+    qudt:factorUnit [
+        qudt:unit unit:N ;
+        qudt:exponent 1
+    ] .
+
+unit:GM_F
+    qudt:factorUnitScalar 9.80665 ;
+    qudt:factorUnit [
+        qudt:unit unit:MilliN ;
+        qudt:exponent 1
+    ] .
+
+unit:NUM
+    qudt:conversionMultiplier 1.0.
