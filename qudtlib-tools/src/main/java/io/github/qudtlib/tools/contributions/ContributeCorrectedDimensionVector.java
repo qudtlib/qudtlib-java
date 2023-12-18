@@ -22,6 +22,7 @@ public class ContributeCorrectedDimensionVector {
                 tool -> {
                     Qudt.allUnits().stream()
                             .sorted(Comparator.comparing(Unit::getIri))
+                            .filter(u -> !u.isDeprecated())
                             .forEach(
                                     u -> {
                                         String dimVector = null;

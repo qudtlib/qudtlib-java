@@ -7,17 +7,78 @@ import io.github.qudtlib.model.DimensionVector;
 import io.github.qudtlib.model.QudtNamespaces;
 import io.github.qudtlib.model.Unit;
 import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
+import io.github.qudtlib.vocab.QUDT;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.math.MathContext;
+import java.util.*;
+import java.util.stream.IntStream;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.impl.TreeModel;
 
 public class CheckConversionMultipliers {
+
+    private static class UnitConversionFactor {
+        private Unit unit;
+        private BigDecimal factor;
+
+        public UnitConversionFactor(Unit unit, BigDecimal factor) {
+            this.unit = unit;
+            this.factor = factor;
+        }
+
+        public boolean conversionFailed() {
+            return false;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof UnitConversionFactor)) return false;
+            UnitConversionFactor that = (UnitConversionFactor) o;
+            return Objects.equals(unit, that.unit) && Objects.equals(factor, that.factor);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(unit, factor);
+        }
+    }
+
+    private static class UnitConversionFailed extends UnitConversionFactor {
+        private String errormessage;
+
+        public UnitConversionFailed(Unit unit, BigDecimal factor, String errormessage) {
+            super(unit, factor);
+            this.errormessage = errormessage;
+        }
+
+        public boolean conversionFailed() {
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof UnitConversionFailed)) return false;
+            if (!super.equals(o)) return false;
+            UnitConversionFailed that = (UnitConversionFailed) o;
+            return Objects.equals(errormessage, that.errormessage);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), errormessage);
+        }
+    }
+
     public static void main(String[] args) {
+        Model statements = new TreeModel();
         QudtEntityGenerator entityGenerator = new QudtEntityGenerator();
         entityGenerator.unitOfWork(
                 tool -> {
+                    int totalCorrections = 0;
                     Map<String, Set<Unit>> baseUnits =
                             Qudt.allUnits().stream()
                                     .filter(
@@ -47,35 +108,224 @@ public class CheckConversionMultipliers {
                             continue;
                         }
                         List<Unit> bases = new ArrayList<>(baseUnits.get(dimVector));
-                        if (bases.size() > 1) {
-                            for (int i = 0; i < bases.size(); i++) {
-                                for (int j = 0; j < bases.size(); j++) {
-                                    Unit from = bases.get(i);
-                                    Unit to = bases.get(j);
-                                    try {
+                        int nBases = bases.size();
+                        UnitConversionFactor[][] conversions =
+                                new UnitConversionFactor[nBases][nBases];
+                        for (int i = 0; i < nBases; i++) {
+                            Unit from = bases.get(i);
+                            Set<UnitConversionFactor> unitFactors = new HashSet<>();
+                            for (int j = 0; j < nBases; j++) {
+                                Unit to = bases.get(j);
+                                UnitConversionFactor unitFactor;
+                                try {
+                                    if (i == j) {
+                                        unitFactor =
+                                                new UnitConversionFactor(
+                                                        to,
+                                                        from.getFactorUnits().conversionFactor(to));
+                                    } else {
                                         BigDecimal factor =
                                                 from.getFactorUnits().conversionFactor(to);
-                                        if (BigDecimal.ONE.compareTo(factor) != 0) {
-                                            System.out.println(
-                                                    String.format(
-                                                            " 1 %s should be 1 %s but based on the factor units, it is 1 %s = %s %s",
-                                                            from.getIriAbbreviated(),
-                                                            to.getIriAbbreviated(),
-                                                            from.getIriAbbreviated(),
-                                                            factor.toString(),
-                                                            to.getIriAbbreviated()));
+                                        unitFactor = new UnitConversionFactor(to, factor);
+                                    }
+                                } catch (Exception e) {
+                                    System.err.println(
+                                            "error while comparing bases:"
+                                                    + e.getMessage()); // ignore for now
+                                    unitFactor =
+                                            new UnitConversionFailed(
+                                                    to, BigDecimal.ZERO, e.getMessage());
+                                }
+                                conversions[i][j] = unitFactor;
+                            }
+                        }
+                        List<Unit> correctBases = findCorrectBases(bases, conversions);
+                        System.out.println(
+                                "correct bases: "
+                                        + correctBases.stream()
+                                                .map(u -> u.getIriAbbreviated())
+                                                .collect(joining(",")));
+                        List<Unit> incorrectBases =
+                                bases.stream()
+                                        .filter(u -> !correctBases.contains(u))
+                                        .collect(toList());
+                        if (!incorrectBases.isEmpty()) {
+                            System.out.println(
+                                    "incorrect bases "
+                                            + incorrectBases.stream()
+                                                    .map(Unit::getIriAbbreviated)
+                                                    .collect(joining(",")));
+                        }
+                        List<Unit> otherUnits =
+                                Qudt.allUnits().stream()
+                                        .filter(
+                                                u ->
+                                                        u.getDimensionVectorIri()
+                                                                .orElse("[none]")
+                                                                .equals(dimVector))
+                                        .filter(u -> !bases.contains(u))
+                                        .collect(toList());
+                        if (!otherUnits.isEmpty()) {
+                            ValueFactory vf = SimpleValueFactory.getInstance();
+                            System.out.println(
+                                    "other units:"
+                                            + otherUnits.stream()
+                                                    .map(Unit::getIriAbbreviated)
+                                                    .collect(joining(",")));
+                            boolean allCorrect = true;
+                            for (Unit other : otherUnits) {
+                                if (other.hasFactorUnits()) {
+                                    for (Unit correctBase : correctBases) {
+                                        try {
+                                            BigDecimal calculatedFactor =
+                                                    other.getFactorUnits()
+                                                            .conversionFactor(correctBase);
+                                            if (other.getConversionMultiplier().isEmpty()) {
+                                                allCorrect = false;
+                                                totalCorrections++;
+                                                System.out.println(
+                                                        String.format(
+                                                                "%s has no conversionMultiplier, but we've found out that 1 %s = %s %s",
+                                                                other.getIriAbbreviated(),
+                                                                other.toString(),
+                                                                calculatedFactor.toString(),
+                                                                correctBase.toString()));
+                                                statements.add(
+                                                        vf.createIRI(other.getIri()),
+                                                        QUDT.conversionMultiplier,
+                                                        vf.createLiteral(calculatedFactor));
+                                            } else {
+                                                if (isRelativeDifferenceGreaterThan(
+                                                        other,
+                                                        calculatedFactor,
+                                                        new BigDecimal("0.0001"))) {
+                                                    allCorrect = false;
+                                                    totalCorrections++;
+                                                    statements.add(
+                                                            vf.createIRI(other.getIri()),
+                                                            QUDT.conversionMultiplier,
+                                                            vf.createLiteral(calculatedFactor));
+                                                    System.out.format(
+                                                            "%s has conversionMultiplier %s, but we've found out that 1 %s = %s %s (relative diff: %s - %s)\n",
+                                                            other.getIriAbbreviated(),
+                                                            other.getConversionMultiplier()
+                                                                    .get()
+                                                                    .toString(),
+                                                            other.toString(),
+                                                            calculatedFactor.toString(),
+                                                            correctBase.toString(),
+                                                            relativeValueDifference(
+                                                                            other.getConversionMultiplier()
+                                                                                    .get(),
+                                                                            calculatedFactor)
+                                                                    .toString(),
+                                                            greaterThan(
+                                                                            relativeValueDifference(
+                                                                                    calculatedFactor,
+                                                                                    other.getConversionMultiplier()
+                                                                                            .get()),
+                                                                            new BigDecimal("0.1"))
+                                                                    ? "big difference"
+                                                                    : "small difference");
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            System.err.println("cannot convert: " + e.getMessage());
+                                            allCorrect = false;
                                         }
-                                    } catch (Exception e) {
-                                        System.err.println(e.getMessage()); // ignore for now
                                     }
                                 }
                             }
+                            if (allCorrect) {
+                                System.out.println("   (all correct)");
+                            }
+                        } else {
+                            System.out.println(" (no other units)");
                         }
-                        System.out.println(
-                                baseUnits.get(dimVector).stream()
-                                        .map(u -> u.getIriAbbreviated())
-                                        .collect(joining("\n\t", "\n\t", "\n")));
                     }
+                    System.out.format("total corrections: %d\n", statements.size());
+                    System.out.println(statements);
                 });
+    }
+
+    private static List<Unit> findCorrectBases(
+            List<Unit> bases, UnitConversionFactor[][] conversions) {
+        int nBases = bases.size();
+        List<Integer> incorrectBaseIndices = new ArrayList<>();
+        for (int rounds = 0; rounds < nBases; rounds++) {
+            int[] numCorrectConversions = new int[nBases];
+            for (int i = 0; i < nBases; i++) {
+                if (incorrectBaseIndices.contains(i)) {
+                    continue;
+                }
+                int numCorrectConversionsI = 0;
+                for (int j = 0; j < nBases; j++) {
+                    if (incorrectBaseIndices.contains(j)) {
+                        continue;
+                    }
+                    if (conversions[i][j].factor.compareTo(BigDecimal.ONE) == 0) {
+                        numCorrectConversionsI += 1;
+                    }
+                }
+                numCorrectConversions[i] = numCorrectConversionsI;
+            }
+            int worstUnit = findMinIndex(numCorrectConversions, incorrectBaseIndices);
+            int numCorrectInWorst = numCorrectConversions[worstUnit];
+            if (numCorrectInWorst >= nBases - incorrectBaseIndices.size()) {
+                return IntStream.range(0, nBases)
+                        .filter(i -> !incorrectBaseIndices.contains(i))
+                        .mapToObj(bases::get)
+                        .collect(toList());
+            }
+            incorrectBaseIndices.add(worstUnit);
+        }
+        return List.of();
+    }
+
+    private static int findMinIndex(int[] values, List<Integer> ignoreIndices) {
+        int minVal = Integer.MAX_VALUE;
+        int minIndex = -1;
+        for (int i = 0; i < values.length; i++) {
+            if (ignoreIndices.contains(i)) {
+                continue;
+            }
+            if (values[i] < minVal) {
+                minIndex = i;
+                minVal = values[i];
+            }
+        }
+        return minIndex;
+    }
+
+    private static boolean isRelativeDifferenceGreaterThan(
+            Unit other, BigDecimal calculatedFactor, BigDecimal epsilon) {
+        return greaterThan(
+                relativeValueDifference(calculatedFactor, other.getConversionMultiplier().get()),
+                epsilon);
+    }
+
+    /**
+     * Returns the difference between the two values in relation to the value of their mean
+     *
+     * @return
+     */
+    static BigDecimal relativeValueDifference(BigDecimal left, BigDecimal right) {
+        Objects.requireNonNull(left);
+        Objects.requireNonNull(right);
+        BigDecimal mean =
+                left.add(right)
+                        .divide(BigDecimal.valueOf(2), MathContext.DECIMAL128)
+                        .abs(MathContext.DECIMAL128);
+        BigDecimal diff =
+                left.abs(MathContext.DECIMAL128)
+                        .subtract(right.abs(MathContext.DECIMAL128))
+                        .abs(MathContext.DECIMAL128);
+        return diff.divide(mean, MathContext.DECIMAL128).abs();
+    }
+
+    static boolean greaterThan(BigDecimal left, BigDecimal right) {
+        Objects.requireNonNull(left);
+        Objects.requireNonNull(right);
+        return left.subtract(right).signum() > 0;
     }
 }
