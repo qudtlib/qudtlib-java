@@ -7,6 +7,7 @@ import io.github.qudtlib.nodedef.SettableBuilderBase;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Combines a {@link Unit} and an exponent; some Units are a combination of {@link FactorUnit}s. If
@@ -230,6 +231,14 @@ public class FactorUnit {
                     .collect(Collectors.toList());
         }
         return List.of(this);
+    }
+
+    public Stream<FactorUnit> streamLeafFactorUnitsWithCumulativeExponents() {
+        List<FactorUnit> leafFactorUnits = this.unit.getLeafFactorUnitsWithCumulativeExponents();
+        if (FactorUnits.hasFactorUnits(leafFactorUnits)) {
+            return leafFactorUnits.stream().map(f -> f.pow(this.getExponent()));
+        }
+        return Stream.of(this);
     }
 
     private FactorUnit withExponentMultiplied(int by) {
