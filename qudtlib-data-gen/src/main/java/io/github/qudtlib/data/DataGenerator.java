@@ -143,7 +143,7 @@ public class DataGenerator {
                 // deal with kg
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
                 // remove unwanted individual triples
-                RdfOps.removeStatementsFromFile(outputCon, TRIPLES_TO_DELETE_FROM_UNITS);
+                RdfOps.removeStatementsFromFile(inputCon, TRIPLES_TO_DELETE_FROM_UNITS);
                 // add missing triples
                 RdfOps.addStatementsFromFile(inputCon, TRIPLES_TO_ADD_TO_UNITS);
                 // add SI base units

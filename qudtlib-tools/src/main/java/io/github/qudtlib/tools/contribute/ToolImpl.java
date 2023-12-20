@@ -78,10 +78,10 @@ class ToolImpl implements Tool {
 
     void writeRdf(OutputStream out, Predicate<Statement> statementPredicate) {
         try {
-            newQuantityKinds.stream().forEach(qk -> ToolImpl.save(qk, con));
-            newUnits.stream().forEach(u -> ToolImpl.save(u, con));
+            newQuantityKinds.stream().forEach(qk -> this.save(qk, con));
+            newUnits.stream().forEach(u -> this.save(u, con));
             con.commit();
-            ToolImpl.writeOut(con, out, statementPredicate);
+            this.writeOut(con, out, statementPredicate);
         } catch (RepositoryException e) {
             Throwable cause = e.getCause();
             if (cause instanceof ShaclSailValidationException) {
@@ -96,7 +96,7 @@ class ToolImpl implements Tool {
         con.close();
     }
 
-    private static void writeOut(
+    public void writeOut(
             RepositoryConnection con, OutputStream out, Predicate<Statement> statementPredicate) {
         RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
         writer.startRDF();
@@ -123,12 +123,13 @@ class ToolImpl implements Tool {
         }
     }
 
-    private static void writeOut(Model model, OutputStream out) {
-        writeOut(model, out, s -> true);
+    @Override
+    public void writeOut(Model model, OutputStream out) {
+        this.writeOut(model, out, s -> true);
     }
 
-    private static void writeOut(
-            Model model, OutputStream out, Predicate<Statement> statementPredicate) {
+    @Override
+    public void writeOut(Model model, OutputStream out, Predicate<Statement> statementPredicate) {
         RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
         writer.startRDF();
         writer.handleNamespace(
@@ -529,7 +530,7 @@ class ToolImpl implements Tool {
         System.err.println(quantityKinds);
     }
 
-    private static void save(
+    private void save(
             QuantityKindForContribution quantityKindForContribution, RepositoryConnection con) {
         QuantityKind quantityKind = quantityKindForContribution.getQuantityKind();
         suggestConnectedQuantityKindsIfIsolated(quantityKind);
@@ -559,7 +560,7 @@ class ToolImpl implements Tool {
         saveQuantityKindMetadata(mb, quantityKindForContribution.getQuantityKindMetadata());
         Model model = mb.build();
         System.err.println("Adding these triples: ");
-        writeOut(model, System.err);
+        this.writeOut(model, System.err);
         con.add(model);
     }
 
@@ -595,7 +596,7 @@ class ToolImpl implements Tool {
         }
     }
 
-    private static void save(UnitForContribution unitForContribution, RepositoryConnection con) {
+    private void save(UnitForContribution unitForContribution, RepositoryConnection con) {
         Unit unit = unitForContribution.getUnit();
         suggestQuantityKindsIfNotPresent(unit);
         warnIfQuantityKindHasDifferentDimensionVector(unit);
@@ -639,7 +640,7 @@ class ToolImpl implements Tool {
         saveCommonMetadata(mb, unitForContribution.getMetadata());
         Model model = mb.build();
         System.err.println("Adding these triples: ");
-        writeOut(model, System.err);
+        this.writeOut(model, System.err);
         con.add(model);
     }
 

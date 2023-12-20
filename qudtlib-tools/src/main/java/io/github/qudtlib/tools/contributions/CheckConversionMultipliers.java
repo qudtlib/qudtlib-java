@@ -74,7 +74,8 @@ public class CheckConversionMultipliers {
     }
 
     public static void main(String[] args) {
-        Model statements = new TreeModel();
+        Model statementsToAdd = new TreeModel();
+        Model statementsToDelete = new TreeModel();
         QudtEntityGenerator entityGenerator = new QudtEntityGenerator();
         entityGenerator.unitOfWork(
                 tool -> {
@@ -174,7 +175,6 @@ public class CheckConversionMultipliers {
                                                     .collect(joining(",")));
                             boolean allCorrect = true;
                             for (Unit other : otherUnits) {
-                                if (other.hasFactorUnits()) {
                                     for (Unit correctBase : correctBases) {
                                         try {
                                             BigDecimal calculatedFactor =
@@ -190,7 +190,7 @@ public class CheckConversionMultipliers {
                                                                 other.toString(),
                                                                 calculatedFactor.toString(),
                                                                 correctBase.toString()));
-                                                statements.add(
+                                                statementsToAdd.add(
                                                         vf.createIRI(other.getIri()),
                                                         QUDT.conversionMultiplier,
                                                         vf.createLiteral(calculatedFactor));
@@ -201,7 +201,13 @@ public class CheckConversionMultipliers {
                                                         new BigDecimal("0.0001"))) {
                                                     allCorrect = false;
                                                     totalCorrections++;
-                                                    statements.add(
+                                                    statementsToDelete.add(
+                                                            vf.createIRI(other.getIri()),
+                                                            QUDT.conversionMultiplier,
+                                                            vf.createLiteral(
+                                                                    other.getConversionMultiplier()
+                                                                            .get()));
+                                                    statementsToAdd.add(
                                                             vf.createIRI(other.getIri()),
                                                             QUDT.conversionMultiplier,
                                                             vf.createLiteral(calculatedFactor));
@@ -233,7 +239,6 @@ public class CheckConversionMultipliers {
                                             System.err.println("cannot convert: " + e.getMessage());
                                             allCorrect = false;
                                         }
-                                    }
                                 }
                             }
                             if (allCorrect) {
@@ -243,8 +248,12 @@ public class CheckConversionMultipliers {
                             System.out.println(" (no other units)");
                         }
                     }
-                    System.out.format("total corrections: %d\n", statements.size());
-                    System.out.println(statements);
+                    System.out.format("statements to add: %d\n", statementsToAdd.size());
+                    System.out.format("statements to delete: %d\n", statementsToDelete.size());
+                    System.out.println("STATEMENTS TO ADD");
+                    tool.writeOut(statementsToAdd, System.out, s -> true);
+                    System.out.println("STATEMENTS TO DELETE");
+                    tool.writeOut(statementsToDelete, System.out, s -> true);
                 });
     }
 

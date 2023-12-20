@@ -7,3 +7,133 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix sou: <http://qudt.org/vocab/sou/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix qk: <http://qudt.org/vocab/quantitykind/> .
+
+unit:ANGSTROM3 qudt:conversionMultiplier 0.0000000000000000000000000000000000000001 .
+
+unit:A_Ab-CentiM2 qudt:conversionMultiplier 1000000000.0 .
+
+unit:BAR-M3-PER-SEC qudt:conversionMultiplier 100.0 .
+
+unit:BTU_IT-PER-HR-FT2-DEG_R qudt:conversionMultiplier 0.555556 .
+
+unit:BTU_IT-PER-MIN qudt:conversionMultiplier 17.58 .
+
+unit:BTU_IT-PER-SEC-FT-DEG_R qudt:conversionMultiplier 178.66 .
+
+unit:BTU_IT-PER-SEC-FT2-DEG_R qudt:conversionMultiplier 14.89 .
+
+unit:BTU_TH-FT-PER-HR-FT2-DEG_F qudt:conversionMultiplier 1.73 .
+
+unit:BTU_TH-PER-LB-DEG_F qudt:conversionMultiplier 426.654 .
+
+unit:CentiM-PER-KiloYR qudt:conversionMultiplier 0.000000000000316880878140289 .
+
+unit:DEG_F-HR-FT2-PER-BTU_IT qudt:conversionMultiplier 1.89563 .
+
+unit:DEG_F-HR-FT2-PER-BTU_TH qudt:conversionMultiplier 1.8969 .
+
+unit:FT-LB_F-PER-HR qudt:conversionMultiplier 0.00376616129 .
+
+unit:GigaJ-PER-HR qudt:conversionMultiplier 3600000000000.0 .
+
+unit:J-PER-HR qudt:conversionMultiplier 3600.0 .
+
+unit:K-PER-HR qudt:conversionMultiplier 3600.0 .
+
+unit:KAT-PER-L qudt:conversionMultiplier 0.001 .
+
+unit:KAT-PER-MicroL qudt:conversionMultiplier 0.000000001 .
+
+unit:KiloA-HR qudt:conversionMultiplier 1000.0 .
+
+unit:KiloBTU_IT-PER-FT2 qudt:conversionMultiplier 11356526.7 .
+
+unit:KiloBTU_IT-PER-HR qudt:conversionMultiplier 293.07107 .
+
+unit:KiloCAL-PER-CentiM2 qudt:conversionMultiplier 0.0000004184 .
+
+unit:KiloCAL-PER-CentiM2-MIN qudt:conversionMultiplier 0.0000697333333 .
+
+unit:KiloCAL-PER-CentiM2-SEC qudt:conversionMultiplier 0.0000004184 .
+
+unit:KiloGM-PER-CentiM3 qudt:conversionMultiplier 0.000001 .
+
+unit:KiloGM_F-PER-MilliM2 qudt:conversionMultiplier 0.000000980665 .
+
+unit:KiloL-PER-HR qudt:conversionMultiplier 0.00277777777778 .
+
+unit:KiloLB_F-FT-PER-A qudt:conversionMultiplier 2728.302797866667 .
+
+unit:KiloMOL-PER-MIN qudt:conversionMultiplier 16.94444 .
+
+unit:KiloN-M-PER-DEG-M qudt:conversionMultiplier 1000.0 .
+
+unit:KiloPA-PER-MilliM qudt:conversionMultiplier 100000.0 .
+
+unit:LA qudt:conversionMultiplier 3183.09886 .
+
+unit:LB-PER-GAL_US qudt:conversionMultiplier 83.0812213 .
+
+unit:MOL-PER-TONNE qudt:conversionMultiplier 1000.0 .
+
+unit:MegaJ-PER-HR qudt:conversionMultiplier 3600000000.0 .
+
+unit:MicroGM-PER-CentiM2 qudt:conversionMultiplier 0.01 .
+
+unit:MicroGM-PER-DeciL qudt:conversionMultiplier 0.0001 .
+
+unit:MicroKAT-PER-L qudt:conversionMultiplier 0.000000001 .
+
+unit:MicroM-PER-MilliL qudt:conversionMultiplier 0.000001 .
+
+unit:MilliGM-PER-MilliL qudt:conversionMultiplier 0.000001 .
+
+unit:MilliKAT-PER-L qudt:conversionMultiplier 0.000001 .
+
+unit:MilliM-PER-YR qudt:conversionMultiplier 0.00000000000171 .
+
+unit:NUM-PER-CentiM-KiloYR qudt:conversionMultiplier 0.000000316880878140289 .
+
+unit:NUM-PER-HA qudt:conversionMultiplier 1000000.0 .
+
+unit:NanoKAT-PER-L qudt:conversionMultiplier 0.000000000001 .
+
+unit:OZ-IN qudt:conversionMultiplier 0.000694563 .
+
+unit:OZ-PER-GAL_US qudt:conversionMultiplier 7.8125 .
+
+unit:PER-ANGSTROM qudt:conversionMultiplier 0.0000000001 .
+
+unit:PER-HR qudt:conversionMultiplier 360.0 .
+
+unit:PER-KiloV-A-HR qudt:conversionMultiplier 0.001 .
+
+unit:PER-MIN qudt:conversionMultiplier 60.0 .
+
+unit:PER-YR qudt:conversionMultiplier 0.000000031709792 .
+
+unit:PERCENT-PER-DAY qudt:conversionMultiplier 0.0000115740740740741 .
+
+unit:PERCENT-PER-HR qudt:conversionMultiplier 0.000277777777777778 .
+
+unit:PERCENT-PER-WK qudt:conversionMultiplier 0.00000165343915343915 .
+
+unit:PicoKAT-PER-L qudt:conversionMultiplier 0.000000000000001 .
+
+unit:RAD-PER-HR qudt:conversionMultiplier 3600.0 .
+
+unit:RAD-PER-MIN qudt:conversionMultiplier 60.0 .
+
+unit:TONNE-PER-HA-YR qudt:conversionMultiplier 0.00000000317 .
+
+unit:TON_US-PER-DAY qudt:conversionMultiplier 0.010497685185185 .
+
+unit:TON_US-PER-HR qudt:conversionMultiplier 0.251944444444444 .
+
+unit:TON_US-PER-YD3 qudt:conversionMultiplier 1186.3112117181538 .

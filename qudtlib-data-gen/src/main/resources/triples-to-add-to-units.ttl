@@ -340,3 +340,199 @@ unit:GM_F
 
 unit:NUM
     qudt:conversionMultiplier 1.0.
+
+
+
+unit:ANGSTROM3 qudt:conversionMultiplier 0.000000000000000000000000000001 .
+
+unit:A_Ab-CentiM2 qudt:conversionMultiplier 0.001, 0.001 .
+
+unit:BAR-M3-PER-SEC qudt:conversionMultiplier 100000.0 .
+
+unit:BTU_IT-PER-FT2-HR-DEG_F qudt:conversionMultiplier 5.678263596110525100123354413375529304335272559434165229614014783572 .
+
+unit:BTU_IT-PER-FT2-SEC-DEG_F qudt:conversionMultiplier 20441.74894599789036044407588815190261560698121396322522661045322084 .
+
+unit:BTU_IT-PER-HR-FT2-DEG_R qudt:conversionMultiplier 5.678263596110525100123354413375529304335272559434165229614014783572 .
+
+unit:BTU_IT-PER-LB-DEG_F qudt:conversionMultiplier 4186.800188019035346806980902258149971921577957759750339972958539844 .
+
+unit:BTU_IT-PER-LB-DEG_R qudt:conversionMultiplier 4186.800188019035346806980902258149971921577957759750339972958539844 .
+
+unit:BTU_IT-PER-MIN qudt:conversionMultiplier 17.584265 .
+
+unit:BTU_IT-PER-MOL-DEG_F qudt:conversionMultiplier 1899.1006199999998480719504000000126606708 .
+
+unit:BTU_IT-PER-MOL_LB qudt:conversionMultiplier 2.326000104455019823194997746544986720093 .
+
+unit:BTU_IT-PER-MOL_LB-DEG_F qudt:conversionMultiplier 4.186800188019035346806980902258149468088977957759790646580958539840641116 .
+
+unit:BTU_IT-PER-SEC-FT-DEG_R qudt:conversionMultiplier 6230.645078740156981863354330708702912437007874015751433070866141732 .
+
+unit:BTU_IT-PER-SEC-FT2-DEG_R qudt:conversionMultiplier 20441.74894599789036044407588815190261560698121396322522661045322084 .
+
+unit:BTU_TH-FT-PER-HR-FT2-DEG_F qudt:conversionMultiplier 1.7295767716535431687204724409448926435826771653543928440944881889712 .
+
+unit:BTU_TH-PER-LB-DEG_F qudt:conversionMultiplier 4183.998950423261855514897660205378274541240629775220232091293775504 .
+
+unit:CentiM-PER-KiloYR qudt:conversionMultiplier 0.00001 .
+
+unit:DEG_C-CentiM qudt:conversionMultiplier 0.01 .
+
+unit:DEG_C-PER-HR qudt:conversionMultiplier 0.0002777777777777777777777777777777778 .
+
+unit:DEG_C-PER-MIN qudt:conversionMultiplier 0.01666666666666666666666666666666667 .
+
+unit:DEG_C-PER-SEC qudt:conversionMultiplier 1.0 .
+
+unit:DEG_F-HR qudt:conversionMultiplier 2000.00000000000016 .
+
+unit:DEG_F-HR-FT2-PER-BTU_IT qudt:conversionMultiplier 0.176110175773624899746531344926842241506271531837 .
+
+unit:DEG_F-HR-FT2-PER-BTU_TH qudt:conversionMultiplier 0.17622808365343578021006914212548012227912932138284 .
+
+unit:DEG_F-HR-PER-BTU_IT qudt:conversionMultiplier 1.8956341554983012369297209749739323778746383643432 .
+
+unit:DEG_F-PER-HR qudt:conversionMultiplier 0.00015432098765432100000000000000000001234567901234568 .
+
+unit:DEG_F-PER-MIN qudt:conversionMultiplier 0.009259259259259260000000000000000001851851851851852 .
+
+unit:DEG_F-PER-SEC qudt:conversionMultiplier 0.5555555555555556 .
+
+unit:DEG_R-PER-HR qudt:conversionMultiplier 0.00015432098765432100000000000000000001234567901234568 .
+
+unit:DEG_R-PER-MIN qudt:conversionMultiplier 0.009259259259259260000000000000000001851851851851852 .
+
+unit:DEG_R-PER-SEC qudt:conversionMultiplier 0.5555555555555556 .
+
+unit:FT-LB_F-PER-HR qudt:conversionMultiplier 0.0003766160983792 .
+
+unit:FT-LB_F-PER-M2 qudt:conversionMultiplier 1.35581795416512 .
+
+unit:FT-LB_F-SEC qudt:conversionMultiplier 1.35581795416512 .
+
+unit:FT2-DEG_F qudt:conversionMultiplier 0.051612800000000004129024 .
+
+unit:FT2-HR-DEG_F-PER-BTU_IT qudt:conversionMultiplier 0.176110175773624899746531344926842241506271531837 .
+
+unit:GigaJ-PER-HR qudt:conversionMultiplier 277777.7777777777777777777777777778 .
+
+unit:J-PER-HR qudt:conversionMultiplier 0.0002777777777777777777777777777777778 .
+
+unit:K-PER-HR qudt:conversionMultiplier 0.0002777777777777777777777777777777778 .
+
+unit:KAT-PER-L qudt:conversionMultiplier 1000.0 .
+
+unit:KAT-PER-MicroL qudt:conversionMultiplier 1000000000.0 .
+
+unit:KiloA-HR qudt:conversionMultiplier 3600000.0 .
+
+unit:KiloBTU_IT-PER-FT2 qudt:conversionMultiplier 1135652.719222105110876888420443507 .
+
+unit:KiloBTU_IT-PER-HR qudt:conversionMultiplier 29.30710833333333333333333333333334 .
+
+unit:KiloCAL-PER-CentiM-SEC-DEG_C qudt:conversionMultiplier 418400.0 .
+
+unit:KiloCAL-PER-CentiM2 qudt:conversionMultiplier 41840000.0 .
+
+unit:KiloCAL-PER-CentiM2-MIN qudt:conversionMultiplier 697333.3333333333333333333333333335 .
+
+unit:KiloCAL-PER-CentiM2-SEC qudt:conversionMultiplier 41840000.0 .
+
+unit:KiloCAL-PER-GM-DEG_C qudt:conversionMultiplier 4184000.0 .
+
+unit:KiloCAL-PER-MOL-DEG_C qudt:conversionMultiplier 4184.0 .
+
+unit:KiloGM-PER-CentiM3 qudt:conversionMultiplier 1000000.0 .
+
+unit:KiloGM_F-PER-MilliM2 qudt:conversionMultiplier 9806650.0 .
+
+unit:KiloL-PER-HR qudt:conversionMultiplier 0.0002777777777777777777777777777777778 .
+
+unit:KiloLB_F-FT-PER-A qudt:conversionMultiplier 1355.81795416512 .
+
+unit:KiloMOL-PER-MIN qudt:conversionMultiplier 16.66666666666666666666666666666667 .
+
+unit:KiloN-M-PER-DEG-M qudt:conversionMultiplier 57295.77957855229894302178227976183 .
+
+unit:KiloPA-PER-MilliM qudt:conversionMultiplier 1000000.0 .
+
+unit:LA qudt:conversionMultiplier 0.31830988618 .
+
+unit:LB-DEG_F qudt:conversionMultiplier 0.251995761111111131270772 .
+
+unit:LB-DEG_R qudt:conversionMultiplier 0.251995761111111131270772 .
+
+unit:LB-PER-GAL_US qudt:conversionMultiplier 119.82642731689662854391325580551421665788530175590534908103936942782 .
+
+unit:MI_N-PER-MIN qudt:conversionMultiplier 30.86666666666666666666666666666667284 .
+
+unit:MOL-DEG_C qudt:conversionMultiplier 1.0 .
+
+unit:MOL-PER-TONNE qudt:conversionMultiplier 0.001 .
+
+unit:MOL_LB-DEG_F qudt:conversionMultiplier 251.995761111111131270772 .
+
+unit:MegaJ-PER-HR qudt:conversionMultiplier 277.7777777777777777777777777777778 .
+
+unit:MicroGM-PER-CentiM2 qudt:conversionMultiplier 0.00001 .
+
+unit:MicroGM-PER-DeciL qudt:conversionMultiplier 0.00001, 0.00001 .
+
+unit:MicroKAT-PER-L qudt:conversionMultiplier 0.001 .
+
+unit:MicroM-PER-MilliL qudt:conversionMultiplier 1.0 .
+
+unit:MilliGM-PER-MilliL qudt:conversionMultiplier 1.0, 1.0 .
+
+unit:MilliKAT-PER-L qudt:conversionMultiplier 1.0 .
+
+unit:MilliM-PER-YR qudt:conversionMultiplier 0.00000000003168808781402895023702689684893655 .
+
+unit:NUM-PER-CentiM-KiloYR qudt:conversionMultiplier 0.1 .
+
+unit:NUM-PER-HA qudt:conversionMultiplier 0.0001 .
+
+unit:NanoKAT-PER-L qudt:conversionMultiplier 0.000001 .
+
+unit:OZ-IN qudt:conversionMultiplier 0.000720077887375 .
+
+unit:OZ-PER-GAL_US qudt:conversionMultiplier 7.4891517073060392839945784878446398049566816260272940493387548454886935208875 .
+
+unit:PA-PER-K qudt:conversionMultiplier 1.0 .
+
+unit:PER-ANGSTROM qudt:conversionMultiplier 10000000000.0 .
+
+unit:PER-HR qudt:conversionMultiplier 0.0002777777777777777777777777777777778 .
+
+unit:PER-KiloV-A-HR qudt:conversionMultiplier 0.0000002777777777777777777777777777777778 .
+
+unit:PER-MIN qudt:conversionMultiplier 0.01666666666666666666666666666666667 .
+
+unit:PER-WB qudt:conversionMultiplier 1.0 .
+
+unit:PER-YR qudt:conversionMultiplier 0.00000003168808781402895023702689684893655 .
+
+unit:PERCENT-PER-DAY qudt:conversionMultiplier 0.0000001157407407407407407407407407407407 .
+
+unit:PERCENT-PER-HR qudt:conversionMultiplier 0.000002777777777777777777777777777777778 .
+
+unit:PERCENT-PER-WK qudt:conversionMultiplier 0.00000001653439153439153439153439153439153 .
+
+unit:PicoKAT-PER-L qudt:conversionMultiplier 0.000000001 .
+
+unit:RAD-PER-HR qudt:conversionMultiplier 0.0002777777777777777777777777777777778 .
+
+unit:RAD-PER-MIN qudt:conversionMultiplier 0.01666666666666666666666666666666667 .
+
+unit:T-M qudt:conversionMultiplier 1.0 .
+
+unit:TONNE-PER-HA-YR qudt:conversionMultiplier 0.000000003168808781402895023702689684893655 .
+
+unit:TON_US-PER-DAY qudt:conversionMultiplier 0.010499822916666666666666666666666662970729 .
+
+unit:TON_US-PER-HR qudt:conversionMultiplier 0.25199575000000000000000000000000002015966 .
+
+unit:TON_US-PER-YD3 qudt:conversionMultiplier 1186.5527901975411222135752330219538955854 .
+
+unit:W-M2-PER-SR qudt:conversionMultiplier 1.0 .
