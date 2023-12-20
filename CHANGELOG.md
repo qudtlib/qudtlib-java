@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- Bugfix by @occamsystems: Offset difference and scale difference no longer throw exceptions when the provided Units do not have explicit conversion values
+## [6.0.3] - 2023-12-20
 
 ### Added
 
 - Created CONTRIBUGING.md
+
+### Fixed
+
+- Bugfix by @occamsystems: Offset difference and scale difference no longer throw exceptions when the provided Units do not have explicit conversion values
 
 ## [6.0.2] - 2023-12-18
 
@@ -194,7 +196,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.2...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...HEAD
+[6.0.3]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.2...v6.0.3
 [6.0.2]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v5.0.1...v6.0.0
