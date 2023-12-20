@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -880,5 +881,11 @@ public class QudtTests {
     public void testUcumCode() {
         Assertions.assertEquals("t.m-3", Qudt.Units.TONNE__PER__M3.getUcumCode().get());
         Assertions.assertEquals("J.kg-1.K-1", J__PER__KiloGM__K.getUcumCode().get());
+    }
+
+    @Test
+    public void nullOffsetDifference() {
+        Optional<Unit> unit = Qudt.correspondingUnitInSystem(IN, Qudt.SystemsOfUnits.SI);
+        Assertions.assertTrue(unit.isPresent());
     }
 }
