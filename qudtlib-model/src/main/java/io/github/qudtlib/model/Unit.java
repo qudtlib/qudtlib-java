@@ -9,7 +9,9 @@ import io.github.qudtlib.nodedef.SelfSmuggler;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents a QUDT Unit.
@@ -25,6 +27,31 @@ public class Unit extends SelfSmuggler {
 
     public static Definition definition(Unit product) {
         return new Definition(product);
+    }
+
+    public static Definition definition(String iriBase, FactorUnits factors) {
+        String localName = factors.streamLocalnamePossibilities().findFirst().get();
+        Definition definition = new Definition(iriBase + localName);
+        factors.getSymbol().ifPresent(definition::symbol);
+        factors.getUcumCode().ifPresent(definition::ucumCode);
+        List<FactorUnit> fus = factors.getFactorUnits();
+        definition.setFactorUnits(fus);
+
+        fus.stream().map(u -> u.getUnit().getUnitOfSystems())
+            .reduce((a, b) -> {
+                HashSet<SystemOfUnits> set = new HashSet<>(a);
+                set.retainAll(b);
+                return set;
+            })
+            .ifPresent(commonSystems -> commonSystems.forEach(definition::addSystemOfUnits));
+
+        definition.dimensionVectorIri(fus.stream()
+            .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
+            .map(leaf -> DimensionVector.of(leaf.getDimensionVectorIri().get()).get())
+            .reduce(DimensionVector::combine)
+            .map(DimensionVector::getDimensionVectorIri).orElse(null));
+
+        return definition;
     }
 
     public static class Definition extends NodeDefinitionBase<String, Unit> {

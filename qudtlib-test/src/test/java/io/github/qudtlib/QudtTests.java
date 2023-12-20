@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.github.qudtlib.algorithm.AssignmentProblem;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.model.*;
+import io.github.qudtlib.model.Unit.Definition;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.List;
@@ -888,5 +889,27 @@ public class QudtTests {
         Optional<Unit> unit = Qudt.correspondingUnitInSystem(IN, Qudt.SystemsOfUnits.SI);
         Assertions.assertTrue(unit.isPresent());
         Assertions.assertEquals(Qudt.Units.CentiM, unit.get());
+    }
+
+    @Test
+    public void unitFromFactorUnits() {
+        FactorUnits factorUnits = FactorUnits.ofFactorUnitSpec(W, 8);
+        Definition definition = Unit.definition("http://www.test.com/units#", factorUnits);
+        Unit unit = definition.doBuild();
+        Assertions.assertTrue(unit.getUnitOfSystems().contains(Qudt.SystemsOfUnits.SI));
+        Assertions.assertEquals("W⁸",unit.getSymbol().get());
+        Assertions.assertEquals("W8",unit.getUcumCode().get());
+
+        FactorUnits baseFactors = FactorUnits.ofFactorUnitSpec(KiloGM, 8, M, 16, SEC, -24);
+
+        Unit baseUnit = Unit.definition("http://www.test.com/units#", baseFactors).doBuild();
+
+        Assertions.assertTrue(unit.isConvertible(baseUnit));
+
+        FactorUnits wrongFactors = FactorUnits.ofFactorUnitSpec(KiloGM, 8, M, 8, SEC, -8);
+
+        Unit wongUnit = Unit.definition("http://www.test.com/units#", wrongFactors).doBuild();
+
+        Assertions.assertFalse(unit.isConvertible(wongUnit));
     }
 }
