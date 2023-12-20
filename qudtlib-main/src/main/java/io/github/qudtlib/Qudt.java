@@ -1095,11 +1095,11 @@ public class Qudt {
         return u1Log10.doubleValue() - u2Log10.doubleValue();
     }
 
-    static void addQuantityKind(QuantityKind quantityKind) {
+    public static void addQuantityKind(QuantityKind quantityKind) {
         quantityKinds.put(quantityKind.getIri(), quantityKind);
     }
 
-    static void addUnit(Unit unit) {
+    public static void addUnit(Unit unit) {
         units.put(unit.getIri(), unit);
     }
 }
