@@ -564,24 +564,22 @@ public class FactorUnits {
 
     private String getExponentString(int exponent) {
         int absExp = Math.abs(exponent);
-        switch (absExp) {
-            case 1:
-                return "";
-            case 2:
-                return "²";
-            case 3:
-                return "³";
-            case 4:
-                return "\u2074";
-            case 5:
-                return "\u2075";
-            case 6:
-                return "\u2076";
-            case 7:
-                return "\u2077";
-            default:
-                return "m";
+
+        if (absExp == 1) {
+            return "";
         }
+
+        return String.valueOf(absExp)
+            .replace('1','¹')
+            .replace('2','²')
+            .replace('3', '³')
+            .replace('4', '\u2074')
+            .replace('5', '\u2075')
+            .replace('6', '\u2076')
+            .replace('7', '\u2077')
+            .replace('8', '\u2078')
+            .replace('9', '\u2079')
+            .replace('0', '\u2070');
     }
 
     private static String getLocalname(String iri) {
