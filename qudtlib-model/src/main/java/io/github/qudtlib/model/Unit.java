@@ -339,9 +339,13 @@ public class Unit extends SelfSmuggler {
     }
 
     public boolean isConvertible(Unit toUnit) {
-        Objects.requireNonNull(toUnit);
-        Objects.requireNonNull(this.dimensionVectorIri);
-        return this.dimensionVectorIri.equals(toUnit.dimensionVectorIri);
+        if (toUnit == null
+            || toUnit.getDimensionVectorIri() == null
+            || this.getDimensionVectorIri() == null) {
+            return false;
+        }
+
+        return this.getDimensionVectorIri().equals(toUnit.getDimensionVectorIri());
     }
 
     public boolean matches(Collection<Map.Entry<String, Integer>> factorUnitSpec) {
