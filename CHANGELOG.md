@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Created CONTRIBUGING.md  
+- Created CONTRIBUGING.md
 
 ## [6.0.2] - 2023-12-18
 
