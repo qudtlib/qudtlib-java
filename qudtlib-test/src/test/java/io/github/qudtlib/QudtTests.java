@@ -887,5 +887,6 @@ public class QudtTests {
     public void nullOffsetDifference() {
         Optional<Unit> unit = Qudt.correspondingUnitInSystem(IN, Qudt.SystemsOfUnits.SI);
         Assertions.assertTrue(unit.isPresent());
+        Assertions.assertEquals(Qudt.Units.CentiM, unit.get());
     }
 }
