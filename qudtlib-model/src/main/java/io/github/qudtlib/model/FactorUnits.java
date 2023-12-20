@@ -236,16 +236,21 @@ public class FactorUnits {
     }
 
     public FactorUnits numerator() {
-        return new FactorUnits(
-                this.factorUnits.stream().filter(fu -> fu.exponent > 0).collect(toList()));
+        return new FactorUnits(numeratorFactors().collect(toList()));
+    }
+
+    private Stream<FactorUnit> numeratorFactors() {
+        return this.factorUnits.stream().filter(fu -> fu.exponent > 0);
     }
 
     public FactorUnits denominator() {
-        return new FactorUnits(
-                this.factorUnits.stream()
-                        .filter(fu -> fu.exponent < 0)
-                        .map(fu -> fu.pow(-1))
-                        .collect(toList()));
+        return new FactorUnits(denominatorFactors().collect(toList()));
+    }
+
+    private Stream<FactorUnit> denominatorFactors() {
+        return this.factorUnits.stream()
+            .filter(fu -> fu.exponent < 0)
+            .map(fu -> fu.pow(-1));
     }
 
     public boolean hasQkdvDenominatorIri(String dimensionVectorIri) {
@@ -506,11 +511,13 @@ public class FactorUnits {
     }
 
     public List<String> generateAllLocalnamePossibilities() {
-        List<String> numeratorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() > 0);
-        List<String> denominatorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() < 0);
-        List<String> completeOptions = new ArrayList<>();
-        for (String numeratorOption : numeratorOptions) {
-            for (String denominatorOption : denominatorOptions) {
+        return this.streamLocalnamePossibilities().collect(toList());
+    }
+
+    public Stream<String> streamLocalnamePossibilities() {
+        return streamFactorUnitLocalnames(fu -> fu.getExponent() > 0)
+            .flatMap(numeratorOption -> streamFactorUnitLocalnames(fu -> fu.getExponent() < 0)
+                .map(denominatorOption -> {
                 StringBuilder completeOption = new StringBuilder();
                 if (numeratorOption.length() > 0) {
                     completeOption.append(numeratorOption);
@@ -522,16 +529,18 @@ public class FactorUnits {
                     completeOption.append("PER-");
                     completeOption.append(denominatorOption);
                 }
-                completeOptions.add(completeOption.toString());
-            }
-        }
-        return completeOptions;
+                return completeOption.toString();
+            }));
     }
 
     private List<String> permutateFactorUnitLocalnames(Predicate<FactorUnit> factorUnitPredicate) {
+        return this.streamFactorUnitLocalnames(factorUnitPredicate).collect(toList());
+    }
+
+    private Stream<String> streamFactorUnitLocalnames(Predicate<FactorUnit> filterPredicate) {
         return permutate(
                         this.factorUnits.stream()
-                                .filter(factorUnitPredicate)
+                                .filter(filterPredicate)
                                 .map(
                                         fu ->
                                                 getLocalname(fu.unit.getIri())
@@ -540,8 +549,7 @@ public class FactorUnits {
                                                                 : ""))
                                 .collect(toList()))
                 .stream()
-                .map(strings -> strings.stream().collect(Collectors.joining("-")))
-                .collect(toList());
+                .map(strings -> strings.stream().collect(Collectors.joining("-")));
     }
 
     private List<List<String>> permutate(List<String> strings) {
