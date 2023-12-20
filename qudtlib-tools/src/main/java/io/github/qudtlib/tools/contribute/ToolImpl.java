@@ -390,11 +390,9 @@ class ToolImpl implements Tool {
         Set<Unit> matchingunits =
                 Qudt.allUnits().stream()
                         .filter(
-                                u -> {
-                                    return (factorUnits
-                                            .generateAllLocalnamePossibilities()
-                                            .contains(u.getIriLocalname()));
-                                })
+                                u -> (factorUnits
+                                        .streamLocalnamePossibilities()
+                                        .anyMatch(u.getIriLocalname()::equals)))
                         .collect(Collectors.toSet());
         return matchingunits;
     }
