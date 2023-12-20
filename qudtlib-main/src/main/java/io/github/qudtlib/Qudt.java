@@ -1078,8 +1078,10 @@ public class Qudt {
     }
 
     private static double scaleDifference(Unit u1, Unit u2) {
-        BigDecimal u1Log10 = Log10BigDecimal.log10(u1.getConversionMultiplier().orElse(BigDecimal.ONE));
-        BigDecimal u2Log10 = Log10BigDecimal.log10(u2.getConversionMultiplier().orElse(BigDecimal.ONE));
+        BigDecimal u1Log10 =
+                Log10BigDecimal.log10(u1.getConversionMultiplier().orElse(BigDecimal.ONE));
+        BigDecimal u2Log10 =
+                Log10BigDecimal.log10(u2.getConversionMultiplier().orElse(BigDecimal.ONE));
         return u1Log10.doubleValue() - u2Log10.doubleValue();
     }
 
