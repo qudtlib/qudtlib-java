@@ -912,4 +912,19 @@ public class QudtTests {
 
         Assertions.assertFalse(unit.isConvertible(wongUnit));
     }
+
+    @Test
+    public void scaledUnitFromFactorUnits() {
+        FactorUnits factorUnits = FactorUnits.ofFactorUnitSpec(KiloW, 2);
+        Definition definition = Unit.definition("http://www.test.com/units#", factorUnits);
+        Unit unit = definition.doBuild();
+        FactorUnits baseFactors = FactorUnits.ofFactorUnitSpec(KiloGM, 2, M, 4, SEC, -6);
+
+        Unit baseUnit = Unit.definition("http://www.test.com/units#", baseFactors).doBuild();
+
+        Assertions.assertTrue(unit.isConvertible(baseUnit));
+
+        Assertions.assertEquals(1000000,
+            Qudt.convert(BigDecimal.ONE, unit, baseUnit).intValue());
+    }
 }

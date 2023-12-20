@@ -9,9 +9,7 @@ import io.github.qudtlib.nodedef.SelfSmuggler;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Represents a QUDT Unit.
@@ -50,6 +48,11 @@ public class Unit extends SelfSmuggler {
             .map(leaf -> DimensionVector.of(leaf.getDimensionVectorIri().get()).get())
             .reduce(DimensionVector::combine)
             .map(DimensionVector::getDimensionVectorIri).orElse(null));
+
+        definition.conversionMultiplier(fus.stream()
+            .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
+            .map(FactorUnit::conversionMultiplier)
+            .reduce(BigDecimal::multiply).orElse(BigDecimal.ONE));
 
         return definition;
     }
