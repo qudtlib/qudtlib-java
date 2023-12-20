@@ -897,8 +897,8 @@ public class QudtTests {
         Definition definition = Unit.definition("http://www.test.com/units#", factorUnits);
         Unit unit = definition.doBuild();
         Assertions.assertTrue(unit.getUnitOfSystems().contains(Qudt.SystemsOfUnits.SI));
-        Assertions.assertEquals("W⁸",unit.getSymbol().get());
-        Assertions.assertEquals("W8",unit.getUcumCode().get());
+        Assertions.assertEquals("W⁸", unit.getSymbol().get());
+        Assertions.assertEquals("W8", unit.getUcumCode().get());
 
         FactorUnits baseFactors = FactorUnits.ofFactorUnitSpec(KiloGM, 8, M, 16, SEC, -24);
 
@@ -924,7 +924,6 @@ public class QudtTests {
 
         Assertions.assertTrue(unit.isConvertible(baseUnit));
 
-        Assertions.assertEquals(1000000,
-            Qudt.convert(BigDecimal.ONE, unit, baseUnit).intValue());
+        Assertions.assertEquals(1000000, Qudt.convert(BigDecimal.ONE, unit, baseUnit).intValue());
     }
 }

@@ -248,9 +248,7 @@ public class FactorUnits {
     }
 
     private Stream<FactorUnit> denominatorFactors() {
-        return this.factorUnits.stream()
-            .filter(fu -> fu.exponent < 0)
-            .map(fu -> fu.pow(-1));
+        return this.factorUnits.stream().filter(fu -> fu.exponent < 0).map(fu -> fu.pow(-1));
     }
 
     public boolean hasQkdvDenominatorIri(String dimensionVectorIri) {
@@ -516,21 +514,25 @@ public class FactorUnits {
 
     public Stream<String> streamLocalnamePossibilities() {
         return streamFactorUnitLocalnames(fu -> fu.getExponent() > 0)
-            .flatMap(numeratorOption -> streamFactorUnitLocalnames(fu -> fu.getExponent() < 0)
-                .map(denominatorOption -> {
-                StringBuilder completeOption = new StringBuilder();
-                if (numeratorOption.length() > 0) {
-                    completeOption.append(numeratorOption);
-                }
-                if (denominatorOption.length() > 0) {
-                    if (completeOption.length() > 0) {
-                        completeOption.append("-");
-                    }
-                    completeOption.append("PER-");
-                    completeOption.append(denominatorOption);
-                }
-                return completeOption.toString();
-            }));
+                .flatMap(
+                        numeratorOption ->
+                                streamFactorUnitLocalnames(fu -> fu.getExponent() < 0)
+                                        .map(
+                                                denominatorOption -> {
+                                                    StringBuilder completeOption =
+                                                            new StringBuilder();
+                                                    if (numeratorOption.length() > 0) {
+                                                        completeOption.append(numeratorOption);
+                                                    }
+                                                    if (denominatorOption.length() > 0) {
+                                                        if (completeOption.length() > 0) {
+                                                            completeOption.append("-");
+                                                        }
+                                                        completeOption.append("PER-");
+                                                        completeOption.append(denominatorOption);
+                                                    }
+                                                    return completeOption.toString();
+                                                }));
     }
 
     private List<String> permutateFactorUnitLocalnames(Predicate<FactorUnit> factorUnitPredicate) {
@@ -578,16 +580,16 @@ public class FactorUnits {
         }
 
         return String.valueOf(absExp)
-            .replace('1','¹')
-            .replace('2','²')
-            .replace('3', '³')
-            .replace('4', '\u2074')
-            .replace('5', '\u2075')
-            .replace('6', '\u2076')
-            .replace('7', '\u2077')
-            .replace('8', '\u2078')
-            .replace('9', '\u2079')
-            .replace('0', '\u2070');
+                .replace('1', '¹')
+                .replace('2', '²')
+                .replace('3', '³')
+                .replace('4', '\u2074')
+                .replace('5', '\u2075')
+                .replace('6', '\u2076')
+                .replace('7', '\u2077')
+                .replace('8', '\u2078')
+                .replace('9', '\u2079')
+                .replace('0', '\u2070');
     }
 
     private static String getLocalname(String iri) {

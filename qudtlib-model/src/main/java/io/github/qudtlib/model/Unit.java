@@ -35,24 +35,30 @@ public class Unit extends SelfSmuggler {
         List<FactorUnit> fus = factors.getFactorUnits();
         definition.setFactorUnits(fus);
 
-        fus.stream().map(u -> u.getUnit().getUnitOfSystems())
-            .reduce((a, b) -> {
-                HashSet<SystemOfUnits> set = new HashSet<>(a);
-                set.retainAll(b);
-                return set;
-            })
-            .ifPresent(commonSystems -> commonSystems.forEach(definition::addSystemOfUnits));
+        fus.stream()
+                .map(u -> u.getUnit().getUnitOfSystems())
+                .reduce(
+                        (a, b) -> {
+                            HashSet<SystemOfUnits> set = new HashSet<>(a);
+                            set.retainAll(b);
+                            return set;
+                        })
+                .ifPresent(commonSystems -> commonSystems.forEach(definition::addSystemOfUnits));
 
-        definition.dimensionVectorIri(fus.stream()
-            .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
-            .map(leaf -> DimensionVector.of(leaf.getDimensionVectorIri().get()).get())
-            .reduce(DimensionVector::combine)
-            .map(DimensionVector::getDimensionVectorIri).orElse(null));
+        definition.dimensionVectorIri(
+                fus.stream()
+                        .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
+                        .map(leaf -> DimensionVector.of(leaf.getDimensionVectorIri().get()).get())
+                        .reduce(DimensionVector::combine)
+                        .map(DimensionVector::getDimensionVectorIri)
+                        .orElse(null));
 
-        definition.conversionMultiplier(fus.stream()
-            .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
-            .map(FactorUnit::conversionMultiplier)
-            .reduce(BigDecimal::multiply).orElse(BigDecimal.ONE));
+        definition.conversionMultiplier(
+                fus.stream()
+                        .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
+                        .map(FactorUnit::conversionMultiplier)
+                        .reduce(BigDecimal::multiply)
+                        .orElse(BigDecimal.ONE));
 
         return definition;
     }
@@ -370,8 +376,8 @@ public class Unit extends SelfSmuggler {
 
     public boolean isConvertible(Unit toUnit) {
         if (toUnit == null
-            || toUnit.getDimensionVectorIri() == null
-            || this.getDimensionVectorIri() == null) {
+                || toUnit.getDimensionVectorIri() == null
+                || this.getDimensionVectorIri() == null) {
             return false;
         }
 

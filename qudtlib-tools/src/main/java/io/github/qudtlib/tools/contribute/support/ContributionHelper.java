@@ -3,7 +3,6 @@ package io.github.qudtlib.tools.contribute.support;
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -122,12 +121,19 @@ public class ContributionHelper {
     }
 
     private static Unit findUnitByLocalName(FactorUnits factorUnits) {
-        return factorUnits.streamLocalnamePossibilities()
-            .map(localNameCandidate -> Qudt.unitFromLocalname(localNameCandidate)
-                .orElseGet(() -> Qudt.currencyFromLocalname(localNameCandidate)
-                    .orElse(null)))
-            .filter(Objects::nonNull)
-            .findFirst().orElse(null);
+        return factorUnits
+                .streamLocalnamePossibilities()
+                .map(
+                        localNameCandidate ->
+                                Qudt.unitFromLocalname(localNameCandidate)
+                                        .orElseGet(
+                                                () ->
+                                                        Qudt.currencyFromLocalname(
+                                                                        localNameCandidate)
+                                                                .orElse(null)))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     /** Retuns the FactorUnits object resulting from unscaling each factor unit. */

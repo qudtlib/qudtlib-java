@@ -397,9 +397,9 @@ public class FactorUnitsTests {
     public void getSymbol() {
         FactorUnits m8 = FactorUnits.ofFactorUnitSpec(M, 8);
         Optional<String> symbol = m8.getSymbol();
-        Assertions.assertEquals("m⁸",symbol.get());
+        Assertions.assertEquals("m⁸", symbol.get());
 
         FactorUnits ms12 = FactorUnits.ofFactorUnitSpec(MilliSEC, 12);
-        Assertions.assertEquals("ms¹²",ms12.getSymbol().get());
+        Assertions.assertEquals("ms¹²", ms12.getSymbol().get());
     }
 }

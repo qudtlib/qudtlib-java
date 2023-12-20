@@ -114,8 +114,12 @@ public class FactorUnit {
 
     public BigDecimal conversionMultiplier() {
         return BigDecimal.valueOf(
-            Math.pow(this.getUnit().getConversionMultiplier().orElse(BigDecimal.ONE).doubleValue(),
-                this.getExponent()));
+                Math.pow(
+                        this.getUnit()
+                                .getConversionMultiplier()
+                                .orElse(BigDecimal.ONE)
+                                .doubleValue(),
+                        this.getExponent()));
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
