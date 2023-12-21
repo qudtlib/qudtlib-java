@@ -573,11 +573,12 @@ public class FactorUnits {
     }
 
     public BigDecimal getConversionMultiplier() {
-        BigDecimal bigDecimal = this.getFactorUnits().stream()
-            .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
-            .map(FactorUnit::conversionMultiplier)
-            .reduce(BigDecimal::multiply)
-            .orElse(BigDecimal.ONE);
+        BigDecimal bigDecimal =
+                this.getFactorUnits().stream()
+                        .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
+                        .map(FactorUnit::conversionMultiplier)
+                        .reduce(BigDecimal::multiply)
+                        .orElse(BigDecimal.ONE);
 
         return this.getScaleFactor().multiply(bigDecimal);
     }
@@ -590,16 +591,20 @@ public class FactorUnits {
         }
 
         return String.valueOf(absExp)
-                .replace('1', '¹')
-                .replace('2', '²')
-                .replace('3', '³')
-                .replace('4', '\u2074')
-                .replace('5', '\u2075')
-                .replace('6', '\u2076')
-                .replace('7', '\u2077')
-                .replace('8', '\u2078')
-                .replace('9', '\u2079')
-                .replace('0', '\u2070');
+                .chars()
+                .mapToObj(
+                        c -> {
+                            if (c == 49) {
+                                return (char) 185; // Handle 1 to superscript
+                            }
+                            if (c == 50 || c == 51) {
+                                return (char) (c + 128); // Handle 2-3 to superscript
+                            } else {
+                                return (char) (c + 8256); // Handle 4-0 to superscript
+                            }
+                        })
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 
     private static String getLocalname(String iri) {
