@@ -45,13 +45,7 @@ public class Unit extends SelfSmuggler {
                         })
                 .ifPresent(commonSystems -> commonSystems.forEach(definition::addSystemOfUnits));
 
-        definition.dimensionVectorIri(
-                fus.stream()
-                        .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
-                        .map(leaf -> DimensionVector.of(leaf.getDimensionVectorIri().get()).get())
-                        .reduce(DimensionVector::combine)
-                        .map(DimensionVector::getDimensionVectorIri)
-                        .orElse(null));
+        definition.dimensionVectorIri(factors.getDimensionVectorIri());
 
         definition.conversionMultiplier(factors.getConversionMultiplier());
 
