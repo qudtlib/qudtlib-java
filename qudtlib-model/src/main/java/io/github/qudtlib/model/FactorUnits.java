@@ -572,6 +572,16 @@ public class FactorUnits {
         return ret;
     }
 
+    public BigDecimal getConversionMultiplier() {
+        BigDecimal bigDecimal = this.getFactorUnits().stream()
+            .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
+            .map(FactorUnit::conversionMultiplier)
+            .reduce(BigDecimal::multiply)
+            .orElse(BigDecimal.ONE);
+
+        return this.getScaleFactor().multiply(bigDecimal);
+    }
+
     private String getExponentString(int exponent) {
         int absExp = Math.abs(exponent);
 

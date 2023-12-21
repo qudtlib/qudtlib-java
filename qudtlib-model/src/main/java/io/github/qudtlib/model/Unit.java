@@ -53,12 +53,7 @@ public class Unit extends SelfSmuggler {
                         .map(DimensionVector::getDimensionVectorIri)
                         .orElse(null));
 
-        definition.conversionMultiplier(
-                fus.stream()
-                        .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
-                        .map(FactorUnit::conversionMultiplier)
-                        .reduce(BigDecimal::multiply)
-                        .orElse(BigDecimal.ONE));
+        definition.conversionMultiplier(factors.getConversionMultiplier());
 
         return definition;
     }
