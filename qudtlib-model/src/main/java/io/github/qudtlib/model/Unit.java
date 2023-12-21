@@ -28,7 +28,7 @@ public class Unit extends SelfSmuggler {
     }
 
     public static Definition definition(String iriBase, FactorUnits factors) {
-        String localName = factors.streamLocalnamePossibilities().findFirst().get();
+        String localName = factors.getLocalname();
         Definition definition = new Definition(iriBase + localName);
         factors.getSymbol().ifPresent(definition::symbol);
         factors.getUcumCode().ifPresent(definition::ucumCode);
