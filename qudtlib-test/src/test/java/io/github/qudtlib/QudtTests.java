@@ -895,7 +895,7 @@ public class QudtTests {
     public void unitFromFactorUnits() {
         FactorUnits factorUnits = FactorUnits.ofFactorUnitSpec(W, 8);
         Definition definition = Unit.definition("http://www.test.com/units#", factorUnits);
-        Unit unit = definition.doBuild();
+        Unit unit = definition.build();
         Assertions.assertTrue(unit.getUnitOfSystems().contains(Qudt.SystemsOfUnits.SI));
         Assertions.assertEquals("W⁸", unit.getSymbol().get());
         Assertions.assertEquals("W8", unit.getUcumCode().get());
