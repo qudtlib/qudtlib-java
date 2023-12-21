@@ -33,7 +33,7 @@ public class Unit extends SelfSmuggler {
         factors.getSymbol().ifPresent(definition::symbol);
         factors.getUcumCode().ifPresent(definition::ucumCode);
         List<FactorUnit> fus = factors.getFactorUnits();
-        definition.setFactorUnits(fus);
+        definition.setFactorUnits(factors);
 
         fus.stream()
                 .map(u -> u.getUnit().getUnitOfSystems())
