@@ -431,39 +431,11 @@ public class FactorUnits {
     }
 
     public String getLocalname() {
-        return FactorUnits.getLocalname(this.factorUnits);
+        return streamLocalnamePossibilities().findFirst().get();
     }
 
     public static String getLocalname(List<FactorUnit> factorUnits) {
-        StringBuilder sb = new StringBuilder();
-        boolean hasDenominator = false;
-        for (FactorUnit fu : factorUnits) {
-            if (fu.exponent > 0) {
-                sb.append(getLocalname(fu.unit.getIri()));
-                if (fu.exponent > 1) {
-                    sb.append(fu.exponent);
-                }
-                sb.append("-");
-            } else {
-                hasDenominator = true;
-            }
-        }
-        if (hasDenominator) {
-            sb.append("PER-");
-        }
-        for (FactorUnit fu : factorUnits) {
-            if (fu.exponent < 0) {
-                sb.append(getLocalname(fu.unit.getIri()));
-                if (fu.exponent < -1) {
-                    sb.append(Math.abs(fu.exponent));
-                }
-                sb.append("-");
-            }
-        }
-        if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        return sb.toString();
+        return new FactorUnits(factorUnits).streamLocalnamePossibilities().findFirst().get();
     }
 
     public static List<FactorUnit> sortAccordingToUnitLabel(
