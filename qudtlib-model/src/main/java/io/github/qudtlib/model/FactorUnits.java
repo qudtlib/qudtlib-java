@@ -236,16 +236,19 @@ public class FactorUnits {
     }
 
     public FactorUnits numerator() {
-        return new FactorUnits(
-                this.factorUnits.stream().filter(fu -> fu.exponent > 0).collect(toList()));
+        return new FactorUnits(numeratorFactors().collect(toList()));
+    }
+
+    private Stream<FactorUnit> numeratorFactors() {
+        return this.factorUnits.stream().filter(fu -> fu.exponent > 0);
     }
 
     public FactorUnits denominator() {
-        return new FactorUnits(
-                this.factorUnits.stream()
-                        .filter(fu -> fu.exponent < 0)
-                        .map(fu -> fu.pow(-1))
-                        .collect(toList()));
+        return new FactorUnits(denominatorFactors().collect(toList()));
+    }
+
+    private Stream<FactorUnit> denominatorFactors() {
+        return this.factorUnits.stream().filter(fu -> fu.exponent < 0).map(fu -> fu.pow(-1));
     }
 
     public boolean hasQkdvDenominatorIri(String dimensionVectorIri) {
@@ -506,32 +509,40 @@ public class FactorUnits {
     }
 
     public List<String> generateAllLocalnamePossibilities() {
-        List<String> numeratorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() > 0);
-        List<String> denominatorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() < 0);
-        List<String> completeOptions = new ArrayList<>();
-        for (String numeratorOption : numeratorOptions) {
-            for (String denominatorOption : denominatorOptions) {
-                StringBuilder completeOption = new StringBuilder();
-                if (numeratorOption.length() > 0) {
-                    completeOption.append(numeratorOption);
-                }
-                if (denominatorOption.length() > 0) {
-                    if (completeOption.length() > 0) {
-                        completeOption.append("-");
-                    }
-                    completeOption.append("PER-");
-                    completeOption.append(denominatorOption);
-                }
-                completeOptions.add(completeOption.toString());
-            }
-        }
-        return completeOptions;
+        return this.streamLocalnamePossibilities().collect(toList());
+    }
+
+    public Stream<String> streamLocalnamePossibilities() {
+        return streamFactorUnitLocalnames(fu -> fu.getExponent() > 0)
+                .flatMap(
+                        numeratorOption ->
+                                streamFactorUnitLocalnames(fu -> fu.getExponent() < 0)
+                                        .map(
+                                                denominatorOption -> {
+                                                    StringBuilder completeOption =
+                                                            new StringBuilder();
+                                                    if (numeratorOption.length() > 0) {
+                                                        completeOption.append(numeratorOption);
+                                                    }
+                                                    if (denominatorOption.length() > 0) {
+                                                        if (completeOption.length() > 0) {
+                                                            completeOption.append("-");
+                                                        }
+                                                        completeOption.append("PER-");
+                                                        completeOption.append(denominatorOption);
+                                                    }
+                                                    return completeOption.toString();
+                                                }));
     }
 
     private List<String> permutateFactorUnitLocalnames(Predicate<FactorUnit> factorUnitPredicate) {
+        return this.streamFactorUnitLocalnames(factorUnitPredicate).collect(toList());
+    }
+
+    private Stream<String> streamFactorUnitLocalnames(Predicate<FactorUnit> filterPredicate) {
         return permutate(
                         this.factorUnits.stream()
-                                .filter(factorUnitPredicate)
+                                .filter(filterPredicate)
                                 .map(
                                         fu ->
                                                 getLocalname(fu.unit.getIri())
@@ -540,8 +551,7 @@ public class FactorUnits {
                                                                 : ""))
                                 .collect(toList()))
                 .stream()
-                .map(strings -> strings.stream().collect(Collectors.joining("-")))
-                .collect(toList());
+                .map(strings -> strings.stream().collect(Collectors.joining("-")));
     }
 
     private List<List<String>> permutate(List<String> strings) {
@@ -562,26 +572,39 @@ public class FactorUnits {
         return ret;
     }
 
+    public BigDecimal getConversionMultiplier() {
+        BigDecimal bigDecimal =
+                this.getFactorUnits().stream()
+                        .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
+                        .map(FactorUnit::conversionMultiplier)
+                        .reduce(BigDecimal::multiply)
+                        .orElse(BigDecimal.ONE);
+
+        return this.getScaleFactor().multiply(bigDecimal);
+    }
+
     private String getExponentString(int exponent) {
         int absExp = Math.abs(exponent);
-        switch (absExp) {
-            case 1:
-                return "";
-            case 2:
-                return "²";
-            case 3:
-                return "³";
-            case 4:
-                return "\u2074";
-            case 5:
-                return "\u2075";
-            case 6:
-                return "\u2076";
-            case 7:
-                return "\u2077";
-            default:
-                return "m";
+
+        if (absExp == 1) {
+            return "";
         }
+
+        return String.valueOf(absExp)
+                .chars()
+                .mapToObj(
+                        c -> {
+                            if (c == 49) {
+                                return (char) 185; // Handle 1 to superscript
+                            }
+                            if (c == 50 || c == 51) {
+                                return (char) (c + 128); // Handle 2-3 to superscript
+                            } else {
+                                return (char) (c + 8256); // Handle 4-0 to superscript
+                            }
+                        })
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 
     private static String getLocalname(String iri) {

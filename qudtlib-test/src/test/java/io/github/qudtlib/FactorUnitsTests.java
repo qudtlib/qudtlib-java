@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -388,5 +391,15 @@ public class FactorUnitsTests {
                         "N",
                         FactorUnits.ofFactorUnitSpec(Units.SEC, -2, Units.M, 1, Units.KiloGM, 1)
                                 .getFactorUnits()));
+    }
+
+    @Test
+    public void getSymbol() {
+        FactorUnits m8 = FactorUnits.ofFactorUnitSpec(M, 8);
+        Optional<String> symbol = m8.getSymbol();
+        Assertions.assertEquals("m⁸", symbol.get());
+
+        FactorUnits ms12 = FactorUnits.ofFactorUnitSpec(MilliSEC, 12);
+        Assertions.assertEquals("ms¹²", ms12.getSymbol().get());
     }
 }

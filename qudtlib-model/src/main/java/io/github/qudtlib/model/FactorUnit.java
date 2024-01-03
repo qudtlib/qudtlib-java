@@ -4,9 +4,11 @@ import static java.util.stream.Collectors.*;
 
 import io.github.qudtlib.nodedef.NodeDefinition;
 import io.github.qudtlib.nodedef.SettableBuilderBase;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Combines a {@link Unit} and an exponent; some Units are a combination of {@link FactorUnit}s. If
@@ -108,6 +110,16 @@ public class FactorUnit {
 
     public static FactorUnit ofUnit(Unit unit) {
         return FactorUnit.builder().unit(unit).exponent(1).build();
+    }
+
+    public BigDecimal conversionMultiplier() {
+        return BigDecimal.valueOf(
+                Math.pow(
+                        this.getUnit()
+                                .getConversionMultiplier()
+                                .orElse(BigDecimal.ONE)
+                                .doubleValue(),
+                        this.getExponent()));
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
@@ -230,6 +242,14 @@ public class FactorUnit {
                     .collect(Collectors.toList());
         }
         return List.of(this);
+    }
+
+    public Stream<FactorUnit> streamLeafFactorUnitsWithCumulativeExponents() {
+        List<FactorUnit> leafFactorUnits = this.unit.getLeafFactorUnitsWithCumulativeExponents();
+        if (FactorUnits.hasFactorUnits(leafFactorUnits)) {
+            return leafFactorUnits.stream().map(f -> f.pow(this.getExponent()));
+        }
+        return Stream.of(this);
     }
 
     private FactorUnit withExponentMultiplied(int by) {

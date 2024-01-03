@@ -27,6 +27,31 @@ public class Unit extends SelfSmuggler {
         return new Definition(product);
     }
 
+    public static Definition definition(String iriBase, FactorUnits factors) {
+        String localName = factors.getLocalname();
+        Definition definition = new Definition(iriBase + localName);
+        factors.getSymbol().ifPresent(definition::symbol);
+        factors.getUcumCode().ifPresent(definition::ucumCode);
+        List<FactorUnit> fus = factors.getFactorUnits();
+        definition.setFactorUnits(factors);
+
+        fus.stream()
+                .map(u -> u.getUnit().getUnitOfSystems())
+                .reduce(
+                        (a, b) -> {
+                            HashSet<SystemOfUnits> set = new HashSet<>(a);
+                            set.retainAll(b);
+                            return set;
+                        })
+                .ifPresent(commonSystems -> commonSystems.forEach(definition::addSystemOfUnits));
+
+        definition.dimensionVectorIri(factors.getDimensionVectorIri());
+
+        definition.conversionMultiplier(factors.getConversionMultiplier());
+
+        return definition;
+    }
+
     public static class Definition extends NodeDefinitionBase<String, Unit> {
 
         private String iri;
@@ -339,9 +364,13 @@ public class Unit extends SelfSmuggler {
     }
 
     public boolean isConvertible(Unit toUnit) {
-        Objects.requireNonNull(toUnit);
-        Objects.requireNonNull(this.dimensionVectorIri);
-        return this.dimensionVectorIri.equals(toUnit.dimensionVectorIri);
+        if (toUnit == null
+                || toUnit.getDimensionVectorIri() == null
+                || this.getDimensionVectorIri() == null) {
+            return false;
+        }
+
+        return this.getDimensionVectorIri().equals(toUnit.getDimensionVectorIri());
     }
 
     public boolean matches(Collection<Map.Entry<String, Integer>> factorUnitSpec) {

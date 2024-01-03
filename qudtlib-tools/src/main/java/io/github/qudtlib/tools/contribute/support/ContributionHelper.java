@@ -3,7 +3,7 @@ package io.github.qudtlib.tools.contribute.support;
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,9 +94,9 @@ public class ContributionHelper {
                                                 .orElse(false))
                         .filter(
                                 u ->
-                                        !factorUnits
-                                                .generateAllLocalnamePossibilities()
-                                                .contains(u.getIriLocalname()))
+                                        factorUnits
+                                                .streamLocalnamePossibilities()
+                                                .noneMatch(u.getIriLocalname()::equals))
                         .filter(
                                 u ->
                                         u.getConversionMultiplier().get().compareTo(BigDecimal.ONE)
@@ -121,19 +121,19 @@ public class ContributionHelper {
     }
 
     private static Unit findUnitByLocalName(FactorUnits factorUnits) {
-        List<String> possibilities = factorUnits.generateAllLocalnamePossibilities();
-        for (String localnameCandidate : possibilities) {
-            Optional<Unit> existingUnit = Qudt.unitFromLocalname(localnameCandidate);
-            if (existingUnit.isPresent()) {
-                return existingUnit.get();
-            } else {
-                existingUnit = Qudt.currencyFromLocalname(localnameCandidate);
-                if (existingUnit.isPresent()) {
-                    return existingUnit.get();
-                }
-            }
-        }
-        return null;
+        return factorUnits
+                .streamLocalnamePossibilities()
+                .map(
+                        localNameCandidate ->
+                                Qudt.unitFromLocalname(localNameCandidate)
+                                        .orElseGet(
+                                                () ->
+                                                        Qudt.currencyFromLocalname(
+                                                                        localNameCandidate)
+                                                                .orElse(null)))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     /** Retuns the FactorUnits object resulting from unscaling each factor unit. */
