@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -395,11 +394,19 @@ public class FactorUnitsTests {
 
     @Test
     public void getSymbol() {
+        FactorUnits m1 = FactorUnits.ofFactorUnitSpec(M, 1);
+        Assertions.assertEquals("m", m1.getSymbol().get());
+
+        FactorUnits m_1 = FactorUnits.ofFactorUnitSpec(M, -1);
+        Assertions.assertEquals("/m", m_1.getSymbol().get());
+
         FactorUnits m8 = FactorUnits.ofFactorUnitSpec(M, 8);
-        Optional<String> symbol = m8.getSymbol();
-        Assertions.assertEquals("m⁸", symbol.get());
+        Assertions.assertEquals("m⁸", m8.getSymbol().get());
 
         FactorUnits ms12 = FactorUnits.ofFactorUnitSpec(MilliSEC, 12);
         Assertions.assertEquals("ms¹²", ms12.getSymbol().get());
+
+        FactorUnits ms_9 = FactorUnits.ofFactorUnitSpec(MilliSEC, -9);
+        Assertions.assertEquals("/ms⁹", ms_9.getSymbol().get());
     }
 }

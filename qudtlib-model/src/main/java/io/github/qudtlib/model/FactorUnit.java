@@ -113,13 +113,18 @@ public class FactorUnit {
     }
 
     public BigDecimal conversionMultiplier() {
-        return BigDecimal.valueOf(
-                Math.pow(
-                        this.getUnit()
-                                .getConversionMultiplier()
-                                .orElse(BigDecimal.ONE)
-                                .doubleValue(),
-                        this.getExponent()));
+        if (this.exponent >= 0) {
+            return this.getUnit()
+                    .getConversionMultiplier()
+                    .orElse(BigDecimal.ONE)
+                    .pow(this.exponent);
+        } else {
+            return BigDecimal.ONE.divide(
+                    this.getUnit()
+                            .getConversionMultiplier()
+                            .orElse(BigDecimal.ONE)
+                            .pow(-this.exponent));
+        }
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
