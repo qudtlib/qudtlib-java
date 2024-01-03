@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Josh Feingold(@occamsystems) contributed the ability to add units and quantity kinds at runtime, along with a 
-  number of improvements 
+- Josh Feingold(@occamsystems) contributed the ability to add units and quantity kinds at runtime, along with a
+  number of improvements
 
 ## [6.0.3] - 2023-12-20
 
