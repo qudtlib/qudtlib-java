@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.*;
 import io.github.qudtlib.nodedef.NodeDefinition;
 import io.github.qudtlib.nodedef.SettableBuilderBase;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -113,18 +114,10 @@ public class FactorUnit {
     }
 
     public BigDecimal conversionMultiplier() {
-        if (this.exponent >= 0) {
-            return this.getUnit()
-                    .getConversionMultiplier()
-                    .orElse(BigDecimal.ONE)
-                    .pow(this.exponent);
-        } else {
-            return BigDecimal.ONE.divide(
-                    this.getUnit()
-                            .getConversionMultiplier()
-                            .orElse(BigDecimal.ONE)
-                            .pow(-this.exponent));
-        }
+        return this.getUnit()
+                .getConversionMultiplier()
+                .orElse(BigDecimal.ONE)
+                .pow(this.exponent, MathContext.DECIMAL128);
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
