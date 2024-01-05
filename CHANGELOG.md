@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.1.0] - 2024-01-05
+
 ### Added
 
 - Josh Feingold(@occamsystems) contributed the ability to add units and quantity kinds at runtime, along with a
@@ -201,7 +203,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.1.0...HEAD
+[6.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...v6.1.0
 [6.0.3]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.2...v6.0.3
 [6.0.2]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.0...v6.0.1
