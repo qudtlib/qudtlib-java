@@ -298,11 +298,22 @@ public class Qudt {
      * @return the unscaled factor units
      */
     public static List<FactorUnit> unscale(List<FactorUnit> factorUnits) {
+        return unscale(factorUnits, true, true);
+    }
+
+    public static List<FactorUnit> unscale(
+            List<FactorUnit> factorUnits,
+            boolean treatKiloGmAsUnscaled,
+            boolean treatPrefixlessAsUnscaled) {
         return factorUnits.stream()
                 .map(
                         uf ->
                                 FactorUnit.builder()
-                                        .unit(unscale(uf.getUnit()))
+                                        .unit(
+                                                unscale(
+                                                        uf.getUnit(),
+                                                        treatKiloGmAsUnscaled,
+                                                        treatPrefixlessAsUnscaled))
                                         .exponent(uf.getExponent())
                                         .build())
                 .collect(toList());
@@ -1018,6 +1029,7 @@ public class Qudt {
                 Qudt.getUnitsMap().values().stream()
                         .filter(u -> systemOfUnits.allowsUnit(u))
                         .filter(u -> u.getDimensionVectorIri().equals(unit.getDimensionVectorIri()))
+                        .filter(u -> !u.equals(unit))
                         .collect(Collectors.toList());
         if (elegible.size() == 1) {
             return elegible;

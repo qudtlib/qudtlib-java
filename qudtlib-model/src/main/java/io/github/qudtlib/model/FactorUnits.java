@@ -1,8 +1,10 @@
 package io.github.qudtlib.model;
 
+import static io.github.qudtlib.math.BigDec.isRelativeDifferenceGreaterThan;
 import static java.util.stream.Collectors.toList;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
+import io.github.qudtlib.math.BigDec;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
@@ -16,7 +18,7 @@ public class FactorUnits {
 
     public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
         this.factorUnits = factorUnits.stream().collect(Collectors.toUnmodifiableList());
-        this.scaleFactor = scaleFactor;
+        this.scaleFactor = Optional.ofNullable(scaleFactor).orElse(BigDecimal.ONE);
     }
 
     public FactorUnits(List<FactorUnit> factorUnits) {
@@ -41,6 +43,21 @@ public class FactorUnits {
         builder.scaleFactor(factorUnits.getScaleFactor());
         factorUnits.factorUnits.forEach(fu -> builder.factor(fu));
         return builder;
+    }
+
+    public boolean hasFactorUnits() {
+        if (this.factorUnits == null) {
+            return false;
+        }
+        if (this.factorUnits.isEmpty()) {
+            return false;
+        }
+        if (this.factorUnits.size() == 1
+                && this.factorUnits.get(0).getExponent() == 1
+                && BigDecimal.ONE.compareTo(this.scaleFactor) == 0) {
+            return false;
+        }
+        return true;
     }
 
     public static boolean hasFactorUnits(List<FactorUnit> factorUnits) {
@@ -155,7 +172,8 @@ public class FactorUnits {
         if (o == null || getClass() != o.getClass()) return false;
         FactorUnits that = (FactorUnits) o;
 
-        return scaleFactor.compareTo(that.scaleFactor) == 0
+        return (!isRelativeDifferenceGreaterThan(
+                        scaleFactor, that.scaleFactor, BigDec.ONE_MILLIONTH))
                 && new HashSet<>(factorUnits).equals(new HashSet<>(that.factorUnits));
     }
 
@@ -223,8 +241,9 @@ public class FactorUnits {
             Optional<String> fudvOpt = fu.getDimensionVectorIri();
             if (fudvOpt.isEmpty()) {
                 throw new RuntimeException(
-                        "Cannot compute dimension vector of factor units as not all units have a dimension vector: "
-                                + this.toString());
+                        String.format(
+                                "Cannot compute dimension vector of factor units %s: %s does not have a dimension vector",
+                                this.toString(), fu.getUnit().getIriAbbreviated()));
             }
             if (dv == null) {
                 dv = DimensionVector.ofRequired(fudvOpt.get());
@@ -545,14 +564,20 @@ public class FactorUnits {
     }
 
     public BigDecimal getConversionMultiplier() {
-        BigDecimal bigDecimal =
-                this.getFactorUnits().stream()
-                        .flatMap(FactorUnit::streamLeafFactorUnitsWithCumulativeExponents)
-                        .map(FactorUnit::conversionMultiplier)
-                        .reduce(BigDecimal::multiply)
-                        .orElse(BigDecimal.ONE);
-
-        return this.getScaleFactor().multiply(bigDecimal);
+        if (this.hasFactorUnits()) {
+            return this.factorUnits.stream()
+                    .map(
+                            fu ->
+                                    fu.unit
+                                            .getFactorUnits()
+                                            .getConversionMultiplier()
+                                            .pow(fu.getExponent(), MathContext.DECIMAL128))
+                    .reduce(BigDecimal::multiply)
+                    .get()
+                    .multiply(this.getScaleFactor());
+        } else {
+            return this.factorUnits.stream().findFirst().get().conversionMultiplier();
+        }
     }
 
     private String getExponentString(int exponent) {

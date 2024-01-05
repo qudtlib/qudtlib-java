@@ -42,6 +42,8 @@ public class QuantityKind extends SelfSmuggler {
         private String qkdvDenominatorIri;
         private String symbol;
 
+        private Boolean deprecated;
+
         public Definition(String iri) {
             super(iri);
             this.iri = iri;
@@ -122,6 +124,11 @@ public class QuantityKind extends SelfSmuggler {
             return (T) this;
         }
 
+        public <T extends Definition> T deprecated(boolean deprecated) {
+            this.deprecated = deprecated;
+            return (T) this;
+        }
+
         @Override
         protected QuantityKind doBuild() {
             return new QuantityKind(this);
@@ -141,6 +148,8 @@ public class QuantityKind extends SelfSmuggler {
     private String qkdvDenominatorIri;
     private final String symbol;
 
+    private boolean deprecated;
+
     protected QuantityKind(Definition definition) {
         super(definition);
         Objects.requireNonNull(definition.iri);
@@ -154,6 +163,7 @@ public class QuantityKind extends SelfSmuggler {
         this.broaderQuantityKinds = buildSet(definition.broaderQuantityKinds);
         this.applicableUnits = buildSet(definition.applicableUnits);
         this.exactMatches = buildSet(definition.exactMatches);
+        this.deprecated = Optional.ofNullable(definition.deprecated).orElse(false);
     }
 
     public String getIri() {
@@ -209,6 +219,10 @@ public class QuantityKind extends SelfSmuggler {
 
     public Set<LangString> getLabels() {
         return labels.getAll();
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
     }
 
     public Optional<LangString> getLabelForLanguageTag(String languageTag) {

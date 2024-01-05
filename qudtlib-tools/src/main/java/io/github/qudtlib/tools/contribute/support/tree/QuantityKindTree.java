@@ -1,8 +1,11 @@
 package io.github.qudtlib.tools.contribute.support.tree;
 
+import static io.github.qudtlib.tools.contribute.support.tree.FormattingNodeVisitor.*;
+
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.QuantityKind;
 import io.github.qudtlib.model.QudtNamespaces;
+import io.github.qudtlib.model.Unit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -96,5 +99,64 @@ public class QuantityKindTree {
 
     private static String getShortName(QuantityKind quantityKind) {
         return QudtNamespaces.quantityKind.abbreviate(quantityKind.getIri());
+    }
+
+    public static void formatQuantityKindTree(
+            List<Node<Object>> actualQuantityKindsWithUnits, StringBuilder stringBuilder) {
+        formatQuantityKindTree(actualQuantityKindsWithUnits, null, stringBuilder);
+    }
+
+    public static void formatQuantityKindTree(
+            List<Node<Object>> actualQuantityKindsWithUnits,
+            NodeToString<Object> nodeFormatter,
+            StringBuilder stringBuilder) {
+        if (nodeFormatter == null) {
+            nodeFormatter = node -> getUnitOrQuantityKindIriAbbreviated(node);
+        }
+        for (Node<Object> root : actualQuantityKindsWithUnits) {
+            FormattingNodeVisitor<Object> formatter =
+                    new FormattingNodeVisitor<Object>(stringBuilder)
+                            .nodeFormatDefault(nodeFormatter);
+            formatter.treeDrawingConfig(
+                    (config, node) -> {
+                        if (node.getNode().getData() instanceof QuantityKind) {
+                            config.branchStart(CHAR_SLIM_DOUBLE_RIGHT_T)
+                                    .branchStartLast(CHAR_SLIM_DOUBLE_ANGLE)
+                                    .branch(CHAR_DOUBLE_HORIZ)
+                                    .branchEndLeaf(CHAR_DOUBLE_HORIZ)
+                                    .branchEndInner(CHAR_DOUBLE_SLIM_T);
+                        }
+                    });
+            TreeWalker.of(root)
+                    .sorted(
+                            Comparator.comparing(
+                                            (Node<Object> node) ->
+                                                    node.getData().getClass().getSimpleName())
+                                    .thenComparing(
+                                            QuantityKindTree::getUnitOrQuantityKindIriAbbreviated))
+                    .walkDepthFirst(formatter);
+        }
+    }
+
+    public static String getUnitOrQuantityKindIriAbbreviated(Node<?> node) {
+        return (node.getData() instanceof Unit)
+                ? ((Unit) node.getData()).getIriAbbreviated()
+                : QudtNamespaces.quantityKind.abbreviate(((QuantityKind) node.getData()).getIri());
+    }
+
+    public static void makeAndFormatQuantityKindAndUnitTree(
+            Set<QuantityKind> quantityKindSet, StringBuilder stringBuilder) {
+        makeAndFormatQuantityKindAndUnitTree(quantityKindSet, null, stringBuilder);
+    }
+
+    public static void makeAndFormatQuantityKindAndUnitTree(
+            Set<QuantityKind> quantityKindSet,
+            NodeToString<Object> nodeFormatter,
+            StringBuilder stringBuilder) {
+        List<Node<QuantityKind>> actualQuantityKindForest =
+                makeCompleteSkosBroaderForestContaining(quantityKindSet);
+        List<Node<Object>> actualQuantityKindsWithUnits =
+                addAssociatedUnitsToQuantityKindForest(actualQuantityKindForest);
+        formatQuantityKindTree(actualQuantityKindsWithUnits, nodeFormatter, stringBuilder);
     }
 }

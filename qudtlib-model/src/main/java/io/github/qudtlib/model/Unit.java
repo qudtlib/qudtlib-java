@@ -70,6 +70,8 @@ public class Unit extends SelfSmuggler {
         private String currencyCode;
         private Integer currencyNumber;
 
+        private Boolean deprecated;
+
         private Set<Builder<Unit>> exactMatches = new HashSet<>();
         private Set<Builder<SystemOfUnits>> systemsOfUnits = new HashSet<>();
 
@@ -168,6 +170,11 @@ public class Unit extends SelfSmuggler {
             return (T) this;
         }
 
+        public <T extends Definition> T deprecated(boolean deprecated) {
+            this.deprecated = deprecated;
+            return (T) this;
+        }
+
         public <T extends Definition> T currencyCode(String currencyCode) {
             this.currencyCode = currencyCode;
             return (T) this;
@@ -243,6 +250,8 @@ public class Unit extends SelfSmuggler {
     private final Integer currencyNumber;
     private final Set<SystemOfUnits> unitOfSystems;
 
+    private final boolean deprecated;
+
     protected Unit(Definition definition) {
         super(definition);
         Objects.requireNonNull(definition.iri);
@@ -264,11 +273,32 @@ public class Unit extends SelfSmuggler {
         this.quantityKinds = buildSet(definition.quantityKinds);
         this.unitOfSystems = buildSet(definition.systemsOfUnits);
         FactorUnits fu = definition.factorUnits.build();
-        if (FactorUnits.hasFactorUnits(fu.getFactorUnits())) {
+        if (definition.scalingOf != null && fu.hasFactorUnits()) {
+            BigDecimal multiplier =
+                    this.prefix == null
+                            ? definition.conversionMultiplier
+                            : this.prefix.getMultiplier();
+            FactorUnits fuForSclaingOf =
+                    FactorUnits.ofFactorUnitSpec(multiplier, this.scalingOf, 1);
+            if (!fu.equals(fuForSclaingOf)) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Unit %s has conflicting definition of factor units (%s) and scalingOf (%s, which implies factor units %s)",
+                                this.iri, fu.toString(), this.scalingOf, fuForSclaingOf));
+            }
+        }
+        if (fu.hasFactorUnits()) {
             this.factorUnits = fu;
+        } else if (this.scalingOf != null) {
+            BigDecimal multiplier =
+                    this.prefix == null
+                            ? definition.conversionMultiplier
+                            : this.prefix.getMultiplier();
+            this.factorUnits = FactorUnits.ofFactorUnitSpec(multiplier, this.scalingOf, 1);
         } else {
             this.factorUnits = FactorUnits.ofUnit(this);
         }
+        this.deprecated = Optional.ofNullable(definition.deprecated).orElse(false);
     }
 
     static boolean isUnitless(Unit unit) {
@@ -410,7 +440,7 @@ public class Unit extends SelfSmuggler {
     }
 
     public boolean hasFactorUnits() {
-        return FactorUnits.hasFactorUnits(this.factorUnits.getFactorUnits());
+        return this.factorUnits.hasFactorUnits();
     }
 
     public boolean isScaled() {
@@ -540,6 +570,10 @@ public class Unit extends SelfSmuggler {
     void addExactMatch(Unit exactMatch) {
         Objects.requireNonNull(exactMatch);
         this.exactMatches.add(exactMatch);
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
     }
 
     @Override

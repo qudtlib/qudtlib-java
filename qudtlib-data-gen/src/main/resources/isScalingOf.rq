@@ -47,6 +47,10 @@ where
 
         ?baseUnit a qudt:Unit ;
         BIND(REPLACE(STR(?baseUnit), "^.+/", "") as ?baseUnitLocalName)
+        # we don't generate isScalingOf for bases that are derived units
+        FILTER(! CONTAINS(?baseUnitLocalName, "-"))
+        # we don't generate isScalingOf for bases with a non-1 exponent (because then we cannot use the existing factor as would have to be exponentiated)
+        FILTER(! REGEX(?baseUnitLocalName,".+\\d+"))
         BIND("(YR|MO|DAY|HR|MIN)\\b" as ?timeRegex)
         FILTER (
                     (

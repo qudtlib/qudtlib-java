@@ -144,3 +144,528 @@ unit:KAT
                       qudt:unit unit:MOL ] ;
     qudt:factorUnit [ qudt:exponent -1 ;
                       qudt:unit unit:SEC ] .
+
+
+
+
+# other triples we need
+# if A qudt:isScalingOf B is present, it is assumed that the conversionMultiplier of A times the value of a
+# quantity in unit A yields the quantity in B.
+# consequently, the A will be assigned a factorUnit B with exponent 1 and the factorUnitScalar used is A's conversionMultiplier
+
+
+unit:TON_Metric qudt:isScalingOf unit:KiloGM .
+unit:TONNE qudt:isScalingOf unit:KiloGM .
+unit:MIN qudt:isScalingOf unit:SEC .
+unit:HR qudt:isScalingOf unit:SEC .
+unit:HR_Sidereal qudt:isScalingOf unit:SEC .
+unit:MIN_Sidereal qudt:isScalingOf unit:SEC .
+unit:DAY qudt:isScalingOf unit:SEC .
+unit:DAY_Sidereal qudt:isScalingOf unit:SEC .
+unit:WK qudt:isScalingOf unit:SEC .
+unit:MO qudt:isScalingOf unit:SEC .
+unit:YR qudt:isScalingOf unit:SEC .
+unit:YR_Sidereal qudt:isScalingOf unit:SEC .
+unit:YR_TROPICAL qudt:isScalingOf unit:SEC .
+unit:EV qudt:isScalingOf unit:J .
+unit:HA qudt:isScalingOf unit:M2 .
+unit:ARE qudt:isScalingOf unit:M2 .
+unit:ElementaryCharge qudt:isScalingOf unit:C .
+unit:AU qudt:isScalingOf unit:M .
+unit:E_h qudt:isScalingOf unit:J .
+unit:DEG qudt:isScalingOf unit:RAD .
+
+
+
+unit:R
+    qudt:factorUnit [
+        qudt:unit unit:C_Stat ;
+        qudt:exponent 1
+    ] ;
+    qudt:factorUnit [
+        qudt:unit unit:KiloGM ;
+        qudt:exponent -1
+    ] .
+
+unit:L qudt:factorUnit [
+    qudt:unit unit:DeciM;
+    qudt:exponent 3
+] .
+
+unit:PSI
+  qudt:factorUnit [
+    qudt:unit unit:LB_F ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:IN ;
+         qudt:exponent -2
+  ].
+
+unit:IN_H2O qudt:isScalingOf unit:PA .
+
+unit:TORR  qudt:isScalingOf unit:PA .
+
+unit:IN_HG  qudt:isScalingOf unit:PA .
+
+unit:FT_HG  qudt:isScalingOf unit:PA .
+
+unit:KiloPA_A  qudt:isScalingOf unit:PA .
+
+unit:MilliM_HGA  qudt:isScalingOf unit:PA .
+
+unit:MilliM_HG  qudt:isScalingOf unit:PA .
+
+unit:ATM  qudt:isScalingOf unit:PA .
+
+unit:CentiM_H2O  qudt:isScalingOf unit:PA .
+
+unit:CM_H2O  qudt:isScalingOf unit:PA .
+
+unit:MilliM_H2O  qudt:isScalingOf unit:PA .
+
+unit:CentiM_HG  qudt:isScalingOf unit:PA .
+
+unit:ATM_T  qudt:isScalingOf unit:PA .
+
+unit:FT_H2O  qudt:isScalingOf unit:PA .
+
+unit:KN
+    qudt:factorUnit [
+      qudt:unit unit:MI_N ;
+      qudt:exponent 1
+    ] ;
+    qudt:factorUnit [
+      qudt:unit unit:HR ;
+      qudt:exponent -1
+    ] .
+
+unit:MI_N  qudt:isScalingOf unit:M .
+
+unit:LB_F
+  qudt:factorUnit [
+    qudt:unit unit:SLUG ;
+    qudt:exponent 1
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:FT ;
+    qudt:exponent 1
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:SEC ;
+    qudt:exponent -2
+  ].
+
+unit:SLUG
+  qudt:factorUnitScalar 32.17405 ;
+  qudt:factorUnit [
+    qudt:unit unit:LB;
+    qudt:exponent 1
+  ].
+
+unit:G
+  qudt:factorUnitScalar 9.80665 ;
+  qudt:factorUnit [
+    qudt:unit unit:M ;
+    qudt:exponent 1
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:SEC ;
+    qudt:exponent -2
+  ].
+
+unit:KIP_F
+  qudt:factorUnitScalar 1000.0 ;
+  qudt:factorUnit [
+    qudt:unit unit:LB_F ;
+    qudt:exponent 1
+  ].
+
+unit:LB qudt:isScalingOf unit:KiloGM .
+
+unit:BTU_IT qudt:isScalingOf unit:J .
+
+unit:BTU_TH qudt:isScalingOf unit:J .
+
+unit:LA
+  qudt:factorUnitScalar 0.31830988618 ;
+  qudt:factorUnit [
+    qudt:unit unit:CD ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:M ;
+         qudt:exponent -2
+  ].
+
+unit:GALILEO
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:SEC ;
+         qudt:exponent -2
+  ].
+
+unit:MilliGAL qudt:isScalingOf unit:GALILEO .
+
+unit:LA_FT
+  qudt:factorUnitScalar 0.31830988618 ;
+  qudt:factorUnit [
+    qudt:unit unit:CD ;
+        qudt:exponent 1
+  ];
+  qudt:factorUnit [
+         qudt:unit unit:FT ;
+         qudt:exponent -2
+  ].
+
+unit:YD
+  qudt:factorUnitScalar 3.0;
+  qudt:factorUnit [
+    qudt:unit unit:FT ;
+    qudt:exponent 1
+  ].
+
+unit:FT
+  qudt:factorUnitScalar 12.0;
+  qudt:factorUnit [
+    qudt:unit unit:IN ;
+    qudt:exponent 1
+  ].
+
+unit:IN qudt:isScalingOf unit:M .
+
+unit:MI qudt:isScalingOf unit:M .
+
+unit:AC qudt:isScalingOf unit:M2 .
+
+unit:KY
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+    qudt:exponent -1
+  ].
+
+
+unit:DYN qudt:isScalingOf unit:N .
+
+unit:BARAD
+  qudt:factorUnit [
+    qudt:unit unit:DYN ;
+    qudt:exponent 1
+  ] ;
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+    qudt:exponent -2
+  ] .
+
+unit:BARYE
+  qudt:factorUnit [
+    qudt:unit unit:DYN ;
+    qudt:exponent 1
+  ] ;
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+    qudt:exponent -2
+  ] .
+
+unit:ST
+    qudt:factorUnitScalar 0.0001;
+    qudt:factorUnit  [
+        qudt:unit unit:M ;
+        qudt:exponent 2
+    ] ;
+    qudt:factorUnit [
+        qudt:unit unit:SEC ;
+        qudt:exponent -1
+    ] .
+
+unit:KiloPOND qudt:isScalingOf unit:N .
+
+unit:PDL qudt:isScalingOf unit:N .
+
+unit:TON_F_US qudt:isScalingOf unit:N .
+
+unit:OZ_F qudt:isScalingOf unit:N .
+
+unit:OZ
+    qudt:factorUnitScalar 0.0625 ;
+    qudt:factorUnit [
+        qudt:unit unit:LB ;
+        qudt:exponent 1
+    ] .
+
+unit:KiloP qudt:isScalingOf unit:N .
+
+unit:ERG
+  qudt:factorUnit [
+    qudt:unit unit:GM ;
+    qudt:exponent 1
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:CentiM ;
+    qudt:exponent 2
+  ];
+  qudt:factorUnit [
+    qudt:unit unit:SEC ;
+   qudt:exponent -2
+  ].
+
+unit:THM_US qudt:isScalingOf unit:J .
+
+unit:A_Ab qudt:isScalingOf unit:A .
+
+unit:MHO qudt:isScalingOf unit:S .
+
+unit:V_Ab qudt:isScalingOf unit:V .
+
+unit:FARAD_Ab qudt:isScalingOf unit:FARAD .
+
+unit:H_Stat qudt:isScalingOf unit:H .
+
+unit:C_Stat qudt:isScalingOf unit:C .
+
+unit:GAUSS qudt:isScalingOf unit:T .
+
+unit:Gs qudt:isScalingOf unit:T .
+
+unit:MX qudt:isScalingOf unit:WB .
+
+unit:UnitPole qudt:isScalingOf unit:WB .
+
+unit:DEG_R qudt:isScalingOf unit:K .
+
+unit:DEG_F qudt:isScalingOf unit:K .
+
+unit:DEG_C qudt:isScalingOf unit:K .
+
+unit:CAL_TH qudt:isScalingOf unit:J .
+
+unit:CAL_IT qudt:isScalingOf unit:J .
+
+unit:CAL_15_DEG_C qudt:isScalingOf unit:J .
+
+unit:CAL_MEAN  qudt:isScalingOf unit:J .
+
+unit:BAR  qudt:isScalingOf unit:PA .
+
+unit:DIOPTER qudt:isScalingOf unit:PER-M .
+
+unit:KiloCAL qudt:isScalingOf unit:J .
+
+unit:GRAIN qudt:isScalingOf unit:KiloGM .
+
+unit:GAL_US
+    qudt:factorUnitScalar  231 ;
+    qudt:factorUnit [
+        qudt:unit unit:IN ;
+        qudt:exponent 3
+    ] .
+
+unit:QT_US
+    qudt:factorUnitScalar  0.25 ;
+    qudt:factorUnit [
+        qudt:unit unit:GAL_US ;
+        qudt:exponent 1
+    ] .
+
+unit:PINT_US
+    qudt:factorUnitScalar  0.5 ;
+    qudt:factorUnit [
+        qudt:unit unit:QT_US ;
+        qudt:exponent 1
+    ] .
+
+unit:GAL_US_DRY
+    qudt:factorUnitScalar  0.125 ;
+    qudt:factorUnit [
+        qudt:unit unit:BU_US ;
+        qudt:exponent 1
+    ] .
+
+
+unit:GAL_UK
+    qudt:factorUnitScalar  4.54609 ;
+    qudt:factorUnit [
+        qudt:unit unit:L ;
+        qudt:exponent 1
+    ] .
+
+unit:QT_UK
+    qudt:factorUnitScalar  0.25 ;
+    qudt:factorUnit [
+        qudt:unit unit:GAL_UK ;
+        qudt:exponent 1
+    ] .
+
+unit:PINT_UK
+    qudt:factorUnitScalar  0.5 ;
+    qudt:factorUnit [
+        qudt:unit unit:QT_UK ;
+        qudt:exponent 1
+    ] .
+
+unit:BU_US
+    qudt:factorUnitScalar 2150.42 ;
+    qudt:factorUnit [
+        qudt:unit unit:IN ;
+        qudt:exponent 3
+    ] .
+
+unit:ANGSTROM qudt:isScalingOf unit:M .
+
+unit:GM_F qudt:isScalingOf unit:N .
+
+unit:DPI
+    qudt:factorUnit [
+        qudt:unit unit:NUM ;
+        qudt:exponent 1
+    ];
+    qudt:factorUnit [
+        qudt:unit unit:IN ;
+        qudt:exponent -1
+    ].
+
+unit:F
+  qudt:factorUnitScalar 96485.3321233100184 ;
+  qudt:factorUnit [ qudt:exponent 1 ;
+                    qudt:unit unit:C ] ;
+  qudt:factorUnit [ qudt:exponent -1 ;
+                    qudt:unit unit:MOL ] .
+
+
+
+unit:AMU qudt:isScalingOf unit:KiloGM .
+unit:A_Stat qudt:isScalingOf unit:A .
+unit:BARN qudt:isScalingOf unit:M2 .
+unit:BBL_UK_PET qudt:isScalingOf unit:M3 .
+unit:BBL_US qudt:isScalingOf unit:M3 .
+unit:BBL_US_DRY qudt:isScalingOf unit:M3 .
+unit:BIOT qudt:isScalingOf unit:A .
+unit:BTU_MEAN qudt:isScalingOf unit:J .
+unit:BU_UK qudt:isScalingOf unit:M3 .
+unit:CARAT qudt:isScalingOf unit:KiloGM .
+unit:CH qudt:isScalingOf unit:M .
+unit:CLO qudt:isScalingOf unit:M2-K-PER-W .
+unit:CORD qudt:isScalingOf unit:M3 .
+unit:CUP qudt:isScalingOf unit:M3 .
+unit:CUP_US qudt:isScalingOf unit:M3 .
+unit:CWT_LONG qudt:isScalingOf unit:KiloGM .
+unit:CWT_SHORT qudt:isScalingOf unit:KiloGM .
+unit:C_Ab qudt:isScalingOf unit:A-SEC .
+unit:Ci qudt:isScalingOf unit:BQ .
+unit:DARCY qudt:isScalingOf unit:M2 .
+unit:DRAM_UK qudt:isScalingOf unit:KiloGM .
+unit:DRAM_US qudt:isScalingOf unit:KiloGM .
+unit:DWT qudt:isScalingOf unit:KiloGM .
+unit:Da qudt:isScalingOf unit:KiloGM .
+unit:Debye qudt:isScalingOf unit:C-M .
+unit:Denier qudt:isScalingOf unit:GM-PER-MilliM .
+unit:E qudt:isScalingOf unit:A-SEC .
+unit:EarthMass qudt:isScalingOf unit:KiloGM .
+unit:FARAD_Stat qudt:isScalingOf unit:FARAD .
+unit:FATH qudt:isScalingOf unit:M .
+unit:FBM qudt:isScalingOf unit:M3 .
+unit:FC qudt:isScalingOf unit:CD-PER-M2 .
+unit:FM qudt:isScalingOf unit:M .
+unit:FR qudt:isScalingOf unit:A-SEC .
+unit:FT_US qudt:isScalingOf unit:M .
+unit:FUR qudt:isScalingOf unit:M .
+unit:GAL_IMP qudt:isScalingOf unit:M3 .
+unit:GAUGE_FR qudt:isScalingOf unit:M .
+unit:GI qudt:isScalingOf unit:A .
+unit:GI_UK qudt:isScalingOf unit:M3 .
+unit:GI_US qudt:isScalingOf unit:M3 .
+unit:Gamma qudt:isScalingOf unit:T .
+unit:HP qudt:isScalingOf unit:J-PER-SEC .
+unit:HP_Boiler qudt:isScalingOf unit:J-PER-SEC .
+unit:HP_Brake qudt:isScalingOf unit:J-PER-SEC .
+unit:HP_Electric qudt:isScalingOf unit:J-PER-SEC .
+unit:HP_Metric qudt:isScalingOf unit:J-PER-SEC .
+unit:H_Ab qudt:isScalingOf unit:H .
+unit:Hundredweight_UK qudt:isScalingOf unit:KiloGM .
+unit:Hundredweight_US qudt:isScalingOf unit:KiloGM .
+unit:Kilo-FT3 qudt:isScalingOf unit:M3 .
+unit:KiloCAL_Mean qudt:isScalingOf unit:J .
+unit:LB_M qudt:isScalingOf unit:KiloGM .
+unit:LB_T qudt:isScalingOf unit:KiloGM .
+unit:LY qudt:isScalingOf unit:M .
+unit:LunarMass qudt:isScalingOf unit:KiloGM .
+unit:MHO_Stat qudt:isScalingOf unit:S-PER-M .
+unit:MIL_Circ qudt:isScalingOf unit:M2 .
+unit:MI_US qudt:isScalingOf unit:M .
+unit:MOL_LB qudt:isScalingOf unit:MOL .
+unit:MilLength qudt:isScalingOf unit:M .
+unit:OERSTED qudt:isScalingOf unit:A-PER-M .
+unit:OHM_Ab qudt:isScalingOf unit:OHM .
+unit:OHM_Stat qudt:isScalingOf unit:OHM .
+unit:OZ_M qudt:isScalingOf unit:KiloGM .
+unit:OZ_TROY qudt:isScalingOf unit:KiloGM .
+unit:OZ_VOL_UK qudt:isScalingOf unit:M3 .
+unit:OZ_VOL_US qudt:isScalingOf unit:M3 .
+unit:PARSEC qudt:isScalingOf unit:M .
+unit:PCA qudt:isScalingOf unit:M .
+unit:PERM_Metric qudt:isScalingOf unit:SEC-PER-M .
+unit:PERM_US qudt:isScalingOf unit:SEC-PER-M .
+unit:PHOT qudt:isScalingOf unit:CD-PER-M2 .
+unit:PINT qudt:isScalingOf unit:M3 .
+unit:PINT_US_DRY qudt:isScalingOf unit:M3 .
+unit:PK_UK qudt:isScalingOf unit:M3 .
+unit:PK_US_DRY qudt:isScalingOf unit:M3 .
+unit:POISE qudt:isScalingOf unit:KiloGM-PER-M-SEC .
+unit:PT qudt:isScalingOf unit:M .
+unit:Pennyweight qudt:isScalingOf unit:KiloGM .
+unit:PlanckArea qudt:isScalingOf unit:M2 .
+unit:PlanckCharge qudt:isScalingOf unit:A-SEC .
+unit:PlanckCurrent qudt:isScalingOf unit:A .
+unit:PlanckCurrentDensity qudt:isScalingOf unit:A-PER-M2 .
+unit:PlanckDensity qudt:isScalingOf unit:GM-PER-DeciM3 .
+unit:PlanckEnergy qudt:isScalingOf unit:J .
+unit:PlanckForce qudt:isScalingOf unit:N .
+unit:PlanckFrequency qudt:isScalingOf unit:BQ .
+unit:PlanckFrequency_Ang qudt:isScalingOf unit:BQ .
+unit:PlanckImpedance qudt:isScalingOf unit:OHM .
+unit:PlanckLength qudt:isScalingOf unit:M .
+unit:PlanckMass qudt:isScalingOf unit:KiloGM .
+unit:PlanckMomentum qudt:isScalingOf unit:KiloGM-M-PER-SEC .
+unit:PlanckPower qudt:isScalingOf unit:J-PER-SEC .
+unit:PlanckPressure qudt:isScalingOf unit:KiloGM-PER-M-SEC2 .
+unit:PlanckTemperature qudt:isScalingOf unit:DEG_C .
+unit:PlanckTime qudt:isScalingOf unit:SEC .
+unit:PlanckVolt qudt:isScalingOf unit:V .
+unit:PlanckVolume qudt:isScalingOf unit:M3 .
+unit:QT_US_DRY qudt:isScalingOf unit:M3 .
+unit:QUAD qudt:isScalingOf unit:J .
+unit:Quarter_UK qudt:isScalingOf unit:KiloGM .
+unit:RAD_R qudt:isScalingOf unit:M2-PER-SEC2 .
+unit:RAYL qudt:isScalingOf unit:KiloGM-PER-M2-SEC .
+unit:REM qudt:isScalingOf unit:M2-PER-SEC2 .
+unit:ROD qudt:isScalingOf unit:M .
+unit:RT qudt:isScalingOf unit:M3 .
+unit:SH qudt:isScalingOf unit:SEC .
+unit:STILB qudt:isScalingOf unit:CD-PER-M2 .
+unit:STR qudt:isScalingOf unit:M3 .
+unit:S_Ab qudt:isScalingOf unit:S-PER-M .
+unit:S_Stat qudt:isScalingOf unit:S-PER-M .
+unit:SolarMass qudt:isScalingOf unit:KiloGM .
+unit:Standard qudt:isScalingOf unit:M3 .
+unit:Stone_UK qudt:isScalingOf unit:KiloGM .
+unit:TBSP qudt:isScalingOf unit:M3 .
+unit:TEX qudt:isScalingOf unit:GM-PER-MilliM .
+unit:TOE qudt:isScalingOf unit:J .
+unit:TON_Assay qudt:isScalingOf unit:KiloGM .
+unit:TON_FG qudt:isScalingOf unit:J-PER-SEC .
+unit:TON_LONG qudt:isScalingOf unit:KiloGM .
+unit:TON_SHIPPING_US qudt:isScalingOf unit:M3 .
+unit:TON_SHORT qudt:isScalingOf unit:KiloGM .
+unit:TON_UK qudt:isScalingOf unit:KiloGM .
+unit:TON_US qudt:isScalingOf unit:KiloGM .
+unit:TSP qudt:isScalingOf unit:M3 .
+unit:T_Ab qudt:isScalingOf unit:T .
+unit:TonEnergy qudt:isScalingOf unit:J .
+unit:U qudt:isScalingOf unit:KiloGM .
+unit:V_Stat qudt:isScalingOf unit:V .
+unit:YR_Common qudt:isScalingOf unit:SEC .
+
+

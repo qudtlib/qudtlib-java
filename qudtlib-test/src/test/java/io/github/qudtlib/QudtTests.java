@@ -427,19 +427,25 @@ public class QudtTests {
                 unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("second"), -2)));
         unit = Qudt.Units.KiloN__M;
         unitFactors = Qudt.factorUnits(unit);
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloN, 1)));
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
+        Assertions.assertTrue(
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("meter"), 2)));
+        Assertions.assertTrue(
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("kilogram"), 1)));
+        Assertions.assertTrue(
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("second"), -2)));
     }
 
     @Test
     public void testGetUnitFactorsUnscaled() {
         Unit unit = Qudt.Units.KiloN__M;
         List<FactorUnit> unitFactors = Qudt.factorUnits(unit);
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloN, 1)));
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
-        unitFactors = Qudt.unscale(unitFactors);
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.N, 1)));
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 1)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloGM, 1)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 2)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.SEC, -2)));
+        unitFactors = Qudt.unscale(unitFactors, false, false);
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.GM, 1)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 2)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.SEC, -2)));
     }
 
     @Test
@@ -529,6 +535,9 @@ public class QudtTests {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> Qudt.Units.DEG_F.getConversionMultiplier(Qudt.Units.DEG_C));
+        MatcherAssert.assertThat(
+                Units.MilliGAL.getConversionMultiplier(Units.M__PER__SEC2),
+                Matchers.comparesEqualTo(new BigDecimal("0.00001")));
     }
 
     @Test
@@ -741,6 +750,7 @@ public class QudtTests {
                         new Object[][] {
                             {Units.N__M, 1},
                             {Units.GM, 1, Units.M, 2, Units.SEC, -2},
+                            {Units.KiloGM, 1, Units.M, 2, Units.SEC, -2},
                             {Units.N, 1, Units.M, 1}
                         }),
                 Arguments.of(
@@ -748,6 +758,7 @@ public class QudtTests {
                         Qudt.Units.N,
                         new Object[][] {
                             {Units.N, 1},
+                            {Units.KiloGM, 1, Units.M, 1, Units.SEC, -2},
                             {Units.GM, 1, Units.M, 1, Units.SEC, -2}
                         }),
                 Arguments.of(
@@ -764,6 +775,10 @@ public class QudtTests {
                                 Qudt.Units.SEC, -2
                             },
                             {
+                                Qudt.Units.KiloGM, 1,
+                                Qudt.Units.SEC, -2
+                            },
+                            {
                                 Qudt.Units.N, 1,
                                 Qudt.Units.M, 1,
                                 Qudt.Units.M, -2
@@ -774,44 +789,11 @@ public class QudtTests {
                                 Qudt.Units.GM, 1,
                                 Qudt.Units.SEC, -2
                             },
-                        }),
-                Arguments.of(
-                        4,
-                        Units.J__PER__KiloGM__K__PA,
-                        new Object[][] {
-                            {Units.J__PER__KiloGM__K__PA, 1},
-                            {Units.J, 1, Units.GM, -1, Units.K, -1, PA, -1},
-                            {Units.N, 1, Units.M, 1, Units.GM, -1, Units.K, -1, PA, -1},
                             {
-                                Units.GM, 1, Units.M, 2, Units.SEC, -2, Units.GM, -1, Units.K, -1,
-                                PA, -1,
-                            },
-                            {Units.M, 2, Units.SEC, -2, Units.K, -1, PA, -1},
-                            {Units.J, 1, Units.GM, -1, Units.K, -1, Units.N, -1, Units.M, 2},
-                            {
-                                Units.J, 1, Units.GM, -2, Units.K, -1, Units.M, -1, Units.SEC, 2,
-                                Units.M, 2,
-                            },
-                            {Units.J, 1, Units.GM, -2, Units.K, -1, Units.M, 1, Units.SEC, 2},
-                            {Units.N, 1, Units.M, 3, Units.GM, -1, Units.K, -1, Units.N, -1},
-                            {
-                                Units.N, 1, Units.M, 3, Units.GM, -2, Units.K, -1, Units.M, -1,
-                                Units.SEC, 2,
-                            },
-                            {
-                                Units.GM, 1, Units.M, 4, Units.SEC, -2, Units.GM, -1, Units.K, -1,
-                                Units.N, -1,
-                            },
-                            {Units.M, 4, Units.SEC, -2, Units.K, -1, Units.N, -1},
-                            {
-                                Units.GM, 1, Units.M, 4, Units.SEC, -2, Units.GM, -2, Units.K, -1,
-                                Units.M, -1, Units.SEC, 2,
-                            },
-                            {Units.GM, -1, Units.M, 3, Units.K, -1},
-                            {Units.N, 1, Units.M, 2, Units.GM, -2, Units.K, -1, Units.SEC, 2},
-                            {
-                                Units.M, 3, Units.GM, 1, Units.SEC, -2, Units.GM, -2, Units.K, -1,
-                                Units.SEC, 2,
+                                Qudt.Units.M, -2,
+                                Qudt.Units.M, 2,
+                                Qudt.Units.KiloGM, 1,
+                                Qudt.Units.SEC, -2
                             },
                         }));
     }

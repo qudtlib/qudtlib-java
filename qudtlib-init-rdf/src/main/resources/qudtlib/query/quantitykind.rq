@@ -12,6 +12,9 @@ SELECT DISTINCT * where
                 ?quantityKind rdfs:label ?label .
             }
             optional {
+                ?quantityKind qudt:deprecated ?deprecated
+            }
+            optional {
                 ?quantityKind qudt:applicableUnit ?applicableUnit
             }
             optional {
@@ -34,6 +37,9 @@ SELECT DISTINCT * where
                 ?quantityKind qudt:exactMatch ?exactMatch
                 optional {
                     ?exactMatch qudt:applicableUnit ?applicableUnit
+                }
+                optional {
+                    ?quantityKind qudt:deprecated ?deprecated
                 }
                 optional {
                     ?exactMatch qudt:hasDimensionVector ?dimensionVector

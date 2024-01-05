@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
 
 public interface Tool {
     Unit addDerivedUnit(
@@ -59,4 +61,8 @@ public interface Tool {
     List<FactorUnits> parseUcumCodeToFactorUnits(String ucumCode);
 
     List<QuantityKind> searchQuantityKinds(Predicate<QuantityKind> filter);
+
+    void writeOut(Model model, OutputStream out, Predicate<Statement> statementPredicate);
+
+    void writeOut(Model model, OutputStream out);
 }
