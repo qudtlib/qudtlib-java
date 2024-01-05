@@ -15,6 +15,10 @@ public class IndentedOutputStream extends OutputStream {
         this.indentString = indentString;
     }
 
+    public PrintStream printStream() {
+        return new PrintStream(this);
+    }
+
     public static OutputStream nullOutputStream() {
         return OutputStream.nullOutputStream();
     }
