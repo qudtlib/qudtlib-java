@@ -1,13 +1,15 @@
 package io.github.qudtlib;
 
 import static io.github.qudtlib.model.Units.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class FactorUnitsTests {
+
     @ParameterizedTest
     @MethodSource
     public void testNormalize(FactorUnits factorUnitsToNormalize, FactorUnits expectedResult) {
@@ -164,10 +167,37 @@ public class FactorUnitsTests {
 
     @ParameterizedTest
     @MethodSource
+    public void testGetConversionMultiplier(FactorUnits factorUnits, BigDecimal expectedResult) {
+        assertThat(
+                factorUnits.getConversionMultiplier(),
+                is(closeTo(expectedResult, new BigDecimal("0.00001"))));
+    }
+
+    public static Stream<Arguments> testGetConversionMultiplier() {
+        return Stream.of(
+                        M,
+                        M2,
+                        BAR,
+                        PER__BAR,
+                        N,
+                        N__M,
+                        J,
+                        J__PER__K,
+                        BTU_IT__FT__PER__FT2__HR__DEG_F,
+                        KiloCAL__PER__MOL,
+                        ATM__M3__PER__MOL,
+                        QT_UK__PER__DAY,
+                        QT_UK__PER__HR,
+                        CentiM6,
+                        MilliGAL)
+                .map(u -> Arguments.of(u.getFactorUnits(), u.getConversionMultiplier().get()));
+    }
+
+    @ParameterizedTest
+    @MethodSource
     public void testConversionFactor(
             FactorUnits factorUnits, Unit toUnit, BigDecimal expectedResult) {
-        MatcherAssert.assertThat(
-                factorUnits.conversionFactor(toUnit), Matchers.comparesEqualTo(expectedResult));
+        assertThat(factorUnits.conversionFactor(toUnit), Matchers.comparesEqualTo(expectedResult));
     }
 
     public static Stream<Arguments> testConversionFactor() {
@@ -183,7 +213,8 @@ public class FactorUnitsTests {
                 Arguments.of(
                         FactorUnits.ofFactorUnitSpec(GM, 1, Units.DAY, -1),
                         Units.KiloGM__PER__SEC,
-                        new BigDecimal("0.00000001157407407407407407407407407407407")));
+                        new BigDecimal("0.00000001157407407407407407407407407407407")),
+                Arguments.of(MilliGAL.getFactorUnits(), M__PER__SEC2, new BigDecimal("0.00001")));
     }
 
     @ParameterizedTest

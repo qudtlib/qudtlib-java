@@ -30,6 +30,9 @@ public class BigDec {
                 left.abs(MathContext.DECIMAL128)
                         .subtract(right.abs(MathContext.DECIMAL128))
                         .abs(MathContext.DECIMAL128);
+        if (BigDecimal.ZERO.compareTo(mean) == 0) {
+            return diff.abs(MathContext.DECIMAL128);
+        }
         return diff.divide(mean, MathContext.DECIMAL128).abs();
     }
 

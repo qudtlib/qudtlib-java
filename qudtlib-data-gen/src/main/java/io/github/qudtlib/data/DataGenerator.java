@@ -45,6 +45,8 @@ public class DataGenerator {
     private static final String IS_SCALING_OF_QUERY = "isScalingOf.rq";
     private static final String MISSING_UNITS_QUERY = "missing-units.rq";
     private static final String REMOVE_KILOGM_SCALINGS_QUERY = "remove-kiloGM-scalings.rq";
+
+    private static final String REMOVE_FROM_UNITS_BY_QUERY = "remove-from-units-by-query.rq";
     // additional data
     private static final String SI_BASE_UNITS_DATA = "si-base-units.ttl";
     private static final String TRIPLES_TO_ADD_TO_UNITS = "triples-to-add-to-units.ttl";
@@ -142,6 +144,8 @@ public class DataGenerator {
                 RdfOps.addStatementsFromFile(inputCon, CURRENCIES_FILE);
                 // deal with kg
                 RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
+                // if we have identified wrong data in this query, remove it
+                RdfOps.updateDataUsingQuery(inputCon, REMOVE_FROM_UNITS_BY_QUERY);
                 // remove unwanted individual triples
                 RdfOps.removeStatementsFromFile(inputCon, TRIPLES_TO_DELETE_FROM_UNITS);
                 // add missing triples
@@ -152,13 +156,13 @@ public class DataGenerator {
                 RdfOps.copyData(inputCon, outputCon);
                 // add prefixes to INPUT repo (cannot be in output, but is required for queries!)
                 RdfOps.addStatementsFromFile(inputCon, PREFIXES_FILE);
-                // find factor units, write result in INPUT and OUTPUT repos
-                RdfOps.addDataUsingQuery(inputCon, FACTOR_UNITS_QUERY, inputCon, outputCon);
                 // find isScalingOf where missing, write result in INPUT and OUTPUT repos
                 if (DEBUG) {
                     RdfOps.writeTurtleFile(inputCon, new File("/tmp/scaling-data.ttl").toPath());
                 }
                 RdfOps.addDataUsingQuery(inputCon, IS_SCALING_OF_QUERY, inputCon, outputCon);
+                // find factor units, write result in INPUT and OUTPUT repos
+                RdfOps.addDataUsingQuery(inputCon, FACTOR_UNITS_QUERY, inputCon, outputCon);
                 // we generate some units in the above, add basic unit info for those, write to
                 // INPUT and OUTPUT repos
                 RdfOps.addDataUsingQuery(inputCon, MISSING_UNITS_QUERY, inputCon, outputCon);

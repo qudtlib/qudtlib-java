@@ -273,8 +273,28 @@ public class Unit extends SelfSmuggler {
         this.quantityKinds = buildSet(definition.quantityKinds);
         this.unitOfSystems = buildSet(definition.systemsOfUnits);
         FactorUnits fu = definition.factorUnits.build();
+        if (definition.scalingOf != null && fu.hasFactorUnits()) {
+            BigDecimal multiplier =
+                    this.prefix == null
+                            ? definition.conversionMultiplier
+                            : this.prefix.getMultiplier();
+            FactorUnits fuForSclaingOf =
+                    FactorUnits.ofFactorUnitSpec(multiplier, this.scalingOf, 1);
+            if (!fu.equals(fuForSclaingOf)) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Unit %s has conflicting definition of factor units (%s) and scalingOf (%s, which implies factor units %s)",
+                                this.iri, fu.toString(), this.scalingOf, fuForSclaingOf));
+            }
+        }
         if (fu.hasFactorUnits()) {
             this.factorUnits = fu;
+        } else if (this.scalingOf != null) {
+            BigDecimal multiplier =
+                    this.prefix == null
+                            ? definition.conversionMultiplier
+                            : this.prefix.getMultiplier();
+            this.factorUnits = FactorUnits.ofFactorUnitSpec(multiplier, this.scalingOf, 1);
         } else {
             this.factorUnits = FactorUnits.ofUnit(this);
         }
