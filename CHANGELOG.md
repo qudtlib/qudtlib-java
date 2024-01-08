@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `unit:MHO`: fix dimension vector and quantity kind of
+- `unit:MHO`, `unit:MicroMHO`: fix dimension vector and quantity kind
 - `unit:F`: fix `unit:isScalingOf`
 
 ## [6.1.0] - 2024-01-05

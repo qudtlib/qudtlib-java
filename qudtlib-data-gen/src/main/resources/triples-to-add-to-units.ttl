@@ -16,6 +16,11 @@ unit:MHO
   qudt:hasQuantityKind qk:Admittance ;
   qudt:hasQuantityKind qk:Conductance .
 
+unit:MicroMHO
+  qudt:hasDimensionVector qkdv:A0E2L-2I0M-1H0T3D0 ;
+  qudt:hasQuantityKind qk:Admittance ;
+  qudt:hasQuantityKind qk:Conductance .
+
 ## PR https://github.com/qudt/qudt-public-repo/pull/844
 
 
