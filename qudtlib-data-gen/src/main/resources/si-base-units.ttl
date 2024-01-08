@@ -527,14 +527,6 @@ unit:DPI
         qudt:exponent -1
     ].
 
-unit:F
-  qudt:factorUnitScalar 96485.3321233100184 ;
-  qudt:factorUnit [ qudt:exponent 1 ;
-                    qudt:unit unit:C ] ;
-  qudt:factorUnit [ qudt:exponent -1 ;
-                    qudt:unit unit:MOL ] .
-
-
 
 unit:AMU qudt:isScalingOf unit:KiloGM .
 unit:A_Stat qudt:isScalingOf unit:A .
@@ -564,6 +556,7 @@ unit:Debye qudt:isScalingOf unit:C-M .
 unit:Denier qudt:isScalingOf unit:GM-PER-MilliM .
 unit:E qudt:isScalingOf unit:A-SEC .
 unit:EarthMass qudt:isScalingOf unit:KiloGM .
+unit:F qudt:isScalingOf unit:C .
 unit:FARAD_Stat qudt:isScalingOf unit:FARAD .
 unit:FATH qudt:isScalingOf unit:M .
 unit:FBM qudt:isScalingOf unit:M3 .
