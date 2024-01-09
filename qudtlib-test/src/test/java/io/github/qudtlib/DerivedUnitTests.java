@@ -1,5 +1,6 @@
 package io.github.qudtlib;
 
+import static io.github.qudtlib.model.Units.W;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.qudtlib.model.*;
@@ -109,7 +110,7 @@ public class DerivedUnitTests {
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.BEST_MATCH, Qudt.Units.N, 1, Qudt.Units.M, 1);
         assertEquals(1, units.size());
-        assertTrue(units.contains(Qudt.Units.N__M));
+        assertEquals(Qudt.Units.J, units.stream().findFirst().get());
     }
 
     @Test
@@ -130,12 +131,17 @@ public class DerivedUnitTests {
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.BEST_MATCH, "KiloGM", 1, "M", -3);
         assertEquals(1, units.size());
-        assertTrue(units.contains(Qudt.Units.KiloGM__PER__M3));
+        assertEquals(Qudt.Units.KiloGM__PER__M3, units.stream().findFirst().get());
         units =
                 Qudt.derivedUnitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.BEST_MATCH, "KiloN", 1, "MilliM", 1);
         assertEquals(1, units.size());
-        assertTrue(units.contains(Qudt.Units.N__M));
+        assertEquals(Qudt.Units.J, units.stream().findFirst().get());
+        units =
+                Qudt.derivedUnitsFromUnitExponentPairs(
+                        DerivedUnitSearchMode.BEST_MATCH, "KiloGM", 1, "M", 1, "SEC", -2, "M", -1);
+        assertEquals(1, units.size());
+        assertEquals(Qudt.Units.N__PER__M, units.stream().findFirst().get());
     }
 
     @Test
@@ -419,7 +425,7 @@ public class DerivedUnitTests {
         assertEquals(2, simplified.size());
         Set<Unit> units =
                 Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, simplified);
-        assertTrue(units.contains(Qudt.Units.N__PER__M2));
+        assertEquals(Qudt.Units.PA, units.stream().findFirst().get());
     }
 
     @Test
@@ -439,11 +445,11 @@ public class DerivedUnitTests {
         Set<Unit> units =
                 Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, wattFactors);
         assertEquals(1, units.size());
-        assertTrue(units.contains(Qudt.Units.J__PER__SEC));
-        wattFactors = FactorUnits.ofUnit(Qudt.Units.W).getFactorUnits();
+        assertEquals(Qudt.Units.W, units.stream().findFirst().get());
+        wattFactors = FactorUnits.ofUnit(W).getFactorUnits();
         units = Qudt.derivedUnitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, wattFactors);
         assertEquals(1, units.size());
-        assertTrue(units.contains(Qudt.Units.W));
+        assertEquals(W, units.stream().findFirst().get());
     }
 
     @ParameterizedTest
@@ -508,12 +514,12 @@ public class DerivedUnitTests {
                             Qudt.Units.M,
                             -2
                         },
-                        new Unit[] {Units.N__M__PER__M2}),
+                        new Unit[] {Units.N__PER__M}),
                 Arguments.of(
                         1,
                         DerivedUnitSearchMode.BEST_MATCH,
                         new Object[] {Qudt.Units.KiloN, 1, Qudt.Units.MilliM, 1},
-                        new Unit[] {Units.N__M}),
+                        new Unit[] {Units.J}),
                 Arguments.of(
                         1,
                         DerivedUnitSearchMode.BEST_MATCH,

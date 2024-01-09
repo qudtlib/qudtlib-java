@@ -97,18 +97,6 @@ public class FactorUnit {
                 .collect(toList());
     }
 
-    public static FactorUnits normalizeFactorUnits(List<FactorUnit> factorUnits) {
-        FactorUnits ret =
-                factorUnits.stream()
-                        .map(fu -> fu.normalize())
-                        .reduce((prev, cur) -> cur.combineWith(prev))
-                        .get();
-        if (ret.isRatioOfSameUnits()) {
-            return ret;
-        }
-        return ret.reduceExponents();
-    }
-
     public static FactorUnit ofUnit(Unit unit) {
         return FactorUnit.builder().unit(unit).exponent(1).build();
     }
@@ -255,7 +243,7 @@ public class FactorUnit {
     }
 
     public FactorUnits normalize() {
-        return this.unit.normalize().pow(this.exponent);
+        return this.unit.getFactorUnits();
     }
 
     public FactorUnit pow(int exponent) {

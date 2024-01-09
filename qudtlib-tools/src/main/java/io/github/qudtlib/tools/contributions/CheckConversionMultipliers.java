@@ -179,7 +179,7 @@ public class CheckConversionMultipliers {
             if (!incorrectBases.isEmpty()) {
                 output.println("incorrect bases " + unitCollectionToString(incorrectBases));
             }
-            Optional<Unit> bestBaseOpt = findBestBase(bases);
+            Optional<Unit> bestBaseOpt = findBestBase(correctBases);
             if (bestBaseOpt.isPresent()) {
                 output.println("best base unit: " + bestBaseOpt.get().getIriAbbreviated());
             }
