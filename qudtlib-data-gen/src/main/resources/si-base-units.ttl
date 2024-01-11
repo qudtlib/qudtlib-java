@@ -593,6 +593,7 @@ unit:MIL_Circ qudt:isScalingOf unit:M2 .
 unit:MI_US qudt:isScalingOf unit:M .
 unit:MOL_LB qudt:isScalingOf unit:MOL .
 unit:MilLength qudt:isScalingOf unit:M .
+unit:MilliR_man qudt:isScalingOf unit:SV ;
 unit:OERSTED qudt:isScalingOf unit:A-PER-M .
 unit:OHM_Ab qudt:isScalingOf unit:OHM .
 unit:OHM_Stat qudt:isScalingOf unit:OHM .

@@ -26,8 +26,7 @@ unit:MicroMHO
 
 # random correction
 unit:MilliR_man
-    qudt:isScalingOf unit:SV ;
-    qudt:conversionMultiplier 0.0001 .
+    qudt:conversionMultiplier 0.0001 ;
     qudt:prefix prefix:Milli .
 
 unit:MilliGAL qudt:prefix prefix:Milli .
