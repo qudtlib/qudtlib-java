@@ -35,7 +35,6 @@ VALUES  ?u {
 <http://qudt.org/vocab/unit/KiloMOL-PER-MIN>
 <http://qudt.org/vocab/unit/KiloN-M-PER-DEG-M>
 <http://qudt.org/vocab/unit/KiloPA-PER-MilliM>
-<http://qudt.org/vocab/unit/KiloR>
 <http://qudt.org/vocab/unit/KiloYR>
 <http://qudt.org/vocab/unit/LA>
 <http://qudt.org/vocab/unit/LB-PER-GAL_US>
@@ -49,7 +48,6 @@ VALUES  ?u {
 <http://qudt.org/vocab/unit/MilliGAL-PER-MO>
 <http://qudt.org/vocab/unit/MilliGM-PER-MilliL>
 <http://qudt.org/vocab/unit/MilliM-PER-YR>
-<http://qudt.org/vocab/unit/MilliR>
 <http://qudt.org/vocab/unit/MilliRAD_R-PER-HR>
 <http://qudt.org/vocab/unit/MilliR_man>
 <http://qudt.org/vocab/unit/N-M-PER-DEG-M>
@@ -69,7 +67,6 @@ VALUES  ?u {
 <http://qudt.org/vocab/unit/PERCENT-PER-HR>
 <http://qudt.org/vocab/unit/PERCENT-PER-M>
 <http://qudt.org/vocab/unit/PERCENT-PER-WK>
-<http://qudt.org/vocab/unit/R>
 <http://qudt.org/vocab/unit/RAD-PER-HR>
 <http://qudt.org/vocab/unit/RAD-PER-MIN>
 <http://qudt.org/vocab/unit/SHANNON-PER-SEC>

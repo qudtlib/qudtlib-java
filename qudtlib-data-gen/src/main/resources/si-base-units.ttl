@@ -178,8 +178,9 @@ unit:DEG qudt:isScalingOf unit:RAD .
 
 
 unit:R
+    qudt:factorUnitScalar 0.000258 ;
     qudt:factorUnit [
-        qudt:unit unit:C_Stat ;
+        qudt:unit unit:C ;
         qudt:exponent 1
     ] ;
     qudt:factorUnit [
@@ -527,17 +528,10 @@ unit:DPI
         qudt:exponent -1
     ].
 
-unit:F
-  qudt:factorUnitScalar 96485.3321233100184 ;
-  qudt:factorUnit [ qudt:exponent 1 ;
-                    qudt:unit unit:C ] ;
-  qudt:factorUnit [ qudt:exponent -1 ;
-                    qudt:unit unit:MOL ] .
-
-
 
 unit:AMU qudt:isScalingOf unit:KiloGM .
 unit:A_Stat qudt:isScalingOf unit:A .
+unit:AT qudt:isScalingOf unit:A .
 unit:BARN qudt:isScalingOf unit:M2 .
 unit:BBL_UK_PET qudt:isScalingOf unit:M3 .
 unit:BBL_US qudt:isScalingOf unit:M3 .
@@ -555,6 +549,7 @@ unit:CWT_LONG qudt:isScalingOf unit:KiloGM .
 unit:CWT_SHORT qudt:isScalingOf unit:KiloGM .
 unit:C_Ab qudt:isScalingOf unit:A-SEC .
 unit:Ci qudt:isScalingOf unit:BQ .
+unit:CP qudt:isScalingOf unit:CD .
 unit:DARCY qudt:isScalingOf unit:M2 .
 unit:DRAM_UK qudt:isScalingOf unit:KiloGM .
 unit:DRAM_US qudt:isScalingOf unit:KiloGM .
@@ -564,6 +559,7 @@ unit:Debye qudt:isScalingOf unit:C-M .
 unit:Denier qudt:isScalingOf unit:GM-PER-MilliM .
 unit:E qudt:isScalingOf unit:A-SEC .
 unit:EarthMass qudt:isScalingOf unit:KiloGM .
+unit:F qudt:isScalingOf unit:C .
 unit:FARAD_Stat qudt:isScalingOf unit:FARAD .
 unit:FATH qudt:isScalingOf unit:M .
 unit:FBM qudt:isScalingOf unit:M3 .
@@ -597,6 +593,7 @@ unit:MIL_Circ qudt:isScalingOf unit:M2 .
 unit:MI_US qudt:isScalingOf unit:M .
 unit:MOL_LB qudt:isScalingOf unit:MOL .
 unit:MilLength qudt:isScalingOf unit:M .
+unit:MilliR_man qudt:isScalingOf unit:SV ;
 unit:OERSTED qudt:isScalingOf unit:A-PER-M .
 unit:OHM_Ab qudt:isScalingOf unit:OHM .
 unit:OHM_Stat qudt:isScalingOf unit:OHM .

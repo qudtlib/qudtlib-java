@@ -3,7 +3,6 @@ package io.github.qudtlib;
 import static java.util.stream.Collectors.toList;
 
 import com.java2s.Log10BigDecimal;
-import io.github.qudtlib.algorithm.AssignmentProblem;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.exception.NotFoundException;
 import io.github.qudtlib.init.Initializer;
@@ -418,6 +417,7 @@ public class Qudt {
      */
     private static Set<Unit> derivedUnitsFromFactorUnits(
             DerivedUnitSearchMode searchMode, FactorUnits selection) {
+
         List<Unit> matchingUnits =
                 units.values().stream()
                         .filter(d -> d.matches(selection))
@@ -425,14 +425,9 @@ public class Qudt {
         if (searchMode == DerivedUnitSearchMode.ALL || matchingUnits.size() < 2) {
             return new HashSet<>(matchingUnits);
         }
-        Map<Unit, Double> scores = new HashMap<>();
-        for (Unit unit : matchingUnits) {
-            scores.put(unit, matchScore(unit, selection));
-        }
-        return Set.of(
-                matchingUnits.stream()
-                        .max((l, r) -> (int) Math.signum(scores.get(l) - scores.get(r)))
-                        .get());
+
+        return matchingUnits.stream().min(bestMatchForFactorUnitsComparator(selection)).stream()
+                .collect(Collectors.toSet());
     }
 
     public static List<Unit> unitsWithSameFractionalDimensionVector(Unit unit) {
@@ -450,129 +445,72 @@ public class Qudt {
                 .collect(Collectors.toList());
     }
 
-    private static Double matchScore(Unit unit, FactorUnits requested) {
-        List<List<FactorUnit>> unitFactors = unit.getAllPossibleFactorUnitCombinations();
-        List<List<FactorUnit>> requestedFactors =
-                FactorUnit.getAllPossibleFactorUnitCombinations(requested.getFactorUnits());
-        List<List<FactorUnit>> smaller =
-                unitFactors.size() > requestedFactors.size() ? requestedFactors : unitFactors;
-        List<List<FactorUnit>> larger =
-                unitFactors.size() > requestedFactors.size() ? unitFactors : requestedFactors;
-        double[][] unitSimilarityMatrix = getUnitSimilarityMatrix(smaller, larger);
-        double overlapScore = 0;
-        if (unitSimilarityMatrix.length > 0) {
-            overlapScore = getOverlapScore(unitSimilarityMatrix);
-        }
-        String unitLocalName = getIriLocalName(unit.getIri());
-        int tieBreaker =
-                requested.getFactorUnits().stream()
-                        .reduce(
-                                0,
-                                (prev, cur) ->
-                                        prev
-                                                + (unitLocalName.matches(
-                                                                        ".*\\b"
-                                                                                + getIriLocalName(
-                                                                                        cur.getUnit()
-                                                                                                .getIri())
-                                                                                + "\\b.*")
-                                                                || unitLocalName.matches(
-                                                                        ".*\\b"
-                                                                                + (getIriLocalName(
-                                                                                                cur.getUnit()
-                                                                                                        .getIri())
-                                                                                        + Math.abs(
-                                                                                                cur
-                                                                                                        .getExponent()))
-                                                                                + "\\b.*")
-                                                        ? 1
-                                                        : 0),
-                                (l, r) -> l + r);
-        return overlapScore
-                + tieBreaker / Math.pow(unitFactors.size() + requestedFactors.size() + 1, 2);
-    }
+    private static Comparator<Unit> bestMatchForFactorUnitsComparator(
+            FactorUnits requestedFactorUnits) {
 
-    private static double getOverlapScore(double[][] mat) {
-        int numAssignments = mat.length;
-        int rowsPlusCols = mat.length + mat[0].length;
-        double minAssignmentScore = AssignmentProblem.instance(mat).solve().getWeight();
-        double overlap =
-                (double) numAssignments * (1 - (minAssignmentScore / (double) numAssignments));
-        return overlap / ((double) rowsPlusCols - overlap);
-    }
+        FactorUnits reqNorm = requestedFactorUnits.normalize();
+        FactorUnits reqNum = requestedFactorUnits.numerator();
+        FactorUnits reqNumNorm = reqNum.normalize();
+        FactorUnits reqDen = requestedFactorUnits.denominator();
+        FactorUnits reqDenNorm = reqDen.normalize();
+        List<String> reqLocalNamePossibilities =
+                requestedFactorUnits.generateAllLocalnamePossibilities();
+        return new Comparator<Unit>() {
+            @Override
+            public int compare(Unit left, Unit right) {
+                if (!left.getIriLocalname().contains("-")) {
+                    if (right.getIriLocalname().contains("-")) {
+                        return -1; // prefer a derived unit with a new name (such as W, J, N etc.)
+                    }
+                } else if (!right.getIriLocalname().contains("-")) {
+                    return 1;
+                }
 
-    static double[][] getUnitSimilarityMatrix(
-            List<List<FactorUnit>> rows, List<List<FactorUnit>> cols) {
-        return rows.stream()
-                .map(
-                        rowCombination ->
-                                cols.stream()
-                                        .map(
-                                                colCombination ->
-                                                        scoreCombinations(
-                                                                rowCombination, colCombination))
-                                        .mapToDouble(d -> d)
-                                        .toArray())
-                .collect(toList())
-                .toArray(new double[0][0]);
-    }
+                FactorUnits leftDen = left.getFactorUnits().denominator();
+                FactorUnits rightDen = right.getFactorUnits().denominator();
+                int leftFactorsDenCnt = leftDen.expand().size();
+                int rightFactorsDenCnt = rightDen.expand().size();
+                int reqFactorsDenCnt = reqDen.expand().size();
+                int diffFactorsCountDen =
+                        Math.abs(reqFactorsDenCnt - leftFactorsDenCnt)
+                                - Math.abs(reqFactorsDenCnt - rightFactorsDenCnt);
+                if (diffFactorsCountDen != 0) {
+                    return diffFactorsCountDen;
+                }
 
-    private static double scoreCombinations(
-            List<FactorUnit> leftFactors, List<FactorUnit> rightFactors) {
-        List<FactorUnit> smaller =
-                leftFactors.size() > rightFactors.size() ? rightFactors : leftFactors;
-        List<FactorUnit> larger =
-                leftFactors.size() > rightFactors.size() ? leftFactors : rightFactors;
-        double[][] similarityMatrix =
-                smaller.stream()
-                        .map(
-                                sFactor ->
-                                        larger.stream()
-                                                .map(
-                                                        lFactor -> {
-                                                            if (sFactor.equals(lFactor)) {
-                                                                return 0.0;
-                                                            }
-                                                            Unit reqScaledOrSelf =
-                                                                    sFactor.getUnit()
-                                                                            .getScalingOf()
-                                                                            .orElse(
-                                                                                    sFactor
-                                                                                            .getUnit());
-                                                            Unit unitScaledOrSelf =
-                                                                    lFactor.getUnit()
-                                                                            .getScalingOf()
-                                                                            .orElse(
-                                                                                    lFactor
-                                                                                            .getUnit());
-                                                            if (reqScaledOrSelf.equals(
-                                                                            unitScaledOrSelf)
-                                                                    && sFactor.getExponent()
-                                                                            == lFactor
-                                                                                    .getExponent()) {
-                                                                return 0.6;
-                                                            }
-                                                            if (sFactor.getUnit()
-                                                                    .equals(lFactor.getUnit())) {
-                                                                return 0.8;
-                                                            }
-                                                            if (reqScaledOrSelf.equals(
-                                                                    unitScaledOrSelf)) {
-                                                                return 0.9;
-                                                            }
-                                                            return 1.0;
-                                                        })
-                                                .mapToDouble(d -> d)
-                                                .toArray())
-                        .collect(toList())
-                        .toArray(new double[0][0]);
-        if (similarityMatrix.length == 0) {
-            return 1;
-        } else {
-            // matrix values are between 0 and 1.
-            // assignment is between 0 and (min(rows,cols))
-            return 1 - getOverlapScore(similarityMatrix);
-        }
+                FactorUnits leftNum = left.getFactorUnits().numerator();
+                FactorUnits rightNum = right.getFactorUnits().denominator();
+                int leftFactorsNumCnt = leftNum.expand().size();
+                int rightFactorsNumCnt = rightNum.expand().size();
+                int reqFactorsNumCnt = reqNum.expand().size();
+                int diffFactorsCountNum =
+                        Math.abs(reqFactorsNumCnt - leftFactorsNumCnt)
+                                - Math.abs(reqFactorsNumCnt - rightFactorsNumCnt);
+                if (diffFactorsCountNum != 0) {
+                    return diffFactorsCountNum;
+                }
+                int leftCnt = left.getFactorUnits().expand().size();
+                int rightCnt = right.getFactorUnits().expand().size();
+                int reqCnt = requestedFactorUnits.expand().size();
+                if (leftCnt == reqCnt) {
+                    if (rightCnt != reqCnt) {
+                        return -1;
+                    }
+                } else {
+                    if (rightCnt == reqCnt) {
+                        return 1;
+                    }
+                }
+                if (reqLocalNamePossibilities.contains(left.getIriLocalname())) {
+                    if (!reqLocalNamePossibilities.contains(right.getIriLocalname())) {
+                        return -1;
+                    }
+                } else if (reqLocalNamePossibilities.contains(right.getIriLocalname())) {
+                    return 1;
+                }
+                return left.getIriLocalname().compareTo(right.getIriLocalname());
+            }
+        };
     }
 
     private static String getIriLocalName(String iri) {

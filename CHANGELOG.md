@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Simplified BEST_MATCH algorithm for obtaining a unit from a set of factor units. Recent additions to the data model (isScalingOf and factorUnit relationships) led to a larger set of candidates and the complexity of the previous algorithm led to very high computation time.
+- Changed the behaviour of Unit.hasFactorUnits() such that for a FactorUnits object with only one top-level factor unit (such as [N^1]), the method returns false.
+
+### Fixed
+
+- `unit:MHO`, `unit:MicroMHO`: fix dimension vector and quantity kind
+- `unit:F`: fix `unit:isScalingOf`
+
 ## [6.1.0] - 2024-01-05
 
 ### Added

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FactorUnits {
+    private static final FactorUnits EMPTY_FACTOR_UNITS = new FactorUnits(new ArrayList<>());
     private final List<FactorUnit> factorUnits;
     private final BigDecimal scaleFactor;
 
@@ -23,6 +24,10 @@ public class FactorUnits {
 
     public FactorUnits(List<FactorUnit> factorUnits) {
         this(factorUnits, new BigDecimal("1"));
+    }
+
+    public FactorUnits(FactorUnit factorUnit) {
+        this(List.of(factorUnit), new BigDecimal("1"));
     }
 
     public FactorUnits(FactorUnits other) {
@@ -45,12 +50,20 @@ public class FactorUnits {
         return builder;
     }
 
+    public static FactorUnits empty() {
+        return EMPTY_FACTOR_UNITS;
+    }
+
     public boolean hasFactorUnits() {
         if (this.factorUnits == null) {
             return false;
         }
         if (this.factorUnits.isEmpty()) {
             return false;
+        }
+        if (this.factorUnits.size() == 1
+                && this.factorUnits.get(0).getUnit().getFactorUnits() != this) {
+            return true;
         }
         if (this.factorUnits.size() == 1
                 && this.factorUnits.get(0).getExponent() == 1
@@ -66,6 +79,10 @@ public class FactorUnits {
         }
         if (factorUnits.isEmpty()) {
             return false;
+        }
+        if (factorUnits.size() == 1
+                && factorUnits.get(0).getUnit().getFactorUnits() != factorUnits) {
+            return true;
         }
         if (factorUnits.size() == 1 && factorUnits.get(0).getExponent() == 1) {
             return false;
@@ -226,10 +243,18 @@ public class FactorUnits {
     }
 
     public FactorUnits normalize() {
-        FactorUnits normalized = FactorUnit.normalizeFactorUnits(this.factorUnits);
-        return new FactorUnits(
-                normalized.getFactorUnits(),
-                normalized.getScaleFactor().multiply(this.scaleFactor));
+        FactorUnits normalized = FactorUnits.empty();
+        if (this.hasFactorUnits()) {
+            normalized =
+                    this.factorUnits.stream()
+                            .map(fu -> fu.getUnit().normalize().pow(fu.getExponent()))
+                            .reduce((prev, cur) -> prev.combineWith(cur))
+                            .get();
+        }
+        if (!normalized.isRatioOfSameUnits()) {
+            normalized = normalized.reduceExponents();
+        }
+        return normalized.scale(this.scaleFactor);
     }
 
     public String getDimensionVectorIri() {
@@ -254,14 +279,44 @@ public class FactorUnits {
         return dv.getDimensionVectorIri();
     }
 
+    public List<FactorUnit> expand() {
+        return streamExpandFactors(this).collect(toList());
+    }
+
+    public static Stream<FactorUnit> streamExpandFactors(FactorUnits factorUnits) {
+        if (!factorUnits.hasFactorUnits()) {
+            return factorUnits.getFactorUnits().stream();
+        }
+        return factorUnits.getFactorUnits().stream()
+                .flatMap(fu -> streamExpandFactors(fu.getUnit().getFactorUnits()));
+    }
+
+    /**
+     * Returns a FactorUnits object containing the scaleFactor and the factors in the numerator of
+     * this FactorUnits object. Note that any derived units in the numerator are returned without
+     * recursive decomposition. For example, for `5.0 * M2-PER-N` a FactorUnit object representing
+     * `N` is returned.
+     *
+     * @return a FactorUnits object representing the scaleFactor and the numerator units of this
+     *     unit.
+     */
     public FactorUnits numerator() {
-        return new FactorUnits(numeratorFactors().collect(toList()));
+        return new FactorUnits(numeratorFactors().collect(toList()), this.scaleFactor);
     }
 
     private Stream<FactorUnit> numeratorFactors() {
         return this.factorUnits.stream().filter(fu -> fu.exponent > 0);
     }
 
+    /**
+     * Returns a FactorUnits object containing the factors in the denominator of this FactorUnits
+     * object. Note that any derived units in the denominator are returned without recursive
+     * decomposition. For example, for `5.0 * ` a FactorUnit object representing `5.0 * N` is
+     * returned.
+     *
+     * @return a FactorUnits object representing the scaleFactor and the numerator units of this
+     *     unit.
+     */
     public FactorUnits denominator() {
         return new FactorUnits(denominatorFactors().collect(toList()));
     }
@@ -294,6 +349,23 @@ public class FactorUnits {
                 other.hasFactorUnits()
                         ? new FactorUnits(other.getFactorUnits())
                         : FactorUnits.ofUnit(other);
+        return conversionFactorInternal(otherFactorUnits);
+    }
+
+    public BigDecimal conversionFactor(FactorUnits otherFactorUnits) {
+        if (!otherFactorUnits.getDimensionVectorIri().equals(this.getDimensionVectorIri())) {
+            throw new InconvertibleQuantitiesException(
+                    String.format(
+                            "Cannot convert from %s to %s: dimension vectors differ (%s vs %s)",
+                            this.toString(),
+                            otherFactorUnits.toString(),
+                            this.getDimensionVectorIri(),
+                            otherFactorUnits.getDimensionVectorIri()));
+        }
+        return conversionFactorInternal(otherFactorUnits);
+    }
+
+    private BigDecimal conversionFactorInternal(FactorUnits otherFactorUnits) {
         FactorUnits myFactors = this.normalize();
         FactorUnits otherFactors = otherFactorUnits.normalize();
         List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.getFactorUnits());
@@ -301,7 +373,6 @@ public class FactorUnits {
         FactorUnit processed = null;
         BigDecimal factor =
                 myFactors.scaleFactor.divide(otherFactors.scaleFactor, MathContext.DECIMAL128);
-
         for (FactorUnit myFactor : myFactorUnitList) {
             for (FactorUnit otherFactor : otherFactorUnitList) {
                 if (myFactor.unit.isConvertible(otherFactor.unit)
