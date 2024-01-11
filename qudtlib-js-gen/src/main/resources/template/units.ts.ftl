@@ -8,6 +8,7 @@ import {
   QuantityKind,
   Prefix,
   LangString,
+  FactorUnits,
   FactorUnit,
   SystemOfUnits,
   Qudt,
@@ -204,12 +205,15 @@ for (const unit of config.units.values()){
 {
   let unit:Unit;
 <#list units as iri, unit>
-    <#if unit.hasFactorUnits()>
   unit = getUnit("${iri}");
+  unit.setFactorUnits(
+      new FactorUnits([
         <#list unit.factorUnits.factorUnits as factorUnit>
-  unit.addFactorUnit(new FactorUnit(getUnit("${factorUnit.unit.iri}"), ${factorUnit.exponent}));
+          new FactorUnit(getUnit("${factorUnit.unit.iri}"), ${factorUnit.exponent}),
         </#list>
-    </#if>
+        ],
+        ${bigDec(unit.factorUnits.scaleFactor)},
+      ));
 </#list>
 }
 
