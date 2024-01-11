@@ -242,10 +242,6 @@ public class FactorUnit {
         return FactorUnit.builder().unit(unit).exponent(this.exponent * by).build();
     }
 
-    public FactorUnits normalize() {
-        return this.unit.getFactorUnits();
-    }
-
     public FactorUnit pow(int exponent) {
         return new FactorUnit(this.unit, this.exponent * exponent);
     }
