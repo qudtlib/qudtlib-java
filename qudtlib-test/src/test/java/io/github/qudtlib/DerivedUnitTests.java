@@ -1,5 +1,6 @@
 package io.github.qudtlib;
 
+import static io.github.qudtlib.model.Units.SR;
 import static io.github.qudtlib.model.Units.W;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -315,6 +316,16 @@ public class DerivedUnitTests {
                     Qudt.Units.M, -2, Qudt.Units.SEC, -2, Qudt.Units.KiloGM, 1, Qudt.Units.M, 1
                 };
         assertTrue(Qudt.Units.N__PER__M2.matches(factors));
+    }
+
+    @Test
+    public void test_withAndWithoutRatioOfSameUnits() {
+        Object[] factors =
+                        new Object[] {Qudt.Units.M, 2, SR, 1};
+        assertTrue(Qudt.Units.M2.matches(factors));
+        factors =
+                        new Object[] { Qudt.Units.M,2 };
+        assertTrue(Qudt.Units.M2__SR.matches(factors));
     }
 
     @Test
