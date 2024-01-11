@@ -247,24 +247,14 @@ public class FactorUnits {
         if (this.hasFactorUnits()) {
             normalized =
                     this.factorUnits.stream()
-                            .map(
-                                    fu -> {
-                                        FactorUnits sub = fu.getUnit().getFactorUnits();
-                                        if (sub.hasFactorUnits()) {
-                                            return sub.normalize().pow(fu.exponent);
-                                        } else {
-                                            return sub.pow(fu.exponent);
-                                        }
-                                    })
-                            .reduce((prev, cur) -> cur.combineWith(prev))
+                            .map(fu -> fu.getUnit().normalize().pow(fu.getExponent()))
+                            .reduce((prev, cur) -> prev.combineWith(cur))
                             .get();
         }
         if (!normalized.isRatioOfSameUnits()) {
             normalized = normalized.reduceExponents();
         }
-        return new FactorUnits(
-                normalized.getFactorUnits(),
-                normalized.getScaleFactor().multiply(this.scaleFactor));
+        return normalized.scale(this.scaleFactor);
     }
 
     public String getDimensionVectorIri() {
