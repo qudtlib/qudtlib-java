@@ -449,22 +449,21 @@ public class QudtTests {
 
     @ParameterizedTest
     @MethodSource
-    public void testUnscale_Unit(Unit unit, Unit expectedResult){
+    public void testUnscale_Unit(Unit unit, Unit expectedResult) {
         assertEquals(expectedResult, Qudt.unscale(unit));
     }
 
-    public static Stream<Arguments> testUnscale_Unit(){
+    public static Stream<Arguments> testUnscale_Unit() {
         return Stream.of(
-                          Arguments.of(Units.YoctoC, Units.C),
-                          Arguments.of(Units.TeraBYTE, Units.BYTE),
-                          Arguments.of(Units.KiloGM, Units.KiloGM),
-                          Arguments.of(Units.MilliGM, Units.GM),
-                          Arguments.of(Units.MegaGM, Units.GM),
-                          Arguments.of(Units.TON_Metric, TON_Metric),
-                          Arguments.of(Units.TONNE, TONNE),
-                          Arguments.of(Units.KiloM, Units.M),
-                          Arguments.of(Units.KiloN, Units.N)
-        );
+                Arguments.of(Units.YoctoC, Units.C),
+                Arguments.of(Units.TeraBYTE, Units.BYTE),
+                Arguments.of(Units.KiloGM, Units.KiloGM),
+                Arguments.of(Units.MilliGM, Units.GM),
+                Arguments.of(Units.MegaGM, Units.GM),
+                Arguments.of(Units.TON_Metric, TON_Metric),
+                Arguments.of(Units.TONNE, TONNE),
+                Arguments.of(Units.KiloM, Units.M),
+                Arguments.of(Units.KiloN, Units.N));
     }
 
     @Test

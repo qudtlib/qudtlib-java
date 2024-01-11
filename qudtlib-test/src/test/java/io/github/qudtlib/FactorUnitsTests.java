@@ -214,14 +214,8 @@ public class FactorUnitsTests {
                         FactorUnits.ofFactorUnitSpec(GM, 1, Units.DAY, -1),
                         Units.KiloGM__PER__SEC,
                         new BigDecimal("0.00000001157407407407407407407407407407407")),
-                        Arguments.of(
-                                        FactorUnits.ofFactorUnitSpec(A,1),
-                                        Units.AT,
-                                        new BigDecimal("1.0")),
-                        Arguments.of(
-                                        FactorUnits.ofFactorUnitSpec(AT,1),
-                                        Units.A,
-                                        new BigDecimal("1.0")),
+                Arguments.of(FactorUnits.ofFactorUnitSpec(A, 1), Units.AT, new BigDecimal("1.0")),
+                Arguments.of(FactorUnits.ofFactorUnitSpec(AT, 1), Units.A, new BigDecimal("1.0")),
                 Arguments.of(MilliGAL.getFactorUnits(), M__PER__SEC2, new BigDecimal("0.00001")));
     }
 

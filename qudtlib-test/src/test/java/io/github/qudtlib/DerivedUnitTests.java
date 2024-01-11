@@ -320,11 +320,9 @@ public class DerivedUnitTests {
 
     @Test
     public void test_withAndWithoutRatioOfSameUnits() {
-        Object[] factors =
-                        new Object[] {Qudt.Units.M, 2, SR, 1};
+        Object[] factors = new Object[] {Qudt.Units.M, 2, SR, 1};
         assertTrue(Qudt.Units.M2.matches(factors));
-        factors =
-                        new Object[] { Qudt.Units.M,2 };
+        factors = new Object[] {Qudt.Units.M, 2};
         assertTrue(Qudt.Units.M2__SR.matches(factors));
     }
 
