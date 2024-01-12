@@ -338,10 +338,10 @@ public class Qudt {
      * @param factorUnits a map containing unit to exponent entries.
      * @return the derived units that match the given factor units
      */
-    public static Set<Unit> derivedUnitsFromMap(
+    public static List<Unit> unitsFromMap(
             DerivedUnitSearchMode searchMode, Map<Unit, Integer> factorUnits) {
         Object[] arr = new Object[factorUnits.size() * 2];
-        return derivedUnitsFromUnitExponentPairs(
+        return unitsFromUnitExponentPairs(
                 searchMode,
                 factorUnits.entrySet().stream()
                         .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
@@ -350,17 +350,45 @@ public class Qudt {
     }
 
     /**
+     * Deprecated - use <code>Qudt.unitsFromMap({@link DerivedUnitSearchMode}, FactorUnits)</code>
+     * instead.
+     *
+     * @param searchMode
+     * @param factorUnits
+     * @return
+     */
+    @Deprecated(since = "6.2", forRemoval = true)
+    public static Set<Unit> derivedUnitsFromMap(
+            DerivedUnitSearchMode searchMode, Map<Unit, Integer> factorUnits) {
+        return new HashSet<>(unitsFromMap(searchMode, factorUnits));
+    }
+
+    /**
      * Obtains units based on factor units.
      *
      * @param searchMode the {@link DerivedUnitSearchMode} to use
      * @param factorUnits the factor units
      * @return the derived unit that match the given factor units
-     * @see #derivedUnitsFromMap(DerivedUnitSearchMode, Map)
+     * @see #unitsFromMap(DerivedUnitSearchMode, Map)
      */
-    public static Set<Unit> derivedUnitsFromFactorUnits(
+    public static List<Unit> unitsFromFactorUnits(
             DerivedUnitSearchMode searchMode, List<FactorUnit> factorUnits) {
         FactorUnits selection = new FactorUnits(factorUnits);
-        return derivedUnitsFromFactorUnits(searchMode, selection);
+        return derivedUnitListFromFactorUnits(searchMode, selection);
+    }
+
+    /**
+     * Deprecated - use <code>Qudt.unitsFromFactorUnits({@link DerivedUnitSearchMode}, FactorUnits)
+     * </code> instead.
+     *
+     * @param searchMode
+     * @param factorUnits
+     * @return
+     */
+    @Deprecated(since = "6.2", forRemoval = true)
+    public static Set<Unit> derivedUnitsFromFactorUnits(
+            DerivedUnitSearchMode searchMode, List<FactorUnit> factorUnits) {
+        return new HashSet<>(unitsFromFactorUnits(searchMode, factorUnits));
     }
 
     /**
@@ -370,11 +398,11 @@ public class Qudt {
      * @param searchMode the {@link DerivedUnitSearchMode} to use
      * @param factorUnitSpec alternating (unit, exponent) pairs. The unit can be specified as {@link
      *     Unit} or String. In the latter case, it can be a unit IRI, a unit IRI's local name or a
-     *     unit's label. The exponent must be an and Integer.
+     *     unit's label. The exponent must be an Integer.
      * @return the units that match
-     * @see #derivedUnitsFromMap(DerivedUnitSearchMode, Map)
+     * @see #unitsFromMap(DerivedUnitSearchMode, Map)
      */
-    public static Set<Unit> derivedUnitsFromUnitExponentPairs(
+    public static List<Unit> unitsFromUnitExponentPairs(
             DerivedUnitSearchMode searchMode, final Object... factorUnitSpec) {
         Object[] spec = new Object[factorUnitSpec.length];
         for (int i = 0; i < factorUnitSpec.length; i++) {
@@ -406,16 +434,30 @@ public class Qudt {
             }
         }
         FactorUnits selection = FactorUnits.ofFactorUnitSpec(spec);
-        return derivedUnitsFromFactorUnits(searchMode, selection);
+        return derivedUnitListFromFactorUnits(searchMode, selection);
+    }
+
+    /**
+     * Deprecated - use <code>
+     * Qudt.unitsFromUnitExponentPairs({@link DerivedUnitSearchMode}, Object...</code> instead.
+     *
+     * @param searchMode
+     * @param factorUnitSpec
+     * @return
+     */
+    @Deprecated(since = "6.2", forRemoval = true)
+    public static Set<Unit> derivedUnitsFromUnitExponentPairs(
+            DerivedUnitSearchMode searchMode, final Object... factorUnitSpec) {
+        return new HashSet<>(unitsFromUnitExponentPairs(searchMode, factorUnitSpec));
     }
 
     /**
      * @param searchMode the {@link DerivedUnitSearchMode} to use
      * @param selection the factor unit selection
      * @return the units that match
-     * @see #derivedUnitsFromMap(DerivedUnitSearchMode, Map)
+     * @see #unitsFromMap(DerivedUnitSearchMode, Map)
      */
-    private static Set<Unit> derivedUnitsFromFactorUnits(
+    private static List<Unit> derivedUnitListFromFactorUnits(
             DerivedUnitSearchMode searchMode, FactorUnits selection) {
 
         List<Unit> matchingUnits =
@@ -423,11 +465,13 @@ public class Qudt {
                         .filter(d -> d.matches(selection))
                         .collect(Collectors.toList());
         if (searchMode == DerivedUnitSearchMode.ALL || matchingUnits.size() < 2) {
-            return new HashSet<>(matchingUnits);
+            return matchingUnits.stream()
+                    .sorted(bestMatchForFactorUnitsComparator(selection))
+                    .collect(toList());
         }
 
         return matchingUnits.stream().min(bestMatchForFactorUnitsComparator(selection)).stream()
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     public static List<Unit> unitsWithSameFractionalDimensionVector(Unit unit) {

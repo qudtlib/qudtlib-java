@@ -7,7 +7,6 @@ import io.github.qudtlib.model.QuantityValue;
 import io.github.qudtlib.model.Unit;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Simple demo of the QUDTLib usage.
@@ -24,8 +23,8 @@ public class QudtlibExample {
                         + Qudt.convert(new BigDecimal("38.5"), Qudt.Units.DEG_C, Qudt.Units.DEG_F));
         System.out.println("---");
         System.out.println("finding unit for factors: m, kg, and s^-2:");
-        Set<Unit> myUnits =
-                Qudt.derivedUnitsFromUnitExponentPairs(
+        List<Unit> myUnits =
+                Qudt.unitsFromUnitExponentPairs(
                         DerivedUnitSearchMode.BEST_MATCH,
                         Qudt.Units.M,
                         1,

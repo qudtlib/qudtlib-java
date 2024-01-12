@@ -3,30 +3,39 @@ package io.github.qudtlib.tools.contribute.support;
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ContributionHelper {
-    public static Unit.Definition derivedUnitDefinition(FactorUnits factorUnits) {
-        String localname = factorUnits.getLocalname();
+    public static Unit.Definition derivedUnitDefinition(
+            FactorUnits factorUnits, String nonstandardLocalname) {
+        String localname = null;
         Unit.Definition def = null;
-        Unit existingUnit = findUnitByLocalName(factorUnits);
+        Unit existingUnit = null;
+        if (nonstandardLocalname != null) {
+            localname = nonstandardLocalname;
+            existingUnit = Qudt.unitFromLocalname(localname).orElse(null);
+        } else {
+            factorUnits.getLocalname();
+            existingUnit = findUnitByLocalName(factorUnits);
+        }
         if (existingUnit == null) {
             def = Unit.definition(QudtNamespaces.unit.makeIriInNamespace(localname));
-            FactorUnits base = getBaseFactorUnits(factorUnits);
+            FactorUnits base = getBaseFactorUnits(factorUnits).withoutScaleFactor();
             if (base.equals(factorUnits)) {
                 def.conversionMultiplier(findMultiplier(factorUnits));
             } else {
-                Set<Unit> units =
-                        Qudt.derivedUnitsFromFactorUnits(
-                                DerivedUnitSearchMode.BEST_MATCH, base.getFactorUnits());
+                List<Unit> units =
+                        Qudt.unitsFromFactorUnits(DerivedUnitSearchMode.ALL, base.getFactorUnits());
+                units = filterPossibleBasesByQkIfOnlyOneFactor(factorUnits, units);
                 if (units.isEmpty()) {
                     throw new RuntimeException(
                             String.format(
                                     "Cannot create unit %s: the factor units %s define a scaled unit, but there is no QUDT unit for the base factor units %s. Add a unit for these factors first.",
-                                    factorUnits.getLocalname(),
+                                    localname,
                                     factorUnits.toString(),
                                     base.getFactorUnits().toString()));
                 }
@@ -45,7 +54,7 @@ public class ContributionHelper {
                     .getFactorUnits()
                     .getFactorUnits()
                     .forEach(fu -> finalDef.addFactorUnit(fu));
-            FactorUnits base = getBaseFactorUnits(factorUnits);
+            FactorUnits base = getBaseFactorUnits(factorUnits).withoutScaleFactor();
             if (existingUnit.getScalingOf().isPresent()) {
                 finalDef.scalingOf(existingUnit.getScalingOf().get());
                 finalDef.conversionMultiplier(
@@ -59,9 +68,9 @@ public class ContributionHelper {
                                                 .get()));
                 existingUnit.getConversionOffset().ifPresent(co -> finalDef.conversionOffset(co));
             } else {
-                Set<Unit> baseUnits =
-                        Qudt.derivedUnitsFromFactorUnits(
-                                DerivedUnitSearchMode.BEST_MATCH, base.getFactorUnits());
+                List<Unit> baseUnits =
+                        Qudt.unitsFromFactorUnits(DerivedUnitSearchMode.ALL, base.getFactorUnits());
+                baseUnits = filterPossibleBasesByQkIfOnlyOneFactor(factorUnits, baseUnits);
                 Optional<Unit> newBase = baseUnits.stream().findFirst();
                 if (newBase.isEmpty() || newBase.get().equals(existingUnit)) {
                     finalDef.conversionMultiplier(findMultiplier(factorUnits));
@@ -81,6 +90,29 @@ public class ContributionHelper {
                 .ucumCode(factorUnits.getUcumCode().orElse(null))
                 .addLabels(LabelCombiner.forFactorUnits(factorUnits));
         return def;
+    }
+
+    private static List<Unit> filterPossibleBasesByQkIfOnlyOneFactor(
+            FactorUnits factorUnits, List<Unit> baseUnits) {
+        if (factorUnits.getFactorUnits().size() == 1) {
+            // make sure the base we found shares the quantity kinds of the base we provided
+            baseUnits =
+                    baseUnits.stream()
+                            .filter(
+                                    bu ->
+                                            factorUnits
+                                                    .getFactorUnits()
+                                                    .get(0)
+                                                    .getUnit()
+                                                    .getQuantityKinds()
+                                                    .stream()
+                                                    .allMatch(
+                                                            qk ->
+                                                                    bu.getQuantityKinds()
+                                                                            .contains(qk)))
+                            .collect(Collectors.toList());
+        }
+        return baseUnits;
     }
 
     private static BigDecimal findMultiplier(FactorUnits factorUnits) {

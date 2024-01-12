@@ -157,15 +157,24 @@ class ToolImpl implements Tool {
 
     @Override
     public Unit addDerivedUnit(FactorUnits factorUnits, Consumer<Unit.Definition> unitConfigurer) {
-        return addDerivedUnit(factorUnits, unitConfigurer, null);
+        return addDerivedUnit(factorUnits, unitConfigurer, null, null);
+    }
+
+    public Unit addDerivedUnit(
+            FactorUnits factorUnits,
+            Consumer<Unit.Definition> unitConfigurer,
+            Consumer<UnitMetadata.Builder> metadataConfigurer) {
+        return addDerivedUnit(factorUnits, unitConfigurer, metadataConfigurer, null);
     }
 
     @Override
     public Unit addDerivedUnit(
             FactorUnits factorUnits,
             Consumer<Unit.Definition> unitConfigurer,
-            Consumer<UnitMetadata.Builder> metadataConfigurer) {
-        UnitForContribution.Builder builder = UnitForContribution.builder(factorUnits);
+            Consumer<UnitMetadata.Builder> metadataConfigurer,
+            String nonstandardLocalname) {
+        UnitForContribution.Builder builder =
+                UnitForContribution.builder(factorUnits, nonstandardLocalname);
         unitConfigurer.accept(builder.unit());
         if (metadataConfigurer != null) {
             metadataConfigurer.accept(builder.metadata());
@@ -209,7 +218,7 @@ class ToolImpl implements Tool {
 
     @Override
     public boolean checkUnitExists(FactorUnits factorUnits, DerivedUnitSearchMode mode) {
-        Set<Unit> units = Qudt.derivedUnitsFromFactorUnits(mode, factorUnits.getFactorUnits());
+        List<Unit> units = Qudt.unitsFromFactorUnits(mode, factorUnits.getFactorUnits());
         System.err.println(
                 "Checking if a unit exists in Qudt for factor units " + factorUnits.toString());
         if (units.isEmpty()) {
@@ -372,7 +381,7 @@ class ToolImpl implements Tool {
             System.err.println(String.format("Adding unit for factors %s", factorUnits));
             FactorUnits unscaled = new FactorUnits(Qudt.unscale(factorUnits.getFactorUnits()));
             if ((!unscaled.equals(factorUnits))
-                    && Qudt.derivedUnitsFromFactorUnits(
+                    && Qudt.unitsFromFactorUnits(
                                     DerivedUnitSearchMode.BEST_MATCH, unscaled.getFactorUnits())
                             .isEmpty()) {
                 addDerivedUnitBestEffort(unscaled);
@@ -561,7 +570,7 @@ class ToolImpl implements Tool {
         Model model = mb.build();
         System.err.println("Adding these triples: ");
         this.writeOut(model, System.err);
-        con.add(model);
+        con.add(model, new Resource[] {});
     }
 
     private static void suggestConnectedQuantityKindsIfIsolated(QuantityKind quantityKind) {
@@ -641,7 +650,7 @@ class ToolImpl implements Tool {
         Model model = mb.build();
         System.err.println("Adding these triples: ");
         this.writeOut(model, System.err);
-        con.add(model);
+        con.add(model, new Resource[] {});
     }
 
     private static void saveQuantityKindMetadata(ModelBuilder mb, QuantityKindMetadata metadata) {
