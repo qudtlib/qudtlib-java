@@ -1,15 +1,12 @@
 package io.github.qudtlib.tools.contributions;
 
-import static io.github.qudtlib.tools.contribute.support.tree.FormattingNodeVisitor.*;
-
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.*;
 import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
 import io.github.qudtlib.tools.contribute.support.IndentedOutputStream;
-import io.github.qudtlib.tools.contribute.support.tree.FormattingNodeVisitor;
+import io.github.qudtlib.tools.contribute.support.SelectionHelper;
 import io.github.qudtlib.tools.contribute.support.tree.Node;
 import io.github.qudtlib.tools.contribute.support.tree.QuantityKindTree;
-import io.github.qudtlib.tools.contribute.support.tree.TreeWalker;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +19,7 @@ public class ContributeCorrectedDimensionVector {
                 tool -> {
                     Qudt.allUnits().stream()
                             .sorted(Comparator.comparing(Unit::getIri))
+                            .filter(u -> !u.isDeprecated())
                             .forEach(
                                     u -> {
                                         String dimVector = null;
@@ -118,108 +116,26 @@ public class ContributeCorrectedDimensionVector {
                                         if (quantityKindSet.equals(Set.of(QuantityKinds.Unknown))) {
                                             out.println(" (omitting unit/quantity kind tree)");
                                         } else {
-                                            List<Node<QuantityKind>> actualQuantityKindForest =
-                                                    QuantityKindTree
-                                                            .makeCompleteSkosBroaderForestContaining(
-                                                                    quantityKindSet);
-                                            List<Node<Object>> actualQuantityKindsWithUnits =
-                                                    QuantityKindTree
-                                                            .addAssociatedUnitsToQuantityKindForest(
-                                                                    actualQuantityKindForest);
-                                            for (Node<Object> root : actualQuantityKindsWithUnits) {
-                                                StringBuilder stringBuilder = new StringBuilder();
-                                                FormattingNodeVisitor<Object> formatter =
-                                                        new FormattingNodeVisitor<>(stringBuilder)
-                                                                .nodeFormatDefault(
-                                                                        node ->
-                                                                                getUnitOrQuantityKindIri(
-                                                                                        node));
-                                                formatter.treeDrawingConfig(
-                                                        (config, node) -> {
-                                                            if (node.getNode().getData()
-                                                                    instanceof QuantityKind) {
-                                                                config.branchStart(
-                                                                                CHAR_SLIM_DOUBLE_RIGHT_T)
-                                                                        .branchStartLast(
-                                                                                CHAR_SLIM_DOUBLE_ANGLE)
-                                                                        .branch(CHAR_DOUBLE_HORIZ)
-                                                                        .branchEndLeaf(
-                                                                                CHAR_DOUBLE_HORIZ)
-                                                                        .branchEndInner(
-                                                                                CHAR_DOUBLE_SLIM_T);
-                                                            }
-                                                        });
-                                                TreeWalker.of(root)
-                                                        .sorted(
-                                                                Comparator.comparing(
-                                                                                (Node<Object>
-                                                                                                node) ->
-                                                                                        node.getData()
-                                                                                                .getClass()
-                                                                                                .getSimpleName())
-                                                                        .thenComparing(
-                                                                                ContributeCorrectedDimensionVector
-                                                                                        ::getUnitOrQuantityKindIri))
-                                                        .walkDepthFirst(formatter);
-                                                out.print(stringBuilder.toString());
-                                            }
+                                            StringBuilder stringBuilder = new StringBuilder();
+                                            QuantityKindTree.makeAndFormatQuantityKindAndUnitTree(
+                                                    quantityKindSet, stringBuilder);
+                                            out.print(stringBuilder.toString());
                                         }
-                                        List<QuantityKind> fittingQuantityKinds =
-                                                getQuantityKindsByDimensionVector(
+                                        Set<QuantityKind> fittingQuantityKinds =
+                                                SelectionHelper.getQuantityKindsByDimensionVector(
                                                         correctedDimensionVector);
-                                        List<Node<QuantityKind>> quantityKindForest =
-                                                QuantityKindTree
-                                                        .makeCompleteSkosBroaderForestContaining(
-                                                                fittingQuantityKinds);
-                                        List<Node<Object>> quantityKindsWithUnits =
-                                                QuantityKindTree
-                                                        .addAssociatedUnitsToQuantityKindForest(
-                                                                quantityKindForest);
-
                                         out.println(
                                                 String.format(
                                                         "quantity kinds that fit the corrected dimension vector %s, and associated units:",
                                                         correctedDimensionVector));
-                                        if (quantityKindsWithUnits.isEmpty()) {
+
+                                        if (fittingQuantityKinds.isEmpty()) {
                                             out.println("(none found)");
                                         } else {
-                                            for (Node<Object> root : quantityKindsWithUnits) {
-                                                StringBuilder stringBuilder = new StringBuilder();
-                                                FormattingNodeVisitor<Object> formatter =
-                                                        new FormattingNodeVisitor<>(stringBuilder)
-                                                                .nodeFormatDefault(
-                                                                        node ->
-                                                                                getUnitOrQuantityKindIri(
-                                                                                        node));
-                                                formatter.treeDrawingConfig(
-                                                        (config, node) -> {
-                                                            if (node.getNode().getData()
-                                                                    instanceof QuantityKind) {
-                                                                config.branchStart(
-                                                                                CHAR_SLIM_DOUBLE_RIGHT_T)
-                                                                        .branchStartLast(
-                                                                                CHAR_SLIM_DOUBLE_ANGLE)
-                                                                        .branch(CHAR_DOUBLE_HORIZ)
-                                                                        .branchEndLeaf(
-                                                                                CHAR_DOUBLE_HORIZ)
-                                                                        .branchEndInner(
-                                                                                CHAR_DOUBLE_SLIM_T);
-                                                            }
-                                                        });
-                                                TreeWalker.of(root)
-                                                        .sorted(
-                                                                Comparator.comparing(
-                                                                                (Node<Object>
-                                                                                                node) ->
-                                                                                        node.getData()
-                                                                                                .getClass()
-                                                                                                .getSimpleName())
-                                                                        .thenComparing(
-                                                                                ContributeCorrectedDimensionVector
-                                                                                        ::getUnitOrQuantityKindIri))
-                                                        .walkDepthFirst(formatter);
-                                                out.print(stringBuilder.toString());
-                                            }
+                                            StringBuilder stringBuilder = new StringBuilder();
+                                            QuantityKindTree.makeAndFormatQuantityKindAndUnitTree(
+                                                    fittingQuantityKinds, stringBuilder);
+                                            out.print(stringBuilder.toString());
                                         }
                                         System.out.println(
                                                 String.format(
@@ -239,29 +155,7 @@ public class ContributeCorrectedDimensionVector {
                 : QudtNamespaces.quantityKind.abbreviate(((QuantityKind) node.getData()).getIri());
     }
 
-    private static List<Unit> getUnitsAssociatedWithQuantityKind(QuantityKind quantityKind) {
-        return Qudt.allUnits().stream()
-                .filter(u -> u.getQuantityKinds().contains(quantityKind))
-                .collect(Collectors.toList());
-    }
-
-    private static List<QuantityKind> getQuantityKindsByDimensionVector(String dimensionVectorIri) {
-        return Qudt.allQuantityKinds().stream()
-                .filter(
-                        qk ->
-                                qk.getDimensionVectorIri()
-                                        .map(dv -> dv.equals(dimensionVectorIri))
-                                        .orElse(false))
-                .collect(Collectors.toList());
-    }
-
-    private static boolean hasOtherUnitsAssociated(QuantityKind quantityKind, Unit except) {
-        List<Unit> ret = getUnitsAssociatedWithQuantityKind(quantityKind);
-        ret.remove(except);
-        return !ret.isEmpty();
-    }
-
-    private static List<Unit> getUnitsByDimensionVector(String dimensionVectorIri) {
+    public static List<Unit> getUnitsByDimensionVector(String dimensionVectorIri) {
         return Qudt.allUnits().stream()
                 .filter(
                         u ->

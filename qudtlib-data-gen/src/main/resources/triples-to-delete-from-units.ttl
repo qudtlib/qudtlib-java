@@ -7,3 +7,14 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prefix: <http://qudt.org/vocab/prefix/> .
+
+# PR https://github.com/qudt/qudt-public-repo/pull/845
+
+unit:MHO
+    qudt:hasDimensionVector qkdv:A0E2L-3I0M-1H0T3D0 ;
+    qudt:hasQuantityKind qk:ElectricConductivity .
+
+unit:MicroMHO
+    qudt:hasDimensionVector qkdv:A0E2L-3I0M-1H0T3D0 ;
+    qudt:hasQuantityKind qk:ElectricConductivity .

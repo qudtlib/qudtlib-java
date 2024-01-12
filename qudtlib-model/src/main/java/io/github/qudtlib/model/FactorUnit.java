@@ -4,9 +4,12 @@ import static java.util.stream.Collectors.*;
 
 import io.github.qudtlib.nodedef.NodeDefinition;
 import io.github.qudtlib.nodedef.SettableBuilderBase;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Combines a {@link Unit} and an exponent; some Units are a combination of {@link FactorUnit}s. If
@@ -94,20 +97,15 @@ public class FactorUnit {
                 .collect(toList());
     }
 
-    public static FactorUnits normalizeFactorUnits(List<FactorUnit> factorUnits) {
-        FactorUnits ret =
-                factorUnits.stream()
-                        .map(fu -> fu.normalize())
-                        .reduce((prev, cur) -> cur.combineWith(prev))
-                        .get();
-        if (ret.isRatioOfSameUnits()) {
-            return ret;
-        }
-        return ret.reduceExponents();
-    }
-
     public static FactorUnit ofUnit(Unit unit) {
         return FactorUnit.builder().unit(unit).exponent(1).build();
+    }
+
+    public BigDecimal conversionMultiplier() {
+        return this.getUnit()
+                .getConversionMultiplier()
+                .orElse(BigDecimal.ONE)
+                .pow(this.exponent, MathContext.DECIMAL128);
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
@@ -232,12 +230,16 @@ public class FactorUnit {
         return List.of(this);
     }
 
-    private FactorUnit withExponentMultiplied(int by) {
-        return FactorUnit.builder().unit(unit).exponent(this.exponent * by).build();
+    public Stream<FactorUnit> streamLeafFactorUnitsWithCumulativeExponents() {
+        List<FactorUnit> leafFactorUnits = this.unit.getLeafFactorUnitsWithCumulativeExponents();
+        if (FactorUnits.hasFactorUnits(leafFactorUnits)) {
+            return leafFactorUnits.stream().map(f -> f.pow(this.getExponent()));
+        }
+        return Stream.of(this);
     }
 
-    public FactorUnits normalize() {
-        return this.unit.normalize().pow(this.exponent);
+    private FactorUnit withExponentMultiplied(int by) {
+        return FactorUnit.builder().unit(unit).exponent(this.exponent * by).build();
     }
 
     public FactorUnit pow(int exponent) {

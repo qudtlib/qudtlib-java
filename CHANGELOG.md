@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deprecated
+
+- `Qudt.derivedUnitsFrom*` have been deprecated. The implementations have become slower. The alternatives are listed in the code comments. The replacing methods have been renamed to fit better with the other unit-related methods and return `List<Unit>` instead of `Set<Unit>`. The reason is that the list is sorted according to match quality, which helps clients to choose the best after filtering.
+
+### Added
+
+- `Qudt.unitsFrom*` methods for obtaining units that match a given specification expressed via factor units.
+- `FactorUnits FactorUnits.withoutScaleFactor()` to get the FactorUnits object with scaleFactor 1.
+
+## [6.2.0] - 2024-01-11
+
+### Changed
+
+- Simplified BEST_MATCH algorithm for obtaining a unit from a set of factor units. Recent additions to the data model (isScalingOf and factorUnit relationships) led to a larger set of candidates and the complexity of the previous algorithm led to very high computation time.
+- Changed the behaviour of Unit.hasFactorUnits() such that for a FactorUnits object with only one top-level factor unit (such as [N^1]), the method returns false.
+
+### Fixed
+
+- `unit:MHO`, `unit:MicroMHO`: fix dimension vector and quantity kind
+- `unit:F`: fix `unit:isScalingOf`
+
+## [6.1.0] - 2024-01-05
+
+### Added
+
+- Josh Feingold(@occamsystems) contributed the ability to add units and quantity kinds at runtime, along with a
+  number of improvements
+
 ## [6.0.3] - 2023-12-20
 
 ### Added
@@ -15,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Bugfix by @occamsystems: Offset difference and scale difference no longer throw exceptions when the provided Units do not have explicit conversion values
+- Bugfix by Josh Feingold(@occamsystems): Offset difference and scale difference no longer throw exceptions when the provided Units do not have explicit conversion values
 
 ## [6.0.2] - 2023-12-18
 
@@ -196,7 +224,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.2.0...HEAD
+[6.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.1.0...v6.2.0
+[6.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...v6.1.0
 [6.0.3]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.2...v6.0.3
 [6.0.2]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.0...v6.0.1

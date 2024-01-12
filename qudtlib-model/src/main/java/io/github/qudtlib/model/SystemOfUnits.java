@@ -141,13 +141,9 @@ public class SystemOfUnits extends SelfSmuggler {
                                                     QudtNamespaces.unit.makeIriInNamespace(
                                                             "KiloGM")));
         }
-        if (toCheck.getScalingOf().isPresent()) {
+        if (toCheck.getScalingOf().isPresent() && toCheck.getPrefix().isPresent()) {
             Unit base = toCheck.getScalingOf().get();
             return allowsUnit(base);
-        }
-        if (toCheck.hasFactorUnits()) {
-            return toCheck.getFactorUnits().getFactorUnits().stream()
-                    .allMatch(fu -> this.allowsUnit(fu.unit));
         }
         return false;
     }

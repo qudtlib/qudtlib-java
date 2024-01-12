@@ -39,6 +39,7 @@ public class ContributeCorrectedConversionFactor {
                 tool -> {
                     Qudt.allUnits().stream()
                             .sorted(Comparator.comparing(Unit::getIri))
+                            .filter(u -> !u.isDeprecated())
                             .forEach(
                                     u -> {
                                         BigDecimal conversionMultiplier = null;

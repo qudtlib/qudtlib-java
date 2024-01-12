@@ -8,12 +8,16 @@ SELECT DISTINCT
       ?derivedUnit
       ?factorUnit
       ?exponent
+      ?scaleFactor
 WHERE
 {
     ?derivedUnit qudt:factorUnit ?endFactor .
     ?endFactor
         qudt:unit ?factorUnit ;
         qudt:exponent ?exponent .
+    OPTIONAL {
+        ?derivedUnit qudt:factorUnitScalar ?scaleFactor
+    }
 }
 ORDER BY ?derivedUnit ?factorUnit
 

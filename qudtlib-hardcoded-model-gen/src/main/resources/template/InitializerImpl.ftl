@@ -69,6 +69,9 @@ public class InitializerImpl implements Initializer {
     private static void addUnit${iri?index?c}(Definitions definitions) {
         Unit.Definition def = Unit
             .definition(${q(iri)})
+            <#if unit.isDeprecated()>
+            .deprecated(true)
+            </#if>
             <#if unit.prefix.isPresent() >
             .prefix(definitions.expectPrefixDefinition(${optValIri(unit.prefix)}))
             </#if>
@@ -127,6 +130,9 @@ public class InitializerImpl implements Initializer {
                 .dimensionVectorIri(${optStr(quantityKind.dimensionVectorIri)})
                 .qkdvNumeratorIri(${optStr(quantityKind.qkdvNumeratorIri)})
                 .qkdvDenominatorIri(${optStr(quantityKind.qkdvDenominatorIri)})
+                <#if quantityKind.isDeprecated()>
+                    .deprecated(true)
+                </#if>
                 <#if quantityKind.symbol.isPresent()>
                 .symbol(${optStr(quantityKind.symbol)})
                 </#if>

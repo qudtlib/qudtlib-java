@@ -8,9 +8,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -121,6 +119,13 @@ public class InitializerImpl implements Initializer {
                                         compose(
                                                 Value::stringValue,
                                                 definitions::expectUnitDefinition)));
+                unitDefinition.deprecated(
+                        Optional.ofNullable(
+                                        getIfPresent(
+                                                bs,
+                                                "deprecated",
+                                                v -> ((Literal) v).booleanValue()))
+                                .orElse(false));
             }
             if (unitDefinition != null) {
                 definitions.addUnitDefinition(unitDefinition);
@@ -182,6 +187,13 @@ public class InitializerImpl implements Initializer {
                             definitions.expectQuantityKindDefinition(
                                     bs.getValue("exactMatch").stringValue()));
                 }
+                quantityKindDefinition.deprecated(
+                        Optional.ofNullable(
+                                        getIfPresent(
+                                                bs,
+                                                "deprecated",
+                                                v -> ((Literal) v).booleanValue()))
+                                .orElse(false));
             }
             if (quantityKindDefinition != null) {
                 definitions.addQuantityKindDefinition(quantityKindDefinition);
@@ -264,17 +276,13 @@ public class InitializerImpl implements Initializer {
 
     private void populateFactorUnits(RepositoryConnection con, Definitions definitions) {
         TupleQuery query = con.prepareTupleQuery(queryLoadFactorUnits);
+        Map<String, FactorUnits.Builder> factorUnitBuilders = new HashMap<>();
         try (TupleQueryResult result = query.evaluate()) {
             for (BindingSet bs : result) {
                 String currentDerivedUnitIri = bs.getValue("derivedUnit").stringValue();
-                Unit.Definition derivedUnit =
-                        definitions
-                                .getUnitDefinition(currentDerivedUnitIri)
-                                .orElseThrow(
-                                        () ->
-                                                new IllegalArgumentException(
-                                                        "Found a factor of unknown unit "
-                                                                + currentDerivedUnitIri));
+                FactorUnits.Builder fub =
+                        factorUnitBuilders.computeIfAbsent(
+                                currentDerivedUnitIri, s -> FactorUnits.builder());
                 String unitIri = bs.getValue("factorUnit").stringValue();
                 Unit.Definition unitDefinition =
                         definitions
@@ -284,11 +292,25 @@ public class InitializerImpl implements Initializer {
                                                 new IllegalArgumentException(
                                                         "Found factor unit for unknown unit "
                                                                 + unitIri));
-                derivedUnit.addFactorUnit(
+                fub.factor(
                         FactorUnit.builder()
                                 .unit(unitDefinition)
                                 .exponent(((Literal) bs.getValue("exponent")).intValue()));
+                if (bs.hasBinding("scaleFactor")) {
+                    fub.scaleFactor(new BigDecimal(bs.getValue("scaleFactor").stringValue()));
+                }
             }
+        }
+        for (String derivedUnitIri : factorUnitBuilders.keySet()) {
+            Unit.Definition derivedUnit =
+                    definitions
+                            .getUnitDefinition(derivedUnitIri)
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalArgumentException(
+                                                    "Found a factor of unknown unit "
+                                                            + derivedUnitIri));
+            derivedUnit.setFactorUnits(factorUnitBuilders.get(derivedUnitIri));
         }
     }
 

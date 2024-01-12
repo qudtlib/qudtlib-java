@@ -5,7 +5,7 @@
     <artifactId>qudtlib-java</artifactId>
     <packaging>pom</packaging>
     <name>qudtlib-java</name>
-    <version>6.1.0-SNAPSHOT</version>
+    <version>6.3.0-SNAPSHOT</version>
     <url>https://github.com/qudtlib/qudtlib-java</url>
     <description>Unit conversion and related functionality for Java based on the QUDT ontology.</description>
     <developers>
@@ -49,7 +49,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <qudt.release.version>v2.1.33</qudt.release.version>
+        <qudt.release.version>v2.1.34</qudt.release.version>
     </properties>
 
     <scm>

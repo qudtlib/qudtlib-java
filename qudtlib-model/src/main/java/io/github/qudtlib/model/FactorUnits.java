@@ -1,8 +1,10 @@
 package io.github.qudtlib.model;
 
+import static io.github.qudtlib.math.BigDec.isRelativeDifferenceGreaterThan;
 import static java.util.stream.Collectors.toList;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
+import io.github.qudtlib.math.BigDec;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
@@ -11,16 +13,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FactorUnits {
+    private static final FactorUnits EMPTY_FACTOR_UNITS = new FactorUnits(new ArrayList<>());
     private final List<FactorUnit> factorUnits;
     private final BigDecimal scaleFactor;
 
     public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
         this.factorUnits = factorUnits.stream().collect(Collectors.toUnmodifiableList());
-        this.scaleFactor = scaleFactor;
+        this.scaleFactor = Optional.ofNullable(scaleFactor).orElse(BigDecimal.ONE);
     }
 
     public FactorUnits(List<FactorUnit> factorUnits) {
         this(factorUnits, new BigDecimal("1"));
+    }
+
+    public FactorUnits(FactorUnit factorUnit) {
+        this(List.of(factorUnit), new BigDecimal("1"));
     }
 
     public FactorUnits(FactorUnits other) {
@@ -43,12 +50,39 @@ public class FactorUnits {
         return builder;
     }
 
+    public static FactorUnits empty() {
+        return EMPTY_FACTOR_UNITS;
+    }
+
+    public boolean hasFactorUnits() {
+        if (this.factorUnits == null) {
+            return false;
+        }
+        if (this.factorUnits.isEmpty()) {
+            return false;
+        }
+        if (this.factorUnits.size() == 1
+                && this.factorUnits.get(0).getUnit().getFactorUnits() != this) {
+            return true;
+        }
+        if (this.factorUnits.size() == 1
+                && this.factorUnits.get(0).getExponent() == 1
+                && BigDecimal.ONE.compareTo(this.scaleFactor) == 0) {
+            return false;
+        }
+        return true;
+    }
+
     public static boolean hasFactorUnits(List<FactorUnit> factorUnits) {
         if (factorUnits == null) {
             return false;
         }
         if (factorUnits.isEmpty()) {
             return false;
+        }
+        if (factorUnits.size() == 1
+                && factorUnits.get(0).getUnit().getFactorUnits() != factorUnits) {
+            return true;
         }
         if (factorUnits.size() == 1 && factorUnits.get(0).getExponent() == 1) {
             return false;
@@ -141,6 +175,10 @@ public class FactorUnits {
                         .toArray(arr));
     }
 
+    public FactorUnits withoutScaleFactor() {
+        return new FactorUnits(this.factorUnits);
+    }
+
     public List<FactorUnit> getFactorUnits() {
         return factorUnits;
     }
@@ -155,7 +193,8 @@ public class FactorUnits {
         if (o == null || getClass() != o.getClass()) return false;
         FactorUnits that = (FactorUnits) o;
 
-        return scaleFactor.compareTo(that.scaleFactor) == 0
+        return (!isRelativeDifferenceGreaterThan(
+                        scaleFactor, that.scaleFactor, BigDec.ONE_MILLIONTH))
                 && new HashSet<>(factorUnits).equals(new HashSet<>(that.factorUnits));
     }
 
@@ -208,10 +247,18 @@ public class FactorUnits {
     }
 
     public FactorUnits normalize() {
-        FactorUnits normalized = FactorUnit.normalizeFactorUnits(this.factorUnits);
-        return new FactorUnits(
-                normalized.getFactorUnits(),
-                normalized.getScaleFactor().multiply(this.scaleFactor));
+        FactorUnits normalized = FactorUnits.empty();
+        if (this.hasFactorUnits()) {
+            normalized =
+                    this.factorUnits.stream()
+                            .map(fu -> fu.getUnit().normalize().pow(fu.getExponent()))
+                            .reduce((prev, cur) -> prev.combineWith(cur))
+                            .get();
+        }
+        if (!normalized.isRatioOfSameUnits()) {
+            normalized = normalized.reduceExponents();
+        }
+        return normalized.scale(this.scaleFactor);
     }
 
     public String getDimensionVectorIri() {
@@ -223,8 +270,9 @@ public class FactorUnits {
             Optional<String> fudvOpt = fu.getDimensionVectorIri();
             if (fudvOpt.isEmpty()) {
                 throw new RuntimeException(
-                        "Cannot compute dimension vector of factor units as not all units have a dimension vector: "
-                                + this.toString());
+                        String.format(
+                                "Cannot compute dimension vector of factor units %s: %s does not have a dimension vector",
+                                this.toString(), fu.getUnit().getIriAbbreviated()));
             }
             if (dv == null) {
                 dv = DimensionVector.ofRequired(fudvOpt.get());
@@ -235,17 +283,50 @@ public class FactorUnits {
         return dv.getDimensionVectorIri();
     }
 
-    public FactorUnits numerator() {
-        return new FactorUnits(
-                this.factorUnits.stream().filter(fu -> fu.exponent > 0).collect(toList()));
+    public List<FactorUnit> expand() {
+        return streamExpandFactors(this).collect(toList());
     }
 
+    public static Stream<FactorUnit> streamExpandFactors(FactorUnits factorUnits) {
+        if (!factorUnits.hasFactorUnits()) {
+            return factorUnits.getFactorUnits().stream();
+        }
+        return factorUnits.getFactorUnits().stream()
+                .flatMap(fu -> streamExpandFactors(fu.getUnit().getFactorUnits()));
+    }
+
+    /**
+     * Returns a FactorUnits object containing the scaleFactor and the factors in the numerator of
+     * this FactorUnits object. Note that any derived units in the numerator are returned without
+     * recursive decomposition. For example, for `5.0 * M2-PER-N` a FactorUnit object representing
+     * `N` is returned.
+     *
+     * @return a FactorUnits object representing the scaleFactor and the numerator units of this
+     *     unit.
+     */
+    public FactorUnits numerator() {
+        return new FactorUnits(numeratorFactors().collect(toList()), this.scaleFactor);
+    }
+
+    private Stream<FactorUnit> numeratorFactors() {
+        return this.factorUnits.stream().filter(fu -> fu.exponent > 0);
+    }
+
+    /**
+     * Returns a FactorUnits object containing the factors in the denominator of this FactorUnits
+     * object. Note that any derived units in the denominator are returned without recursive
+     * decomposition. For example, for `5.0 * ` a FactorUnit object representing `5.0 * N` is
+     * returned.
+     *
+     * @return a FactorUnits object representing the scaleFactor and the numerator units of this
+     *     unit.
+     */
     public FactorUnits denominator() {
-        return new FactorUnits(
-                this.factorUnits.stream()
-                        .filter(fu -> fu.exponent < 0)
-                        .map(fu -> fu.pow(-1))
-                        .collect(toList()));
+        return new FactorUnits(denominatorFactors().collect(toList()));
+    }
+
+    private Stream<FactorUnit> denominatorFactors() {
+        return this.factorUnits.stream().filter(fu -> fu.exponent < 0).map(fu -> fu.pow(-1));
     }
 
     public boolean hasQkdvDenominatorIri(String dimensionVectorIri) {
@@ -272,6 +353,23 @@ public class FactorUnits {
                 other.hasFactorUnits()
                         ? new FactorUnits(other.getFactorUnits())
                         : FactorUnits.ofUnit(other);
+        return conversionFactorInternal(otherFactorUnits);
+    }
+
+    public BigDecimal conversionFactor(FactorUnits otherFactorUnits) {
+        if (!otherFactorUnits.getDimensionVectorIri().equals(this.getDimensionVectorIri())) {
+            throw new InconvertibleQuantitiesException(
+                    String.format(
+                            "Cannot convert from %s to %s: dimension vectors differ (%s vs %s)",
+                            this.toString(),
+                            otherFactorUnits.toString(),
+                            this.getDimensionVectorIri(),
+                            otherFactorUnits.getDimensionVectorIri()));
+        }
+        return conversionFactorInternal(otherFactorUnits);
+    }
+
+    private BigDecimal conversionFactorInternal(FactorUnits otherFactorUnits) {
         FactorUnits myFactors = this.normalize();
         FactorUnits otherFactors = otherFactorUnits.normalize();
         List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.getFactorUnits());
@@ -279,7 +377,6 @@ public class FactorUnits {
         FactorUnit processed = null;
         BigDecimal factor =
                 myFactors.scaleFactor.divide(otherFactors.scaleFactor, MathContext.DECIMAL128);
-
         for (FactorUnit myFactor : myFactorUnitList) {
             for (FactorUnit otherFactor : otherFactorUnitList) {
                 if (myFactor.unit.isConvertible(otherFactor.unit)
@@ -428,39 +525,11 @@ public class FactorUnits {
     }
 
     public String getLocalname() {
-        return FactorUnits.getLocalname(this.factorUnits);
+        return streamLocalnamePossibilities().findFirst().get();
     }
 
     public static String getLocalname(List<FactorUnit> factorUnits) {
-        StringBuilder sb = new StringBuilder();
-        boolean hasDenominator = false;
-        for (FactorUnit fu : factorUnits) {
-            if (fu.exponent > 0) {
-                sb.append(getLocalname(fu.unit.getIri()));
-                if (fu.exponent > 1) {
-                    sb.append(fu.exponent);
-                }
-                sb.append("-");
-            } else {
-                hasDenominator = true;
-            }
-        }
-        if (hasDenominator) {
-            sb.append("PER-");
-        }
-        for (FactorUnit fu : factorUnits) {
-            if (fu.exponent < 0) {
-                sb.append(getLocalname(fu.unit.getIri()));
-                if (fu.exponent < -1) {
-                    sb.append(Math.abs(fu.exponent));
-                }
-                sb.append("-");
-            }
-        }
-        if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        return sb.toString();
+        return new FactorUnits(factorUnits).streamLocalnamePossibilities().findFirst().get();
     }
 
     public static List<FactorUnit> sortAccordingToUnitLabel(
@@ -506,32 +575,40 @@ public class FactorUnits {
     }
 
     public List<String> generateAllLocalnamePossibilities() {
-        List<String> numeratorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() > 0);
-        List<String> denominatorOptions = permutateFactorUnitLocalnames(fu -> fu.getExponent() < 0);
-        List<String> completeOptions = new ArrayList<>();
-        for (String numeratorOption : numeratorOptions) {
-            for (String denominatorOption : denominatorOptions) {
-                StringBuilder completeOption = new StringBuilder();
-                if (numeratorOption.length() > 0) {
-                    completeOption.append(numeratorOption);
-                }
-                if (denominatorOption.length() > 0) {
-                    if (completeOption.length() > 0) {
-                        completeOption.append("-");
-                    }
-                    completeOption.append("PER-");
-                    completeOption.append(denominatorOption);
-                }
-                completeOptions.add(completeOption.toString());
-            }
-        }
-        return completeOptions;
+        return this.streamLocalnamePossibilities().collect(toList());
+    }
+
+    public Stream<String> streamLocalnamePossibilities() {
+        return streamFactorUnitLocalnames(fu -> fu.getExponent() > 0)
+                .flatMap(
+                        numeratorOption ->
+                                streamFactorUnitLocalnames(fu -> fu.getExponent() < 0)
+                                        .map(
+                                                denominatorOption -> {
+                                                    StringBuilder completeOption =
+                                                            new StringBuilder();
+                                                    if (numeratorOption.length() > 0) {
+                                                        completeOption.append(numeratorOption);
+                                                    }
+                                                    if (denominatorOption.length() > 0) {
+                                                        if (completeOption.length() > 0) {
+                                                            completeOption.append("-");
+                                                        }
+                                                        completeOption.append("PER-");
+                                                        completeOption.append(denominatorOption);
+                                                    }
+                                                    return completeOption.toString();
+                                                }));
     }
 
     private List<String> permutateFactorUnitLocalnames(Predicate<FactorUnit> factorUnitPredicate) {
+        return this.streamFactorUnitLocalnames(factorUnitPredicate).collect(toList());
+    }
+
+    private Stream<String> streamFactorUnitLocalnames(Predicate<FactorUnit> filterPredicate) {
         return permutate(
                         this.factorUnits.stream()
-                                .filter(factorUnitPredicate)
+                                .filter(filterPredicate)
                                 .map(
                                         fu ->
                                                 getLocalname(fu.unit.getIri())
@@ -540,8 +617,7 @@ public class FactorUnits {
                                                                 : ""))
                                 .collect(toList()))
                 .stream()
-                .map(strings -> strings.stream().collect(Collectors.joining("-")))
-                .collect(toList());
+                .map(strings -> strings.stream().collect(Collectors.joining("-")));
     }
 
     private List<List<String>> permutate(List<String> strings) {
@@ -562,26 +638,45 @@ public class FactorUnits {
         return ret;
     }
 
+    public BigDecimal getConversionMultiplier() {
+        if (this.hasFactorUnits()) {
+            return this.factorUnits.stream()
+                    .map(
+                            fu ->
+                                    fu.unit
+                                            .getFactorUnits()
+                                            .getConversionMultiplier()
+                                            .pow(fu.getExponent(), MathContext.DECIMAL128))
+                    .reduce(BigDecimal::multiply)
+                    .get()
+                    .multiply(this.getScaleFactor());
+        } else {
+            return this.factorUnits.stream().findFirst().get().conversionMultiplier();
+        }
+    }
+
     private String getExponentString(int exponent) {
         int absExp = Math.abs(exponent);
-        switch (absExp) {
-            case 1:
-                return "";
-            case 2:
-                return "²";
-            case 3:
-                return "³";
-            case 4:
-                return "\u2074";
-            case 5:
-                return "\u2075";
-            case 6:
-                return "\u2076";
-            case 7:
-                return "\u2077";
-            default:
-                return "m";
+
+        if (absExp == 1) {
+            return "";
         }
+
+        return String.valueOf(absExp)
+                .chars()
+                .mapToObj(
+                        c -> {
+                            if (c == 49) {
+                                return (char) 185; // Handle 1 to superscript
+                            }
+                            if (c == 50 || c == 51) {
+                                return (char) (c + 128); // Handle 2-3 to superscript
+                            } else {
+                                return (char) (c + 8256); // Handle 4-0 to superscript
+                            }
+                        })
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 
     private static String getLocalname(String iri) {

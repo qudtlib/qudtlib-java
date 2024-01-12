@@ -78,10 +78,10 @@ class ToolImpl implements Tool {
 
     void writeRdf(OutputStream out, Predicate<Statement> statementPredicate) {
         try {
-            newQuantityKinds.stream().forEach(qk -> ToolImpl.save(qk, con));
-            newUnits.stream().forEach(u -> ToolImpl.save(u, con));
+            newQuantityKinds.stream().forEach(qk -> this.save(qk, con));
+            newUnits.stream().forEach(u -> this.save(u, con));
             con.commit();
-            ToolImpl.writeOut(con, out, statementPredicate);
+            this.writeOut(con, out, statementPredicate);
         } catch (RepositoryException e) {
             Throwable cause = e.getCause();
             if (cause instanceof ShaclSailValidationException) {
@@ -96,7 +96,7 @@ class ToolImpl implements Tool {
         con.close();
     }
 
-    private static void writeOut(
+    public void writeOut(
             RepositoryConnection con, OutputStream out, Predicate<Statement> statementPredicate) {
         RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
         writer.startRDF();
@@ -123,12 +123,13 @@ class ToolImpl implements Tool {
         }
     }
 
-    private static void writeOut(Model model, OutputStream out) {
-        writeOut(model, out, s -> true);
+    @Override
+    public void writeOut(Model model, OutputStream out) {
+        this.writeOut(model, out, s -> true);
     }
 
-    private static void writeOut(
-            Model model, OutputStream out, Predicate<Statement> statementPredicate) {
+    @Override
+    public void writeOut(Model model, OutputStream out, Predicate<Statement> statementPredicate) {
         RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
         writer.startRDF();
         writer.handleNamespace(
@@ -156,15 +157,24 @@ class ToolImpl implements Tool {
 
     @Override
     public Unit addDerivedUnit(FactorUnits factorUnits, Consumer<Unit.Definition> unitConfigurer) {
-        return addDerivedUnit(factorUnits, unitConfigurer, null);
+        return addDerivedUnit(factorUnits, unitConfigurer, null, null);
+    }
+
+    public Unit addDerivedUnit(
+            FactorUnits factorUnits,
+            Consumer<Unit.Definition> unitConfigurer,
+            Consumer<UnitMetadata.Builder> metadataConfigurer) {
+        return addDerivedUnit(factorUnits, unitConfigurer, metadataConfigurer, null);
     }
 
     @Override
     public Unit addDerivedUnit(
             FactorUnits factorUnits,
             Consumer<Unit.Definition> unitConfigurer,
-            Consumer<UnitMetadata.Builder> metadataConfigurer) {
-        UnitForContribution.Builder builder = UnitForContribution.builder(factorUnits);
+            Consumer<UnitMetadata.Builder> metadataConfigurer,
+            String nonstandardLocalname) {
+        UnitForContribution.Builder builder =
+                UnitForContribution.builder(factorUnits, nonstandardLocalname);
         unitConfigurer.accept(builder.unit());
         if (metadataConfigurer != null) {
             metadataConfigurer.accept(builder.metadata());
@@ -208,7 +218,7 @@ class ToolImpl implements Tool {
 
     @Override
     public boolean checkUnitExists(FactorUnits factorUnits, DerivedUnitSearchMode mode) {
-        Set<Unit> units = Qudt.derivedUnitsFromFactorUnits(mode, factorUnits.getFactorUnits());
+        List<Unit> units = Qudt.unitsFromFactorUnits(mode, factorUnits.getFactorUnits());
         System.err.println(
                 "Checking if a unit exists in Qudt for factor units " + factorUnits.toString());
         if (units.isEmpty()) {
@@ -371,7 +381,7 @@ class ToolImpl implements Tool {
             System.err.println(String.format("Adding unit for factors %s", factorUnits));
             FactorUnits unscaled = new FactorUnits(Qudt.unscale(factorUnits.getFactorUnits()));
             if ((!unscaled.equals(factorUnits))
-                    && Qudt.derivedUnitsFromFactorUnits(
+                    && Qudt.unitsFromFactorUnits(
                                     DerivedUnitSearchMode.BEST_MATCH, unscaled.getFactorUnits())
                             .isEmpty()) {
                 addDerivedUnitBestEffort(unscaled);
@@ -390,11 +400,10 @@ class ToolImpl implements Tool {
         Set<Unit> matchingunits =
                 Qudt.allUnits().stream()
                         .filter(
-                                u -> {
-                                    return (factorUnits
-                                            .generateAllLocalnamePossibilities()
-                                            .contains(u.getIriLocalname()));
-                                })
+                                u ->
+                                        (factorUnits
+                                                .streamLocalnamePossibilities()
+                                                .anyMatch(u.getIriLocalname()::equals)))
                         .collect(Collectors.toSet());
         return matchingunits;
     }
@@ -530,7 +539,7 @@ class ToolImpl implements Tool {
         System.err.println(quantityKinds);
     }
 
-    private static void save(
+    private void save(
             QuantityKindForContribution quantityKindForContribution, RepositoryConnection con) {
         QuantityKind quantityKind = quantityKindForContribution.getQuantityKind();
         suggestConnectedQuantityKindsIfIsolated(quantityKind);
@@ -560,8 +569,8 @@ class ToolImpl implements Tool {
         saveQuantityKindMetadata(mb, quantityKindForContribution.getQuantityKindMetadata());
         Model model = mb.build();
         System.err.println("Adding these triples: ");
-        writeOut(model, System.err);
-        con.add(model);
+        this.writeOut(model, System.err);
+        con.add(model, new Resource[] {});
     }
 
     private static void suggestConnectedQuantityKindsIfIsolated(QuantityKind quantityKind) {
@@ -596,7 +605,7 @@ class ToolImpl implements Tool {
         }
     }
 
-    private static void save(UnitForContribution unitForContribution, RepositoryConnection con) {
+    private void save(UnitForContribution unitForContribution, RepositoryConnection con) {
         Unit unit = unitForContribution.getUnit();
         suggestQuantityKindsIfNotPresent(unit);
         warnIfQuantityKindHasDifferentDimensionVector(unit);
@@ -640,8 +649,8 @@ class ToolImpl implements Tool {
         saveCommonMetadata(mb, unitForContribution.getMetadata());
         Model model = mb.build();
         System.err.println("Adding these triples: ");
-        writeOut(model, System.err);
-        con.add(model);
+        this.writeOut(model, System.err);
+        con.add(model, new Resource[] {});
     }
 
     private static void saveQuantityKindMetadata(ModelBuilder mb, QuantityKindMetadata metadata) {
