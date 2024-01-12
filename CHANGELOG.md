@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deprecated
+
+- `Qudt.derivedUnitsFrom*` have been deprecated. The implementations have become slower. The alternatives are listed in the code comments. The replacing methods have been renamed to fit better with the other unit-related methods and return `List<Unit>` instead of `Set<Unit>`. The reason is that the list is sorted according to match quality, which helps clients to choose the best after filtering.
+
+### Added
+
+- `Qudt.unitsFrom*` methods for obtaining units that match a given specification expressed via factor units.
+- `FactorUnits FactorUnits.withoutScaleFactor()` to get the FactorUnits object with scaleFactor 1.
+
 ## [6.2.0] - 2024-01-11
 
 ### Changed
