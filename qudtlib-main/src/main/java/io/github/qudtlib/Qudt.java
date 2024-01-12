@@ -378,6 +378,20 @@ public class Qudt {
     }
 
     /**
+     * Streams units based on factor units.
+     *
+     * @param searchMode the {@link DerivedUnitSearchMode} to use
+     * @param factorUnits the factor units
+     * @return the derived unit that match the given factor units
+     * @see #unitsFromMap(DerivedUnitSearchMode, Map)
+     */
+    public static Stream<Unit> streamFromFactorUnits(
+            DerivedUnitSearchMode searchMode, List<FactorUnit> factorUnits) {
+        FactorUnits selection = new FactorUnits(factorUnits);
+        return streamUnitsFromFactorUnits(searchMode, selection);
+    }
+
+    /**
      * Deprecated - use <code>Qudt.unitsFromFactorUnits({@link DerivedUnitSearchMode}, FactorUnits)
      * </code> instead.
      *
@@ -474,6 +488,21 @@ public class Qudt {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @param searchMode the {@link DerivedUnitSearchMode} to use
+     * @param selection the factor unit selection
+     * @return the units that match
+     * @see #unitsFromMap(DerivedUnitSearchMode, Map)
+     */
+    private static Stream<Unit> streamUnitsFromFactorUnits(
+            DerivedUnitSearchMode searchMode, FactorUnits selection) {
+        return units.values().stream()
+                .map(d -> unitDifference(d, selection))
+                .filter(UnitDifference.UNIT_DIFF_FILTER)
+                .sorted(UnitDifference.UNIT_DIFF_COMPARATOR)
+                .map(UnitDifference::getUnit);
+    }
+
     public static List<Unit> unitsWithSameFractionalDimensionVector(Unit unit) {
         Objects.requireNonNull(unit);
         FractionalDimensionVector fdv = FractionalUnits.getFractionalDimensionVector(unit);
@@ -555,6 +584,51 @@ public class Qudt {
                 return left.getIriLocalname().compareTo(right.getIriLocalname());
             }
         };
+    }
+
+    private static UnitDifference unitDifference(Unit left, FactorUnits requestedFactorUnits) {
+        if (!left.matches(requestedFactorUnits)) {
+            return new UnitDifference(left, -1);
+        }
+
+        int total = 0;
+
+        // try to pick units with names
+        if (left.getIriLocalname().contains("-")) {
+            total += 1024;
+        }
+
+        FactorUnits reqNum = requestedFactorUnits.numerator();
+        FactorUnits reqNumNorm = reqNum.normalize();
+        FactorUnits reqDen = requestedFactorUnits.denominator();
+        FactorUnits reqDenNorm = reqDen.normalize();
+
+        // then sort by delta in denominator factors
+        FactorUnits leftDen = left.getFactorUnits().denominator();
+        int leftFactorsDenCnt = leftDen.expand().size();
+        int reqFactorsDenCnt = reqDen.expand().size();
+        int diffFactorsCountDen = Math.abs(reqFactorsDenCnt - leftFactorsDenCnt);
+
+        total += 64 * diffFactorsCountDen;
+
+        // then sort by numerator factors
+
+        FactorUnits leftNum = left.getFactorUnits().numerator();
+        int leftFactorsNumCnt = leftNum.expand().size();
+        int reqFactorsNumCnt = reqNum.expand().size();
+        int diffFactorsCountNum = Math.abs(reqFactorsNumCnt - leftFactorsNumCnt);
+
+        total += 8 * diffFactorsCountNum;
+
+        // then sort by similarity of factor unit total size
+        FactorUnits reqNorm = requestedFactorUnits.normalize();
+
+        int leftCnt = left.getFactorUnits().expand().size();
+        int reqCnt = requestedFactorUnits.expand().size();
+
+        total += Math.abs(reqCnt - leftCnt);
+
+        return new UnitDifference(left, total);
     }
 
     private static String getIriLocalName(String iri) {

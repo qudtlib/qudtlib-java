@@ -902,4 +902,18 @@ public class QudtTests {
 
         Assertions.assertEquals(1000000, Qudt.convert(BigDecimal.ONE, unit, baseUnit).intValue());
     }
+
+    @Test
+    public void streamDerivedUnit() {
+        FactorUnits factorUnits = FactorUnits.ofFactorUnitSpec(L, 1, L__PER__SEC, -1);
+        List<FactorUnit> factorUnitList = factorUnits.getFactorUnits();
+        List<Unit> units =
+                Qudt.unitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, factorUnitList);
+        Optional<Unit> first =
+                Qudt.streamFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, factorUnitList)
+                        .findFirst();
+        Assertions.assertTrue(first.isPresent());
+        Assertions.assertEquals(units.get(0), first.get());
+        Assertions.assertEquals(SEC, first.get());
+    }
 }
