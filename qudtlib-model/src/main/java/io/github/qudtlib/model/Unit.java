@@ -105,6 +105,11 @@ public class Unit extends SelfSmuggler {
             return (T) this;
         }
 
+        public <T extends Definition> T clearLabels() {
+            this.labels.clear();
+            return (T) this;
+        }
+
         public <T extends Definition> T addLabel(String label, String languageTag) {
             if (label != null) {
                 return this.addLabel(new LangString(label, languageTag));

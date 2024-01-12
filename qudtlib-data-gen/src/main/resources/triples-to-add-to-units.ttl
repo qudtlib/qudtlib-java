@@ -26,7 +26,7 @@ unit:MicroMHO
 
 # random correction
 unit:MilliR_man
-    qudt:conversionMultiplier 0.0001 ;
+    qudt:conversionMultiplier 0.00001 ;
     qudt:prefix prefix:Milli .
 
 unit:MilliGAL qudt:prefix prefix:Milli .
@@ -1219,3 +1219,15 @@ unit:A-PER-DEG_C qudt:conversionMultiplier 1.0 .
   #    │  └─── unit:MOL multiplier: 1.0
   #    └─── unit:SEC^-1 multiplier: 1.0 (multiplier^-1: 1.0)
 unit:MicroMOL-PER-GM-SEC qudt:conversionMultiplier 0.001 .
+
+
+unit:R_man a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:hasQuantityKind qk:DoseEquivalent;
+  qudt:conversionMultiplier 0.01;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H0T-2D0>;
+  qudt:symbol "rem";
+  qudt:ucumCode "REM"^^qudt:UCUMcs;
+  rdfs:label "roentgen equivalent man"@en;
+  qudt:informativeReference "https://en.wikipedia.org/wiki/Roentgen_equivalent_man"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "The roentgen equivalent man (rem)[1][2] is a CGS unit of equivalent dose, effective dose, and committed dose, which are dose measures used to estimate potential health effects of low levels of ionizing radiation on the human body." .

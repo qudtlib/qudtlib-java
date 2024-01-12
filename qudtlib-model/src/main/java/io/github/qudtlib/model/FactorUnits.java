@@ -175,6 +175,10 @@ public class FactorUnits {
                         .toArray(arr));
     }
 
+    public FactorUnits withoutScaleFactor() {
+        return new FactorUnits(this.factorUnits);
+    }
+
     public List<FactorUnit> getFactorUnits() {
         return factorUnits;
     }

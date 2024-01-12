@@ -16,6 +16,12 @@ public interface Tool {
     Unit addDerivedUnit(
             FactorUnits factorUnits,
             Consumer<Unit.Definition> unitConfigurer,
+            Consumer<UnitMetadata.Builder> metadataConfigurer,
+            String nonstandardLocalname);
+
+    Unit addDerivedUnit(
+            FactorUnits factorUnits,
+            Consumer<Unit.Definition> unitConfigurer,
             Consumer<UnitMetadata.Builder> metadataConfigurer);
 
     Unit addDerivedUnit(FactorUnits factorUnits, Consumer<Unit.Definition> unitConfigurer);

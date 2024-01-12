@@ -26,8 +26,8 @@ public class UnitForContribution {
         return new Builder(iri);
     }
 
-    public static Builder builder(FactorUnits factorUnits) {
-        return new Builder(factorUnits);
+    public static Builder builder(FactorUnits factorUnits, String nonstandardLocalname) {
+        return new Builder(factorUnits, nonstandardLocalname);
     }
 
     public static class Builder {
@@ -43,8 +43,10 @@ public class UnitForContribution {
             this(Unit.definition(iri), UnitMetadata.builder());
         }
 
-        public Builder(FactorUnits factorUnits) {
-            this(ContributionHelper.derivedUnitDefinition(factorUnits), UnitMetadata.builder());
+        public Builder(FactorUnits factorUnits, String nonstandardLocalname) {
+            this(
+                    ContributionHelper.derivedUnitDefinition(factorUnits, nonstandardLocalname),
+                    UnitMetadata.builder());
         }
 
         public Unit.Definition unit() {
