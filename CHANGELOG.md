@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.0] - 2024-01-11
+
 ### Changed
 
 - Simplified BEST_MATCH algorithm for obtaining a unit from a set of factor units. Recent additions to the data model (isScalingOf and factorUnit relationships) led to a larger set of candidates and the complexity of the previous algorithm led to very high computation time.
@@ -213,7 +215,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.1.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.2.0...HEAD
+[6.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.1.0...v6.2.0
 [6.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...v6.1.0
 [6.0.3]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.2...v6.0.3
 [6.0.2]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.1...v6.0.2
