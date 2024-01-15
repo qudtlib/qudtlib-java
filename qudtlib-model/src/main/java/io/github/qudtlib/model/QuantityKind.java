@@ -142,7 +142,7 @@ public class QuantityKind extends SelfSmuggler {
 
     private final Set<QuantityKind> exactMatches;
 
-    private final String dimensionVectorIri;
+    private DimensionVector dimensionVector;
 
     private String qkdvNumeratorIri;
     private String qkdvDenominatorIri;
@@ -156,7 +156,11 @@ public class QuantityKind extends SelfSmuggler {
         Objects.requireNonNull(definition.applicableUnits);
         this.iri = definition.iri;
         this.labels = new LangStrings(definition.labels);
-        this.dimensionVectorIri = definition.dimensionVectorIri;
+
+        if (definition.dimensionVectorIri != null) {
+            this.dimensionVector = new DimensionVector(definition.dimensionVectorIri);
+        }
+
         this.qkdvDenominatorIri = definition.qkdvDenominatorIri;
         this.qkdvNumeratorIri = definition.qkdvNumeratorIri;
         this.symbol = definition.symbol;
@@ -201,8 +205,24 @@ public class QuantityKind extends SelfSmuggler {
         this.exactMatches.add(quantityKind);
     }
 
+    public Optional<DimensionVector> getDimensionVector() {
+        if (this.dimensionVector != null) {
+            return Optional.of(this.dimensionVector);
+        }
+
+        if (this.broaderQuantityKinds != null) {
+            return this.broaderQuantityKinds.stream()
+                    .map(QuantityKind::getDimensionVector)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .findFirst();
+        }
+
+        return Optional.empty();
+    }
+
     public Optional<String> getDimensionVectorIri() {
-        return Optional.ofNullable(dimensionVectorIri);
+        return this.getDimensionVector().map(DimensionVector::getDimensionVectorIri);
     }
 
     public Optional<String> getQkdvNumeratorIri() {
