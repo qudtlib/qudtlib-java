@@ -248,12 +248,13 @@ public class Unit extends SelfSmuggler {
     private final String ucumCode;
     private final LangStrings labels;
     private final Unit scalingOf;
-    private final String dimensionVectorIri;
     private final Set<Unit> exactMatches;
     private final FactorUnits factorUnits;
     private final String currencyCode;
     private final Integer currencyNumber;
     private final Set<SystemOfUnits> unitOfSystems;
+
+    private DimensionVector dimensionVector;
 
     private final boolean deprecated;
 
@@ -264,7 +265,9 @@ public class Unit extends SelfSmuggler {
         Objects.requireNonNull(definition.factorUnits);
         Objects.requireNonNull(definition.quantityKinds);
         this.iri = definition.iri;
-        this.dimensionVectorIri = definition.dimensionVectorIri;
+        if (definition.dimensionVectorIri != null) {
+            this.dimensionVector = new DimensionVector(definition.dimensionVectorIri);
+        }
         this.conversionMultiplier = definition.conversionMultiplier;
         this.conversionOffset = definition.conversionOffset;
         this.symbol = definition.symbol;
@@ -494,8 +497,29 @@ public class Unit extends SelfSmuggler {
         return iri;
     }
 
+    public Optional<DimensionVector> getDimensionVector() {
+        if (this.dimensionVector != null) {
+            return Optional.of(this.dimensionVector);
+        }
+
+        if (this.factorUnits != null && this.factorUnits.hasFactorUnits()) {
+            this.dimensionVector = this.factorUnits.getDimensionVector();
+            return Optional.of(this.dimensionVector);
+        }
+
+        if (this.quantityKinds != null) {
+            return this.quantityKinds.stream()
+                    .map(QuantityKind::getDimensionVector)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .findFirst();
+        }
+
+        return Optional.empty();
+    }
+
     public Optional<String> getDimensionVectorIri() {
-        return Optional.ofNullable(dimensionVectorIri);
+        return this.getDimensionVector().map(DimensionVector::getDimensionVectorIri);
     }
 
     public Optional<BigDecimal> getConversionMultiplier() {

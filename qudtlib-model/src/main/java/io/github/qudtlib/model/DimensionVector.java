@@ -3,6 +3,7 @@ package io.github.qudtlib.model;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Represents the QUDT dimension vector and allows for converting between a dimension vector IRI and
@@ -53,22 +54,27 @@ public class DimensionVector {
         String[] numbers = localName.split("[^\\-\\d]");
         String[] indicators = localName.split("-?\\d{1,2}");
         if (indicators.length != 8) {
-            throw new RuntimeException(
-                    String.format(
-                            "Cannot process dimension vector iri %s: unexpected number of dimensions: %d",
-                            dimensionVectorIri, numbers.length));
-        }
-        for (int i = 0; i < indicators.length; i++) {
+            Logger.getLogger(DimensionVector.class.getName())
+                    .warning(
+                            String.format(
+                                    "Cannot process dimension vector iri %s: unexpected number of dimensions: %d",
+                                    dimensionVectorIri, numbers.length));
+            Arrays.fill(dimValues, 0);
+        } else {
+            for (int i = 0; i < indicators.length; i++) {
 
-            if (indicators[i].charAt(0) != dimensions[i]) {
-                throw new RuntimeException(
-                        String.format(
-                                "Expected dimension indicator '%s', encountered '%s'",
-                                dimensions[i], indicators[i]));
+                if (indicators[i].charAt(0) != dimensions[i]) {
+                    throw new RuntimeException(
+                            String.format(
+                                    "Expected dimension indicator '%s', encountered '%s'",
+                                    dimensions[i], indicators[i]));
+                }
+                dimValues[i] =
+                        Integer.parseInt(
+                                numbers[i + 1]); // split produces an empty first array element
             }
-            dimValues[i] =
-                    Integer.parseInt(numbers[i + 1]); // split produces an empty first array element
         }
+
         this.values = dimValues;
     }
 
