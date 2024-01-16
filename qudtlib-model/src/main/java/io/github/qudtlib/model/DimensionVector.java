@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class DimensionVector {
 
     private static final char[] dimensions = new char[] {'A', 'E', 'L', 'I', 'M', 'H', 'T', 'D'};
-    public static final DecimalFormat FORMAT = new DecimalFormat("#.#");
+    public static final DecimalFormat FORMAT = new DecimalFormat("0.#");
     private static String PT = "pt";
 
     public static DimensionVector DIMENSIONLESS =
@@ -94,7 +94,7 @@ public class DimensionVector {
 
         for (int i = 0; i < 8; i++) {
             sb.append(dimensions[i]).append(dimensionValues[i]);
-            this.values[i] = (float) dimensionValues[i];
+            this.values[i] = noNegativeZero((float) dimensionValues[i]);
         }
 
         this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
@@ -110,10 +110,19 @@ public class DimensionVector {
         this.values = dimensionValues;
 
         for (int i = 0; i < 8; i++) {
-            sb.append(dimensions[i]).append(iriFormat(dimensionValues[i]));
+            this.values[i] = noNegativeZero(values[i]);
+            sb.append(dimensions[i]).append(iriFormat(values[i]));
         }
 
         this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
+    }
+
+    private static float noNegativeZero(float f) {
+        if (f == -0.0f) {
+            return 0.0f;
+        }
+
+        return f;
     }
 
     private static String iriFormat(float dimensionValues) {
@@ -122,7 +131,7 @@ public class DimensionVector {
             return "0";
         }
 
-        return FORMAT.format(dimensionValues).replace("\\.", "pt");
+        return FORMAT.format(dimensionValues).replace(".", "pt");
     }
 
     public DimensionVector() {
