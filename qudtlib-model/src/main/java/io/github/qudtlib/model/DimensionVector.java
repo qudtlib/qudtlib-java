@@ -1,8 +1,10 @@
 package io.github.qudtlib.model;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Represents the QUDT dimension vector and allows for converting between a dimension vector IRI and
@@ -13,14 +15,17 @@ import java.util.Optional;
  * never changes by multiplication, and its value is only 1 iff all other dimensions are 0.
  */
 public class DimensionVector {
+
     private static final char[] dimensions = new char[] {'A', 'E', 'L', 'I', 'M', 'H', 'T', 'D'};
+    public static final DecimalFormat FORMAT = new DecimalFormat("0.#");
+    private static String PT = "pt";
 
     public static DimensionVector DIMENSIONLESS =
             new DimensionVector(new int[] {0, 0, 0, 0, 0, 0, 0, 1});
 
     private String dimensionVectorIri;
 
-    private final int[] values;
+    private final float[] values;
 
     public static Optional<DimensionVector> of(String dimensionVectorIri) {
         try {
@@ -49,26 +54,32 @@ public class DimensionVector {
     public DimensionVector(String dimensionVectorIri) {
         this.dimensionVectorIri = dimensionVectorIri;
         String localName = dimensionVectorIri.substring(dimensionVectorIri.lastIndexOf("/") + 1);
-        int[] dimValues = new int[8];
-        String[] numbers = localName.split("[^\\-\\d]");
-        String[] indicators = localName.split("-?\\d{1,2}");
+        float[] dimValues = new float[8];
+        String[] numbers = localName.split("[^\\-\\dpt]");
+        String[] indicators = localName.split("[^[AELIMHTD]]+");
         if (indicators.length != 8) {
-            throw new RuntimeException(
-                    String.format(
-                            "Cannot process dimension vector iri %s: unexpected number of dimensions: %d",
-                            dimensionVectorIri, numbers.length));
-        }
-        for (int i = 0; i < indicators.length; i++) {
+            Logger.getLogger(DimensionVector.class.getName())
+                    .warning(
+                            String.format(
+                                    "Cannot process dimension vector iri %s: unexpected number of dimensions: %d",
+                                    dimensionVectorIri, numbers.length));
+            Arrays.fill(dimValues, 0);
+        } else {
+            for (int i = 0; i < indicators.length; i++) {
 
-            if (indicators[i].charAt(0) != dimensions[i]) {
-                throw new RuntimeException(
-                        String.format(
-                                "Expected dimension indicator '%s', encountered '%s'",
-                                dimensions[i], indicators[i]));
+                if (indicators[i].charAt(0) != dimensions[i]) {
+                    throw new RuntimeException(
+                            String.format(
+                                    "Expected dimension indicator '%s', encountered '%s'",
+                                    dimensions[i], indicators[i]));
+                }
+                dimValues[i] =
+                        Float.parseFloat(
+                                numbers[i + 1].replace(
+                                        "pt", ".")); // split produces an empty first array element
             }
-            dimValues[i] =
-                    Integer.parseInt(numbers[i + 1]); // split produces an empty first array element
         }
+
         this.values = dimValues;
     }
 
@@ -79,11 +90,48 @@ public class DimensionVector {
         }
         StringBuilder sb = new StringBuilder();
 
+        this.values = new float[8];
+
         for (int i = 0; i < 8; i++) {
             sb.append(dimensions[i]).append(dimensionValues[i]);
+            this.values[i] = noNegativeZero((float) dimensionValues[i]);
         }
-        this.values = dimensionValues;
+
         this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
+    }
+
+    public DimensionVector(float[] dimensionValues) {
+        if (dimensionValues.length != 8) {
+            throw new RuntimeException(
+                    "wrong dimensionality, expected 8, got " + dimensionValues.length);
+        }
+        StringBuilder sb = new StringBuilder();
+
+        this.values = dimensionValues;
+
+        for (int i = 0; i < 8; i++) {
+            this.values[i] = noNegativeZero(values[i]);
+            sb.append(dimensions[i]).append(iriFormat(values[i]));
+        }
+
+        this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
+    }
+
+    private static float noNegativeZero(float f) {
+        if (f == -0.0f) {
+            return 0.0f;
+        }
+
+        return f;
+    }
+
+    private static String iriFormat(float dimensionValues) {
+        // Note: This handles a weird case where you may have "-0" as a value.
+        if (Math.abs(dimensionValues) < 0.01) {
+            return "0";
+        }
+
+        return FORMAT.format(dimensionValues).replace(".", "pt");
     }
 
     public DimensionVector() {
@@ -98,12 +146,12 @@ public class DimensionVector {
         return dimensionVectorIri;
     }
 
-    public int[] getValues() {
+    public float[] getValues() {
         return values;
     }
 
-    public DimensionVector multiply(int by) {
-        int[] mult = new int[8];
+    public DimensionVector multiply(float by) {
+        float[] mult = new float[8];
         boolean isRatio = true;
         for (int i = 0; i < 7; i++) {
             mult[i] = this.values[i] * by;
@@ -115,12 +163,12 @@ public class DimensionVector {
         return new DimensionVector(mult);
     }
 
-    private void setRatio(int[] values, boolean isRatio) {
+    private void setRatio(float[] values, boolean isRatio) {
         values[7] = isRatio ? 1 : 0;
     }
 
     public DimensionVector combine(DimensionVector other) {
-        int[] combined = new int[8];
+        float[] combined = new float[8];
         boolean isRatio = true;
         for (int i = 0; i < 8; i++) {
             combined[i] = this.values[i] + other.getValues()[i];

@@ -16,6 +16,7 @@ public class FactorUnits {
     private static final FactorUnits EMPTY_FACTOR_UNITS = new FactorUnits(new ArrayList<>());
     private final List<FactorUnit> factorUnits;
     private final BigDecimal scaleFactor;
+    private DimensionVector dimensionVector;
 
     public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
         this.factorUnits = factorUnits.stream().collect(Collectors.toUnmodifiableList());
@@ -261,10 +262,18 @@ public class FactorUnits {
         return normalized.scale(this.scaleFactor);
     }
 
-    public String getDimensionVectorIri() {
-        if (this.factorUnits == null || this.factorUnits.isEmpty()) {
-            return QudtNamespaces.dimensionVector.makeIriInNamespace("A0E0L0I0M0H0T0D1");
+    public DimensionVector getDimensionVector() {
+        if (this.dimensionVector == null) {
+            this.dimensionVector = this.computeDimensionVector();
         }
+        return this.dimensionVector;
+    }
+
+    private DimensionVector computeDimensionVector() {
+        if (this.factorUnits == null || this.factorUnits.isEmpty()) {
+            return DimensionVector.DIMENSIONLESS;
+        }
+
         DimensionVector dv = null;
         for (FactorUnit fu : this.factorUnits) {
             Optional<String> fudvOpt = fu.getDimensionVectorIri();
@@ -280,7 +289,12 @@ public class FactorUnits {
                 dv = dv.combine(DimensionVector.ofRequired(fudvOpt.get()));
             }
         }
-        return dv.getDimensionVectorIri();
+
+        return dv;
+    }
+
+    public String getDimensionVectorIri() {
+        return this.getDimensionVector().getDimensionVectorIri();
     }
 
     public List<FactorUnit> expand() {
