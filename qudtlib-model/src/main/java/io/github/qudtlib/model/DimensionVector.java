@@ -1,6 +1,7 @@
 package io.github.qudtlib.model;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,7 +18,14 @@ import java.util.logging.Logger;
 public class DimensionVector {
 
     private static final char[] dimensions = new char[] {'A', 'E', 'L', 'I', 'M', 'H', 'T', 'D'};
-    public static final DecimalFormat FORMAT = new DecimalFormat("0.#");
+    public static final DecimalFormat FORMAT;
+
+    static {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        FORMAT = new DecimalFormat("0.#", symbols);
+    }
+
     private static String PT = "pt";
 
     public static DimensionVector DIMENSIONLESS =
