@@ -113,7 +113,7 @@ public class DimensionVector {
             this.values[i] = noNegativeZero((float) dimensionValues[i]);
         }
 
-        this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
+        this.dimensionVectorIri = QudtNamespaces.dimensionVector.makeIriInNamespace(sb.toString());
     }
 
     public DimensionVector(float[] dimensionValues) {
@@ -130,7 +130,7 @@ public class DimensionVector {
             sb.append(dimensions[i]).append(iriFormat(values[i]));
         }
 
-        this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
+        this.dimensionVectorIri = QudtNamespaces.dimensionVector.makeIriInNamespace(sb.toString());
     }
 
     private static float noNegativeZero(float f) {
@@ -166,28 +166,31 @@ public class DimensionVector {
         return values;
     }
 
-
-
-    public float getAmountOfSubstanceExponent(){
+    public float getAmountOfSubstanceExponent() {
         return this.values[INDEX_AMOUNT_OF_SUBSTANCE];
     }
-    public float getElectricCurrentExponent(){
+
+    public float getElectricCurrentExponent() {
         return this.values[INDEX_ELECTRIC_CURRENT];
     }
 
-    public float getLenghExponent(){
+    public float getLenghExponent() {
         return this.values[INDEX_LENGTH];
     }
-    public float getLuminousIntensityExponent(){
+
+    public float getLuminousIntensityExponent() {
         return this.values[INDEX_LUMINOUS_INTENSITY];
     }
-    public float getMassExponent(){
+
+    public float getMassExponent() {
         return this.values[INDEX_MASS];
     }
-    public float getTemperatureExponent(){
+
+    public float getTemperatureExponent() {
         return this.values[INDEX_TEMPERATURE];
     }
-    public float getTimeExponent(){
+
+    public float getTimeExponent() {
         return this.values[INDEX_TIME];
     }
 
