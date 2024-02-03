@@ -502,6 +502,15 @@ public class Qudt {
         return new Comparator<Unit>() {
             @Override
             public int compare(Unit left, Unit right) {
+                if (left.getFactorUnits().equals(requestedFactorUnits)) {
+                    if (!right.getFactorUnits().equals(requestedFactorUnits)) {
+                        return -1;
+                    }
+                } else {
+                    if (right.getFactorUnits().equals(requestedFactorUnits)) {
+                        return 1;
+                    }
+                }
                 if (!left.getIriLocalname().contains("-")) {
                     if (right.getIriLocalname().contains("-")) {
                         return -1; // prefer a derived unit with a new name (such as W, J, N etc.)

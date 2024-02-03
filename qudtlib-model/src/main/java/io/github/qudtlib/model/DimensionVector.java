@@ -1,6 +1,7 @@
 package io.github.qudtlib.model;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,7 +18,22 @@ import java.util.logging.Logger;
 public class DimensionVector {
 
     private static final char[] dimensions = new char[] {'A', 'E', 'L', 'I', 'M', 'H', 'T', 'D'};
-    public static final DecimalFormat FORMAT = new DecimalFormat("0.#");
+    private static final int INDEX_AMOUNT_OF_SUBSTANCE = 0;
+    private static final int INDEX_ELECTRIC_CURRENT = 1;
+    private static final int INDEX_LENGTH = 2;
+    private static final int INDEX_LUMINOUS_INTENSITY = 3;
+    private static final int INDEX_MASS = 4;
+    private static final int INDEX_TEMPERATURE = 5;
+    private static final int INDEX_TIME = 6;
+
+    public static final DecimalFormat FORMAT;
+
+    static {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        FORMAT = new DecimalFormat("0.#", symbols);
+    }
+
     private static String PT = "pt";
 
     public static DimensionVector DIMENSIONLESS =
@@ -97,7 +113,7 @@ public class DimensionVector {
             this.values[i] = noNegativeZero((float) dimensionValues[i]);
         }
 
-        this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
+        this.dimensionVectorIri = QudtNamespaces.dimensionVector.makeIriInNamespace(sb.toString());
     }
 
     public DimensionVector(float[] dimensionValues) {
@@ -114,7 +130,7 @@ public class DimensionVector {
             sb.append(dimensions[i]).append(iriFormat(values[i]));
         }
 
-        this.dimensionVectorIri = "http://qudt.org/vocab/dimensionvector/" + sb.toString();
+        this.dimensionVectorIri = QudtNamespaces.dimensionVector.makeIriInNamespace(sb.toString());
     }
 
     private static float noNegativeZero(float f) {
@@ -150,6 +166,34 @@ public class DimensionVector {
         return values;
     }
 
+    public float getAmountOfSubstanceExponent() {
+        return this.values[INDEX_AMOUNT_OF_SUBSTANCE];
+    }
+
+    public float getElectricCurrentExponent() {
+        return this.values[INDEX_ELECTRIC_CURRENT];
+    }
+
+    public float getLenghExponent() {
+        return this.values[INDEX_LENGTH];
+    }
+
+    public float getLuminousIntensityExponent() {
+        return this.values[INDEX_LUMINOUS_INTENSITY];
+    }
+
+    public float getMassExponent() {
+        return this.values[INDEX_MASS];
+    }
+
+    public float getTemperatureExponent() {
+        return this.values[INDEX_TEMPERATURE];
+    }
+
+    public float getTimeExponent() {
+        return this.values[INDEX_TIME];
+    }
+
     public DimensionVector multiply(float by) {
         float[] mult = new float[8];
         boolean isRatio = true;
@@ -170,7 +214,7 @@ public class DimensionVector {
     public DimensionVector combine(DimensionVector other) {
         float[] combined = new float[8];
         boolean isRatio = true;
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             combined[i] = this.values[i] + other.getValues()[i];
             if (combined[i] != 0) {
                 isRatio = false;
