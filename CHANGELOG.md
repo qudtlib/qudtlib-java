@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.0] - 2024-02-03
+
+### Added
+
+- `Qudt.unitsFrom*` methods for obtaining units that match a given specification expressed via factor units.
+- `FactorUnits FactorUnits.withoutScaleFactor()` to get the FactorUnits object with scaleFactor 1.
+
 ### Changed
 
 - `Qudt.unitsFromFactorUnits` has been changed to give highest priority to units with factorUnits equal to the requested ones.
@@ -14,11 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 - `Qudt.derivedUnitsFrom*` have been deprecated. The implementations have become slower. The alternatives are listed in the code comments. The replacing methods have been renamed to fit better with the other unit-related methods and return `List<Unit>` instead of `Set<Unit>`. The reason is that the list is sorted according to match quality, which helps clients to choose the best after filtering.
-
-### Added
-
-- `Qudt.unitsFrom*` methods for obtaining units that match a given specification expressed via factor units.
-- `FactorUnits FactorUnits.withoutScaleFactor()` to get the FactorUnits object with scaleFactor 1.
 
 ## [6.2.0] - 2024-01-11
 
@@ -228,7 +230,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.2.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.3.0...HEAD
+[6.3.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.2.0...v6.3.0
 [6.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.1.0...v6.2.0
 [6.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...v6.1.0
 [6.0.3]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.2...v6.0.3
