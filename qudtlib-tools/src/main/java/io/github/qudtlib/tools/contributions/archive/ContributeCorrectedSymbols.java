@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.contributions;
+package io.github.qudtlib.tools.contributions.archive;
 
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.FactorUnit;
@@ -50,9 +50,10 @@ public class ContributeCorrectedSymbols {
                                             }
                                             factorUnits =
                                                     new FactorUnits(
-                                                            FactorUnits.sortAccordingToUnitLabel(
-                                                                    u.getIriLocalname(),
-                                                                    factorUnitList));
+                                                            FactorUnits
+                                                                    .sortAccordingToUnitLocalname(
+                                                                            u.getIriLocalname(),
+                                                                            factorUnitList));
                                             symbol = factorUnits.getSymbol().orElse(null);
                                         }
                                         final String finalSymbol = symbol;

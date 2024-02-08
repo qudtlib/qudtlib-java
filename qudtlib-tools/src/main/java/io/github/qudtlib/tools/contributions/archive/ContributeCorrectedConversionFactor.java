@@ -1,6 +1,4 @@
-package io.github.qudtlib.tools.contributions;
-
-import static io.github.qudtlib.tools.contribute.support.tree.FormattingNodeVisitor.*;
+package io.github.qudtlib.tools.contributions.archive;
 
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.*;
@@ -48,7 +46,7 @@ public class ContributeCorrectedConversionFactor {
                                                 u.getFactorUnits().getFactorUnits();
                                         factorUnits =
                                                 new FactorUnits(
-                                                        FactorUnits.sortAccordingToUnitLabel(
+                                                        FactorUnits.sortAccordingToUnitLocalname(
                                                                 u.getIriLocalname(),
                                                                 factorUnitList));
                                         final FactorUnits finalFactorUnits = factorUnits;

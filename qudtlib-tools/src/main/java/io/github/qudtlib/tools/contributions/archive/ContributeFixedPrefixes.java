@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.contributions;
+package io.github.qudtlib.tools.contributions.archive;
 
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
