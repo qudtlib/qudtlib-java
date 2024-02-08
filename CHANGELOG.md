@@ -7,14 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.4.1] - 2024-02-08
+
 ## [6.4.0] - 2024-02-08
-
-### Changed
-
-- Bump qudtlib version to [2.1.35](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.35)
-- Refactoring and extensions of qudtlib-tools to keep up with incoming changes and slowly working toward a state in which the tools can be used in github actions for correctness checks.
-- Factor units can now be sorted for a given unit IRI, resulting in symbols being generated with expected ordering of factors.
-- Data generation input files have been renamed for consistency
 
 ### Added
 
@@ -22,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added two units and a quantity kind pending upstream PR merging
 - New class `io.github.qudtlib.QudtMainForDebugging` in `qudtlib-main-rdf` that can be used for thread-debugging the non-hardcoded static initializer when other methods fail.
 - `FactorUnits.getConversionMultiplierOpt` obtains the multiplier only if all factor units have one, instead of falling back to using 1.0.
+
+### Changed
+
+- Bump qudtlib version to [2.1.35](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.35)
+- Refactoring and extensions of qudtlib-tools to keep up with incoming changes and slowly working toward a state in which the tools can be used in github actions for correctness checks.
+- Factor units can now be sorted for a given unit IRI, resulting in symbols being generated with expected ordering of factors.
+- Data generation input files have been renamed for consistency
 
 ## [6.3.0] - 2024-02-03
 
@@ -246,7 +248,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.3.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.1...HEAD
+[6.4.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.0...v6.4.1
+[6.4.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.3.0...v6.4.0
 [6.3.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.2.0...v6.3.0
 [6.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.1.0...v6.2.0
 [6.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.0.3...v6.1.0
