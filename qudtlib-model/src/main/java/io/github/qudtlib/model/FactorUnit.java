@@ -102,10 +102,20 @@ public class FactorUnit {
     }
 
     public BigDecimal conversionMultiplier() {
+        return conversionMultiplierWithFallbackOne();
+    }
+
+    public BigDecimal conversionMultiplierWithFallbackOne() {
         return this.getUnit()
                 .getConversionMultiplier()
                 .orElse(BigDecimal.ONE)
                 .pow(this.exponent, MathContext.DECIMAL128);
+    }
+
+    public Optional<BigDecimal> conversionMultiplierOpt() {
+        return this.getUnit()
+                .getConversionMultiplier()
+                .map(cm -> cm.pow(this.exponent, MathContext.DECIMAL128));
     }
 
     public List<List<FactorUnit>> getAllPossibleFactorUnitCombinations() {
