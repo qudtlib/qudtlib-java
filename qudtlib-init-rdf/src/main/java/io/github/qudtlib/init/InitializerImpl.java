@@ -288,6 +288,7 @@ public class InitializerImpl implements Initializer {
                 FactorUnits.Builder fub =
                         factorUnitBuilders.computeIfAbsent(
                                 currentDerivedUnitIri, s -> FactorUnits.builder());
+                fub.iriForSorting(currentDerivedUnitIri);
                 String unitIri = bs.getValue("factorUnit").stringValue();
                 Unit.Definition unitDefinition =
                         definitions

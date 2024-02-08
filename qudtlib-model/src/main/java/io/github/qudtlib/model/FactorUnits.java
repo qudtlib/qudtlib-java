@@ -18,9 +18,17 @@ public class FactorUnits {
     private final BigDecimal scaleFactor;
     private DimensionVector dimensionVector;
 
-    public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
+    public FactorUnits(
+            List<FactorUnit> factorUnits, BigDecimal scaleFactor, String iriForSortingFactors) {
+        if (iriForSortingFactors != null) {
+            factorUnits = sortAccordingToUnitLocalname(iriForSortingFactors, factorUnits);
+        }
         this.factorUnits = factorUnits.stream().collect(Collectors.toUnmodifiableList());
         this.scaleFactor = Optional.ofNullable(scaleFactor).orElse(BigDecimal.ONE);
+    }
+
+    public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
+        this(factorUnits, scaleFactor, null);
     }
 
     public FactorUnits(List<FactorUnit> factorUnits) {
@@ -62,9 +70,11 @@ public class FactorUnits {
         if (this.factorUnits.isEmpty()) {
             return false;
         }
-        if (this.factorUnits.size() == 1
-                && this.factorUnits.get(0).getUnit().getFactorUnits() != this) {
-            return true;
+        if (this.factorUnits.size() == 1) {
+            Unit u = this.factorUnits.get(0).getUnit();
+            if (!this.equals(u.getFactorUnits())) {
+                return true;
+            }
         }
         if (this.factorUnits.size() == 1
                 && this.factorUnits.get(0).getExponent() == 1
@@ -95,6 +105,8 @@ public class FactorUnits {
         private List<FactorUnit.Builder> factorUnitBuilders = new ArrayList<>();
         private BigDecimal scale = BigDecimal.ONE;
 
+        private String iriForSorting = null;
+
         private Builder() {}
 
         public Builder factor(Unit unit, int exponent) {
@@ -119,6 +131,11 @@ public class FactorUnits {
             return this;
         }
 
+        public Builder iriForSorting(String iriForSorting) {
+            this.iriForSorting = iriForSorting;
+            return this;
+        }
+
         public Builder scaleFactor(BigDecimal scaleFactor) {
             Objects.requireNonNull(scaleFactor);
             this.scale = scaleFactor;
@@ -126,6 +143,14 @@ public class FactorUnits {
         }
 
         public FactorUnits build() {
+            if (this.iriForSorting != null) {
+                return new FactorUnits(
+                        factorUnitBuilders.stream()
+                                .map(FactorUnit.Builder::build)
+                                .collect(toList()),
+                        this.scale,
+                        iriForSorting);
+            }
             return new FactorUnits(
                     factorUnitBuilders.stream().map(FactorUnit.Builder::build).collect(toList()),
                     this.scale);
@@ -244,7 +269,8 @@ public class FactorUnits {
     }
 
     public FactorUnits scale(BigDecimal by) {
-        return new FactorUnits(this.factorUnits, this.scaleFactor.multiply(by));
+        return new FactorUnits(
+                this.factorUnits, this.scaleFactor.multiply(by, MathContext.DECIMAL128));
     }
 
     public FactorUnits normalize() {
@@ -255,6 +281,8 @@ public class FactorUnits {
                             .map(fu -> fu.getUnit().normalize().pow(fu.getExponent()))
                             .reduce((prev, cur) -> prev.combineWith(cur))
                             .get();
+        } else {
+            return new FactorUnits(this);
         }
         if (!normalized.isRatioOfSameUnits()) {
             normalized = normalized.reduceExponents();
@@ -399,7 +427,8 @@ public class FactorUnits {
                             factor.multiply(
                                     myFactor.unit
                                             .getConversionMultiplier(otherFactor.unit)
-                                            .pow(myFactor.exponent, MathContext.DECIMAL128));
+                                            .pow(myFactor.exponent, MathContext.DECIMAL128),
+                                    MathContext.DECIMAL128);
                     processed = otherFactor;
                     break;
                 }
@@ -414,7 +443,8 @@ public class FactorUnits {
                             factor.multiply(
                                     myFactor.getUnit()
                                             .getConversionMultiplier()
-                                            .orElse(BigDecimal.ONE));
+                                            .orElse(BigDecimal.ONE),
+                                    MathContext.DECIMAL128);
                 } else {
                     throw new RuntimeException(
                             String.format(
@@ -532,7 +562,9 @@ public class FactorUnits {
             if (sbDenom.length() > 0) {
                 sbDenom.deleteCharAt(sbDenom.length() - 1);
             }
-            sb.append(".");
+            if (sb.length() > 0) {
+                sb.append(".");
+            }
             sb.append(sbDenom);
         }
         return Optional.of(sb.toString());
@@ -546,22 +578,31 @@ public class FactorUnits {
         return new FactorUnits(factorUnits).streamLocalnamePossibilities().findFirst().get();
     }
 
-    public static List<FactorUnit> sortAccordingToUnitLabel(
-            String unitLabel, List<FactorUnit> factorUnitsList) {
+    public static List<FactorUnit> sortAccordingToUnitLocalname(
+            String unitIriOrAbbreviatedOrLocalName, List<FactorUnit> factorUnitsList) {
         FactorUnits factorUnits = new FactorUnits(factorUnitsList);
-        int perIndex = unitLabel.indexOf("PER");
+        String unitLocalName = unitIriOrAbbreviatedOrLocalName;
+        if (QudtNamespaces.unit.isAbbreviatedNamespaceIri(unitLocalName)) {
+            unitLocalName = QudtNamespaces.unit.expand(unitLocalName);
+        }
+        if (QudtNamespaces.unit.isFullNamespaceIri(unitLocalName)) {
+            unitLocalName = QudtNamespaces.unit.getLocalName(unitLocalName);
+        }
+        int perIndex = unitLocalName.indexOf("PER");
         List<FactorUnit> numeratorUnits =
                 perIndex == 0
                         ? List.of()
                         : sortBy(
                                 factorUnits.numerator(),
-                                perIndex == -1 ? unitLabel : unitLabel.substring(0, perIndex));
+                                perIndex == -1
+                                        ? unitLocalName
+                                        : unitLocalName.substring(0, perIndex));
         List<FactorUnit> denominatorUnits =
                 perIndex == -1
                         ? List.of()
                         : sortBy(
                                 factorUnits.denominator(),
-                                perIndex == 0 ? unitLabel : unitLabel.substring(perIndex));
+                                perIndex == 0 ? unitLocalName : unitLocalName.substring(perIndex));
         List<FactorUnit> result =
                 Stream.concat(
                                 numeratorUnits.stream(),
@@ -653,19 +694,68 @@ public class FactorUnits {
     }
 
     public BigDecimal getConversionMultiplier() {
-        if (this.hasFactorUnits()) {
-            return this.factorUnits.stream()
+        return getConversionMultiplierWithFallbackOne();
+    }
+
+    public BigDecimal getConversionMultiplierWithFallbackOne() {
+        FactorUnits reduced = this.reduceExponents();
+        if (reduced.hasFactorUnits()) {
+            return reduced.factorUnits.stream()
                     .map(
                             fu ->
                                     fu.unit
                                             .getFactorUnits()
-                                            .getConversionMultiplier()
+                                            .getConversionMultiplierWithFallbackOne()
                                             .pow(fu.getExponent(), MathContext.DECIMAL128))
-                    .reduce(BigDecimal::multiply)
+                    .reduce((l, r) -> l.multiply(r, MathContext.DECIMAL128))
                     .get()
-                    .multiply(this.getScaleFactor());
+                    .multiply(reduced.getScaleFactor(), MathContext.DECIMAL128);
         } else {
-            return this.factorUnits.stream().findFirst().get().conversionMultiplier();
+            if (reduced.factorUnits.isEmpty()) {
+                return BigDecimal.ONE;
+            }
+            return reduced.factorUnits.stream().findFirst().get().conversionMultiplier();
+        }
+    }
+
+    public Optional<BigDecimal> getConversionMultiplierOpt() {
+        FactorUnits reduced =
+                this.reduceExponents(); // using normalized factor units helps prevent numeric
+        // instability
+        if (reduced.hasFactorUnits()) {
+            return reduced.factorUnits.stream()
+                    .map(
+                            fu ->
+                                    fu.unit
+                                            .getFactorUnits()
+                                            .getConversionMultiplierOpt()
+                                            .map(
+                                                    cm ->
+                                                            cm.pow(
+                                                                    fu.getExponent(),
+                                                                    MathContext.DECIMAL128)))
+                    .reduce(
+                            (leftOpt, rightOpt) ->
+                                    leftOpt.map(
+                                            left ->
+                                                    rightOpt.map(
+                                                                    right ->
+                                                                            left.multiply(
+                                                                                    right,
+                                                                                    MathContext
+                                                                                            .DECIMAL128))
+                                                            .orElse(null)))
+                    .get()
+                    .map(cm -> cm.multiply(reduced.getScaleFactor(), MathContext.DECIMAL128));
+        } else {
+            if (reduced.factorUnits.isEmpty()) {
+                return Optional.of(BigDecimal.ONE);
+            }
+            return reduced.factorUnits.stream()
+                    .findFirst()
+                    .get()
+                    .getUnit()
+                    .getConversionMultiplier();
         }
     }
 
@@ -695,5 +785,19 @@ public class FactorUnits {
 
     private static String getLocalname(String iri) {
         return iri.replaceAll("^.+[/|#]", "");
+    }
+
+    public Stream<FactorUnit> streamAllFactorUnitsRecursively() {
+        return streamAllFactorUnitsRecursively(fu -> true);
+    }
+
+    public Stream<FactorUnit> streamAllFactorUnitsRecursively(Predicate<FactorUnit> pred) {
+        if (this.hasFactorUnits()) {
+            return this.factorUnits.stream()
+                    .flatMap(fu -> fu.getUnit().getFactorUnits().streamAllFactorUnitsRecursively())
+                    .filter(pred);
+        } else {
+            return this.factorUnits.stream();
+        }
     }
 }
