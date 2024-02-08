@@ -75,7 +75,7 @@ public abstract class CodeGen {
                 if (!startPattern.matcher(constName).lookingAt()) {
                     constName = "_" + constName;
                 }
-                constName = constName.replaceAll("-", "__");
+                constName = constName.replaceAll("-", "__").replaceAll("\\.", "pt");
                 return constName;
             };
 }
