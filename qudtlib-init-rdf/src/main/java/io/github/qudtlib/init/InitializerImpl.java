@@ -126,6 +126,11 @@ public class InitializerImpl implements Initializer {
                                                 "deprecated",
                                                 v -> ((Literal) v).booleanValue()))
                                 .orElse(false));
+                unitDefinition.generated(
+                        Optional.ofNullable(
+                                        getIfPresent(
+                                                bs, "generated", v -> ((Literal) v).booleanValue()))
+                                .orElse(false));
             }
             if (unitDefinition != null) {
                 definitions.addUnitDefinition(unitDefinition);

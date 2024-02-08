@@ -61,6 +61,7 @@ public class Unit extends SelfSmuggler {
         private Set<Builder<QuantityKind>> quantityKinds = new HashSet<>();
         private String symbol;
 
+        private boolean generated = false;
         private String ucumCode;
         private Set<LangString> labels = new HashSet<>();
         private Builder<Unit> scalingOf;
@@ -102,6 +103,11 @@ public class Unit extends SelfSmuggler {
 
         public <T extends Definition> T ucumCode(String ucumCode) {
             this.ucumCode = ucumCode;
+            return (T) this;
+        }
+
+        public <T extends Definition> T generated(boolean generated) {
+            this.generated = generated;
             return (T) this;
         }
 
@@ -257,6 +263,7 @@ public class Unit extends SelfSmuggler {
     private DimensionVector dimensionVector;
 
     private final boolean deprecated;
+    private final boolean generated;
 
     protected Unit(Definition definition) {
         super(definition);
@@ -280,6 +287,7 @@ public class Unit extends SelfSmuggler {
         this.exactMatches = buildSet(definition.exactMatches);
         this.quantityKinds = buildSet(definition.quantityKinds);
         this.unitOfSystems = buildSet(definition.systemsOfUnits);
+        this.generated = definition.generated;
         FactorUnits fu = definition.factorUnits.build();
         if (definition.scalingOf != null && fu.hasFactorUnits()) {
             BigDecimal multiplier =
@@ -626,6 +634,10 @@ public class Unit extends SelfSmuggler {
 
     public boolean isDeprecated() {
         return deprecated;
+    }
+
+    public boolean isGenerated() {
+        return generated;
     }
 
     @Override
