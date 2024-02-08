@@ -523,7 +523,16 @@ public class Unit extends SelfSmuggler {
     }
 
     public Optional<BigDecimal> getConversionMultiplier() {
-        return Optional.ofNullable(conversionMultiplier);
+        if (this.conversionMultiplier != null) {
+            return Optional.of(this.conversionMultiplier);
+        }
+        if (this.isScaled() && this.prefix != null && this.scalingOf.conversionMultiplier != null) {
+            return Optional.of(
+                    this.prefix
+                            .getMultiplier()
+                            .multiply(this.scalingOf.conversionMultiplier, MathContext.DECIMAL128));
+        }
+        return Optional.empty();
     }
 
     public Optional<BigDecimal> getConversionOffset() {
@@ -531,11 +540,25 @@ public class Unit extends SelfSmuggler {
     }
 
     public Optional<String> getSymbol() {
-        return Optional.ofNullable(symbol);
+        if (this.symbol != null) {
+            return Optional.of(symbol);
+        }
+        if (this.isScaled() && this.prefix != null && this.scalingOf.symbol != null) {
+            return Optional.of(this.prefix.getSymbol() + this.scalingOf.getSymbol());
+        }
+        return Optional.empty();
     }
 
     public Optional<String> getUcumCode() {
-        return Optional.ofNullable(ucumCode);
+        if (this.ucumCode != null) {
+            return Optional.of(ucumCode);
+        }
+        if (this.isScaled() && this.prefix != null && this.scalingOf.ucumCode != null) {
+            return Optional.of(
+                    this.prefix.getUcumCode().orElse(this.prefix.getSymbol())
+                            + this.scalingOf.getUcumCode().get());
+        }
+        return Optional.empty();
     }
 
     public Set<LangString> getLabels() {
