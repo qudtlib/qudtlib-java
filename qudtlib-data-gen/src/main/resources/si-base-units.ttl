@@ -382,7 +382,19 @@ unit:ST
         qudt:exponent -1
     ] .
 
-unit:KiloPOND qudt:isScalingOf unit:N .
+unit:P
+    qudt:factorUnitScalar 0.00980665;
+    qudt:factorUnit [
+        qudt:unit unit:N ;
+        qudt:exponent 1
+    ] .
+
+unit:POND
+    qudt:factorUnitScalar 0.00980665;
+    qudt:factorUnit [
+        qudt:unit unit:N ;
+        qudt:exponent 1
+    ] .
 
 unit:PDL qudt:isScalingOf unit:N .
 
@@ -396,8 +408,6 @@ unit:OZ
         qudt:unit unit:LB ;
         qudt:exponent 1
     ] .
-
-unit:KiloP qudt:isScalingOf unit:N .
 
 unit:ERG
   qudt:factorUnit [
@@ -578,6 +588,7 @@ unit:HP qudt:isScalingOf unit:J-PER-SEC .
 unit:HP_Boiler qudt:isScalingOf unit:J-PER-SEC .
 unit:HP_Brake qudt:isScalingOf unit:J-PER-SEC .
 unit:HP_Electric qudt:isScalingOf unit:J-PER-SEC .
+unit:HP_H2O qudt:isScalingOf unit:J-PER-SEC .
 unit:HP_Metric qudt:isScalingOf unit:J-PER-SEC .
 unit:H_Ab qudt:isScalingOf unit:H .
 unit:Hundredweight_UK qudt:isScalingOf unit:KiloGM .
@@ -612,6 +623,7 @@ unit:PK_UK qudt:isScalingOf unit:M3 .
 unit:PK_US_DRY qudt:isScalingOf unit:M3 .
 unit:POISE qudt:isScalingOf unit:KiloGM-PER-M-SEC .
 unit:PT qudt:isScalingOf unit:M .
+unit:PT_BIG qudt:isScalingOf unit:M .
 unit:Pennyweight qudt:isScalingOf unit:KiloGM .
 unit:PlanckArea qudt:isScalingOf unit:M2 .
 unit:PlanckCharge qudt:isScalingOf unit:A-SEC .
@@ -658,6 +670,7 @@ unit:TON_SHIPPING_US qudt:isScalingOf unit:M3 .
 unit:TON_SHORT qudt:isScalingOf unit:KiloGM .
 unit:TON_UK qudt:isScalingOf unit:KiloGM .
 unit:TON_US qudt:isScalingOf unit:KiloGM .
+unit:TON qudt:isScalingOf unit:KiloGM .
 unit:TSP qudt:isScalingOf unit:M3 .
 unit:T_Ab qudt:isScalingOf unit:T .
 unit:TonEnergy qudt:isScalingOf unit:J .
