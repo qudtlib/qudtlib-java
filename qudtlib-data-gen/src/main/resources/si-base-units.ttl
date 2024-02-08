@@ -382,19 +382,23 @@ unit:ST
         qudt:exponent -1
     ] .
 
-unit:P
-    qudt:factorUnitScalar 0.00980665;
-    qudt:factorUnit [
-        qudt:unit unit:N ;
-        qudt:exponent 1
-    ] .
+# TODO POND and P will be added, then the KiloP and KiloPOND scalings are no longer needed
+unit:KiloPOND qudt:isScalingOf unit:N .
+unit:KiloP qudt:isScalingOf unit:N .
 
-unit:POND
-    qudt:factorUnitScalar 0.00980665;
-    qudt:factorUnit [
-        qudt:unit unit:N ;
-        qudt:exponent 1
-    ] .
+# unit:P
+#     qudt:factorUnitScalar 0.00980665;
+#     qudt:factorUnit [
+#         qudt:unit unit:N ;
+#         qudt:exponent 1
+#     ] .
+#
+# unit:POND
+#     qudt:factorUnitScalar 0.00980665;
+#     qudt:factorUnit [
+#         qudt:unit unit:N ;
+#         qudt:exponent 1
+#     ] .
 
 unit:PDL qudt:isScalingOf unit:N .
 
@@ -408,6 +412,8 @@ unit:OZ
         qudt:unit unit:LB ;
         qudt:exponent 1
     ] .
+
+
 
 unit:ERG
   qudt:factorUnit [
