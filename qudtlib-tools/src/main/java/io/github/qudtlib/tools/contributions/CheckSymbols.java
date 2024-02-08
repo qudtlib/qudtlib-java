@@ -4,24 +4,21 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
 import io.github.qudtlib.Qudt;
-import io.github.qudtlib.math.BigDec;
 import io.github.qudtlib.model.FactorUnit;
 import io.github.qudtlib.model.QudtNamespaces;
 import io.github.qudtlib.model.Unit;
 import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
-import io.github.qudtlib.tools.contribute.support.FormattingHelper;
 import io.github.qudtlib.tools.contribute.support.IndentedOutputStream;
 import io.github.qudtlib.tools.contribute.support.tree.UnitTree;
 import io.github.qudtlib.vocab.QUDT;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CheckConversionMultipliers {
+public class CheckSymbols {
     public static void main(String[] args) {
         QudtEntityGenerator entityGenerator = new QudtEntityGenerator();
         GlobalData globalData = new GlobalData();
@@ -32,6 +29,7 @@ public class CheckConversionMultipliers {
                     List<Unit> unitsToCheck =
                             Qudt.allUnits().stream()
                                     .filter(u -> !u.isCurrencyUnit() && !u.isDeprecated())
+                                    .filter(u -> !u.isGenerated())
                                     .sorted(Comparator.comparing(u -> u.getIri()))
                                     .collect(Collectors.toList());
                     int correctUnits = -1;
@@ -81,8 +79,8 @@ public class CheckConversionMultipliers {
         System.out.println("\n\n\nSTATEMENTS TO DELETE\n\n");
         System.out.println("PREFIX qudt: <http://qudt.org/schema/qudt/>");
         System.out.println("PREFIX unit: <http://qudt.org/vocab/unit/>");
-        System.out.println("DELETE { ?u qudt:conversionMultiplier ?m } ");
-        System.out.println("WHERE { ?u qudt:conversionMultiplier ?m .");
+        System.out.println("DELETE { ?u qudt:symbol ?m } ");
+        System.out.println("WHERE { ?u qudt:symbol ?m .");
         System.out.println("VALUES  ?u {");
         System.out.println(
                 Stream.concat(globalData.wasMissing.stream(), globalData.wasIncorrect.stream())
@@ -96,61 +94,51 @@ public class CheckConversionMultipliers {
         if (!globalData.trustCalculationForUnit(unit)) {
             return;
         }
-        Optional<BigDecimal> calculatedMultiplier =
-                unit.getFactorUnits().getConversionMultiplierOpt();
-        if (calculatedMultiplier.isEmpty()) {
+        Optional<String> calculatedSymbol =
+                unit.getSymbol().or(() -> unit.getFactorUnits().getSymbol());
+        if (calculatedSymbol.isEmpty()) {
             return;
         } else {
-            if (unit.getConversionMultiplier().isPresent()) {
-                BigDecimal actualMultiplier = unit.getConversionMultiplier().get();
-                boolean isRelevantDifference =
-                        BigDec.isRelativeDifferenceGreaterThan(
-                                calculatedMultiplier.get(),
-                                actualMultiplier,
-                                new BigDecimal(globalData.relativeDifferenceThreshold));
+            if (unit.getSymbol().isPresent()) {
+                String actualSymbol = unit.getSymbol().get();
+                globalData.correctUnits.add(unit);
+                boolean isRelevantDifference = !actualSymbol.equals(calculatedSymbol.get());
                 if (isRelevantDifference) {
                     commentsForTTl.println(
                             format(
-                                    "WRONG MULTIPLIER  : %s - calculated from factors: %s, actual: %s\n",
+                                    "WRONG SYMBOL?  : %s - calculated from factors: %s, actual: %s\n",
                                     unit.getIriAbbreviated(),
-                                    calculatedMultiplier.get().toString(),
-                                    actualMultiplier.toString()));
-                    printConversionMultiplierTriple(
-                            ttlPrintStream, commentsForTTl, unit, calculatedMultiplier.get());
-                    setMultiplier(unit, calculatedMultiplier);
-                    globalData.correctUnits.add(unit);
-                    globalData.wasIncorrect.add(unit);
-                } else {
-                    globalData.correctUnits.add(unit);
+                                    calculatedSymbol.get().toString(),
+                                    actualSymbol.toString()));
+                    commentsForTTl.println("Here is the triple you might want to use instead:");
+                    printSymbolTriple(commentsForTTl, commentsForTTl, unit, calculatedSymbol.get());
                 }
             } else {
                 commentsForTTl.println(
                         format(
-                                "MISSING MULTIPLIER: %s - calculated from factors: %s\n",
-                                unit.getIriAbbreviated(), calculatedMultiplier.get().toString()));
-                printConversionMultiplierTriple(
-                        ttlPrintStream, commentsForTTl, unit, calculatedMultiplier.get());
-                setMultiplier(unit, calculatedMultiplier);
+                                "MISSING SYMBOL: %s - calculated from factors: %s\n",
+                                unit.getIriAbbreviated(), calculatedSymbol.get().toString()));
+                printSymbolTriple(ttlPrintStream, commentsForTTl, unit, calculatedSymbol.get());
+                setSymbol(unit, calculatedSymbol.get());
                 globalData.correctUnits.add(unit);
                 globalData.wasMissing.add(unit);
             }
         }
     }
 
-    private static void setMultiplier(Unit unit, Optional<BigDecimal> calculatedMultiplier) {
+    private static void setSymbol(Unit unit, String calculatedSymbol) {
         try {
-            Field conversionMultiplierField = Unit.class.getDeclaredField("conversionMultiplier");
-            conversionMultiplierField.setAccessible(true);
-            conversionMultiplierField.set(unit, calculatedMultiplier.get());
+            Field symbolField = Unit.class.getDeclaredField("symbol");
+            symbolField.setAccessible(true);
+            symbolField.set(unit, calculatedSymbol);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void collectEffectsOfMissingMultiplier(Unit unit, GlobalData globalData) {
+    private static void collectEffectsOfMissingSymbol(Unit unit, GlobalData globalData) {
         unit.getFactorUnits()
-                .streamAllFactorUnitsRecursively(
-                        fu -> fu.getUnit().getConversionMultiplier().isEmpty())
+                .streamAllFactorUnitsRecursively(fu -> fu.getUnit().getSymbol().isEmpty())
                 .map(FactorUnit::getUnit)
                 .forEach(
                         causeUnit ->
@@ -165,18 +153,14 @@ public class CheckConversionMultipliers {
                                         }));
     }
 
-    private static void printConversionMultiplierTriple(
-            PrintStream printStream,
-            PrintStream commentStream,
-            Unit nonBaseUnit,
-            BigDecimal conversionFactorToBase) {
-        String factorUnitTree =
-                UnitTree.makeFactorUnitTreeShowingConversionMultipliers(nonBaseUnit);
+    private static void printSymbolTriple(
+            PrintStream printStream, PrintStream commentStream, Unit unit, String symbol) {
+        String factorUnitTree = UnitTree.makeFactorUnitTreeShowingSymbols(unit);
         commentStream.print(factorUnitTree);
         printStream.format(
-                "%s %s %s .\n\n",
-                nonBaseUnit.getIriAbbreviated(),
-                QudtNamespaces.qudt.abbreviate(QUDT.conversionMultiplier.toString()),
-                FormattingHelper.format(conversionFactorToBase));
+                "%s %s \"%s\" .\n\n",
+                unit.getIriAbbreviated(),
+                QudtNamespaces.qudt.abbreviate(QUDT.symbol.toString()),
+                symbol);
     }
 }

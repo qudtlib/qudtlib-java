@@ -1,4 +1,4 @@
-package io.github.qudtlib.tools.contributions;
+package io.github.qudtlib.tools.contributions.archive;
 
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.FactorUnit;
@@ -34,7 +34,7 @@ public class ContributeMissingUcumCode {
                                         }
                                         FactorUnits factorUnits =
                                                 new FactorUnits(
-                                                        FactorUnits.sortAccordingToUnitLabel(
+                                                        FactorUnits.sortAccordingToUnitLocalname(
                                                                 u.getIriLocalname(),
                                                                 factorUnitList));
                                         try {

@@ -19,7 +19,7 @@ public class ContributionHelper {
             localname = nonstandardLocalname;
             existingUnit = Qudt.unitFromLocalname(localname).orElse(null);
         } else {
-            factorUnits.getLocalname();
+            localname = factorUnits.getLocalname();
             existingUnit = findUnitByLocalName(factorUnits);
         }
         if (existingUnit == null) {
@@ -131,8 +131,9 @@ public class ContributionHelper {
                                                 .noneMatch(u.getIriLocalname()::equals))
                         .filter(
                                 u ->
-                                        u.getConversionMultiplier().get().compareTo(BigDecimal.ONE)
-                                                == 0)
+                                        u.getConversionMultiplier()
+                                                .map(cm -> cm.compareTo(BigDecimal.ONE) == 0)
+                                                .orElse(false))
                         .collect(Collectors.toSet());
         if (possibleBases.isEmpty()) {
             return BigDecimal.ONE;

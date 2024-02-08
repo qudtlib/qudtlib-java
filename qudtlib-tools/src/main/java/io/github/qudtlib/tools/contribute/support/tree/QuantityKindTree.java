@@ -21,15 +21,15 @@ public class QuantityKindTree {
                         .nodeFormatDefault(
                                 node -> {
                                     StringBuilder ret = new StringBuilder();
-                                    sb.append(getShortName(node.getData()));
+                                    ret.append(getShortName(node.getData()));
                                     if (!node.getData().getExactMatches().isEmpty()) {
-                                        sb.append(" - exact matches: ")
+                                        ret.append(" - exact matches: ")
                                                 .append(
                                                         node.getData().getExactMatches().stream()
                                                                 .map(qk -> getShortName(qk))
                                                                 .collect(Collectors.joining(",")));
                                     }
-                                    return sb.toString();
+                                    return ret.toString();
                                 });
         for (Node<QuantityKind> tree : forest) {
             TreeWalker.of(tree).walkDepthFirst(formattingVisitor);

@@ -1,5 +1,8 @@
 package io.github.qudtlib.tools.contributions;
 
+import static io.github.qudtlib.model.Units.UNITLESS;
+import static java.util.stream.Collectors.joining;
+
 import io.github.qudtlib.Qudt;
 import io.github.qudtlib.model.*;
 import io.github.qudtlib.tools.contribute.QudtEntityGenerator;
@@ -7,11 +10,17 @@ import io.github.qudtlib.tools.contribute.support.IndentedOutputStream;
 import io.github.qudtlib.tools.contribute.support.SelectionHelper;
 import io.github.qudtlib.tools.contribute.support.tree.Node;
 import io.github.qudtlib.tools.contribute.support.tree.QuantityKindTree;
+import io.github.qudtlib.vocab.QUDT;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.impl.TreeModel;
 
-public class ContributeCorrectedDimensionVector {
+public class CheckDimensionVectors {
     public static void main(String[] args) {
         QudtEntityGenerator entityGenerator = new QudtEntityGenerator();
         Map<Unit, String> newDimVectors = new HashMap<>();
@@ -20,6 +29,7 @@ public class ContributeCorrectedDimensionVector {
                     Qudt.allUnits().stream()
                             .sorted(Comparator.comparing(Unit::getIri))
                             .filter(u -> !u.isDeprecated())
+                            .filter(u -> !u.equals(Units.UNKNOWN) && !u.equals(UNITLESS))
                             .forEach(
                                     u -> {
                                         String dimVector = null;
@@ -28,7 +38,7 @@ public class ContributeCorrectedDimensionVector {
                                                 u.getFactorUnits().getFactorUnits();
                                         factorUnits =
                                                 new FactorUnits(
-                                                        FactorUnits.sortAccordingToUnitLabel(
+                                                        FactorUnits.sortAccordingToUnitLocalname(
                                                                 u.getIriLocalname(),
                                                                 factorUnitList));
                                         try {
@@ -70,6 +80,7 @@ public class ContributeCorrectedDimensionVector {
                                         }
                                     });
                 });
+        Model addedStatements = new TreeModel();
         newDimVectors.entrySet().stream()
                 .sorted(Comparator.comparing(e -> e.getKey().getIri()))
                 .forEach(
@@ -143,10 +154,26 @@ public class ContributeCorrectedDimensionVector {
                                                         unit.getIriAbbreviated(),
                                                         QudtNamespaces.dimensionVector.abbreviate(
                                                                 correctedDimensionVector)));
-
+                                        ValueFactory vf = SimpleValueFactory.getInstance();
+                                        addedStatements.add(
+                                                vf.createIRI(unit.getIri()),
+                                                QUDT.hasDimensionVector,
+                                                vf.createIRI(correctedDimensionVector));
                                         System.out.println();
                                     });
                         });
+        System.out.println("\n\nSTATEMENTS TO DELETE");
+        System.out.println("PREFIX qudt: <http://qudt.org/schema/qudt/>");
+        System.out.println("DELETE { ?u qudt:hasDimensionVector ?dv } ");
+        System.out.println("WHERE { ?u qudt:hasDimensionVector ?dv .");
+        System.out.println("VALUES  ?u {");
+        System.out.println(
+                addedStatements.stream()
+                        .map(s -> s.getSubject())
+                        .filter(s -> s.isIRI())
+                        .map(s -> "<" + ((IRI) s).toString() + ">")
+                        .collect(joining("\n\t")));
+        System.out.println("}}");
     }
 
     private static String getUnitOrQuantityKindIri(Node<?> node) {
