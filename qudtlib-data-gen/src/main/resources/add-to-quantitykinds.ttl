@@ -1,0 +1,17 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix qkdv: <http://qudt.org/vocab/dimensionvector/> .
+@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
+@prefix sou: <http://qudt.org/vocab/sou/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+
+quantitykind:WaterVaporDiffusionCoefficient a qudt:QuantityKind;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/quantitykind>;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H0T1D0>;
+  rdfs:label "Wasserdampfdiffusionsleitkoeffizient"@de, "Water vapour diffusion coefficient"@en;
+  qudt:informativeReference "https://www.wufi-wiki.com/mediawiki/index.php/Details:WaterVaporDiffusion"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
+  qudt:plainTextDescription "The Water vapour diffusion coefficient describes how easy vapor diffusion happens in a given material." .
