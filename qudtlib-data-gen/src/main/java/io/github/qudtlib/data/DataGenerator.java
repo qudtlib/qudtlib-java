@@ -27,6 +27,13 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
  */
 public class DataGenerator {
     private final Path outputDir;
+
+    // generated output files
+    private static final String UNITS_OUTFILE = "qudt-units.ttl";
+    private static final String PREFIXES_OUTFILE = "qudt-prefixes.ttl";
+    private static final String QUANTITYKINDS_OUTFILE = "qudt-quantitykinds.ttl";
+    private static final String SYSTEMS_OF_UNITS_OUTFILE = "qudt-systems-of-units.ttl";
+
     // QUDT files
     private static final String UNITS_FILE = "qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL-v2.1.ttl";
     private static final String CURRENCIES_FILE =
@@ -34,27 +41,21 @@ public class DataGenerator {
     private static final String PREFIXES_FILE = "qudt/vocab/prefixes/VOCAB_QUDT-PREFIXES-v2.1.ttl";
     private static final String QUANTITYKINDS_FILE =
             "qudt/vocab/quantitykinds/VOCAB_QUDT-QUANTITY-KINDS-ALL-v2.1.ttl";
-    // generated output files
-    private static final String UNITS_OUTFILE = "qudt-units.ttl";
-    private static final String PREFIXES_OUTFILE = "qudt-prefixes.ttl";
-    private static final String QUANTITYKINDS_OUTFILE = "qudt-quantitykinds.ttl";
 
-    private static final String SYSTEMS_OF_UNITS_OUTFILE = "qudt-systems-of-units.ttl";
     // queries
     private static final String FACTOR_UNITS_QUERY = "factorUnit.rq";
     private static final String IS_SCALING_OF_QUERY = "isScalingOf.rq";
     private static final String MISSING_UNITS_QUERY = "missing-units.rq";
-    private static final String REMOVE_KILOGM_SCALINGS_QUERY = "remove-kiloGM-scalings.rq";
+    private static final String DELETE_KILOGM_SCALINGS_QUERY = "delete-kiloGM-scalings.rq";
 
-    private static final String REMOVE_FROM_UNITS_BY_QUERY = "remove-from-units-by-query.rq";
+    private static final String DELETE_FROM_UNITS_BY_QUERY_PATTERN =
+            "delete-from-units-by-query[N].rq";
     // additional data
     private static final String SI_BASE_UNITS_DATA = "si-base-units.ttl";
-    private static final String TRIPLES_TO_ADD_TO_UNITS = "triples-to-add-to-units.ttl";
-    private static final String TRIPLES_TO_ADD_TO_QUANTITYKINDS =
-            "triples-to-add-to-quantitykinds.ttl";
-    private static final String TRIPLES_TO_DELETE_FROM_UNITS = "triples-to-delete-from-units.ttl";
-    private static final String TRIPLES_TO_DELETE_FROM_QUANTITYKINDS =
-            "triples-to-delete-from-quantitykinds.ttl";
+    private static final String ADD_TO_UNITS = "add-to-units.ttl";
+    private static final String ADD_TO_QUANTITYKINDS = "add-to-quantitykinds.ttl";
+    private static final String DELETE_FROM_UNITS = "delete-from-units.ttl";
+    private static final String DELETE_FROM_QUANTITYKINDS = "delete-from-quantitykinds.ttl";
     private static final String UNITS_EXPECTED_DATA = "tmpExpected/qudt-unit.ttl";
 
     private static final String SYSTEM_OF_UNITS_FILE =
@@ -125,9 +126,9 @@ public class DataGenerator {
             // the currencies file contains the qk:Currency definition:
             RdfOps.addStatementsFromFile(outputCon, CURRENCIES_FILE);
             // remove unwanted individual triples
-            RdfOps.removeStatementsFromFile(outputCon, TRIPLES_TO_DELETE_FROM_QUANTITYKINDS);
+            RdfOps.removeStatementsFromFile(outputCon, DELETE_FROM_QUANTITYKINDS);
             // add missing triples
-            RdfOps.addStatementsFromFile(outputCon, TRIPLES_TO_ADD_TO_QUANTITYKINDS);
+            RdfOps.addStatementsFromFile(outputCon, ADD_TO_QUANTITYKINDS);
 
             RdfOps.writeTurtleFile(outputCon, outFile(QUANTITYKINDS_OUTFILE));
         }
@@ -143,13 +144,13 @@ public class DataGenerator {
                 RdfOps.addStatementsFromFile(inputCon, UNITS_FILE);
                 RdfOps.addStatementsFromFile(inputCon, CURRENCIES_FILE);
                 // deal with kg
-                RdfOps.updateDataUsingQuery(inputCon, REMOVE_KILOGM_SCALINGS_QUERY);
+                RdfOps.updateDataUsingQuery(inputCon, DELETE_KILOGM_SCALINGS_QUERY);
                 // if we have identified wrong data in this query, remove it
-                RdfOps.updateDataUsingQuery(inputCon, REMOVE_FROM_UNITS_BY_QUERY);
+                RdfOps.updateDataUsingNQueries(inputCon, DELETE_FROM_UNITS_BY_QUERY_PATTERN, 5);
                 // remove unwanted individual triples
-                RdfOps.removeStatementsFromFile(inputCon, TRIPLES_TO_DELETE_FROM_UNITS);
+                RdfOps.removeStatementsFromFile(inputCon, DELETE_FROM_UNITS);
                 // add missing triples
-                RdfOps.addStatementsFromFile(inputCon, TRIPLES_TO_ADD_TO_UNITS);
+                RdfOps.addStatementsFromFile(inputCon, ADD_TO_UNITS);
                 // add SI base units
                 RdfOps.addStatementsFromFile(outputCon, SI_BASE_UNITS_DATA);
                 // put result in OUTPUT repo
