@@ -82,8 +82,17 @@
                                         Fetching QUDT data via git checkout ${line.separator}
                                         scmVersionType: ${scmVersionType}
                                         scmVersion: ${scmVersion}${line.separator}
-                                        Note: you can set scmVersionType to one of 'branch' (default), 'revision', 'tag' by passing e.g. -DversionType=revision
+
+                                        Note: you can set scmVersionType to one of 'branch' (default), 'revision', 'tag' by passing e.g. -DscmVersionType=revision
                                         Note: omitting -DscmVersion will result in using the ${qudt.release.version} release zip (as defined by the ${ qudt.release.version } property).
+
+                                        Examples:
+
+                                        -DscmVersion=main   (uses the main branch)
+
+                                        or
+
+                                        -DscmVersion=0a4bhne23 -DscmVersionType=revision    (uses the specified commit ref)
                                     </message>
                                 </configuration>
                             </execution>
@@ -133,10 +142,18 @@
                                 </goals>
                                 <configuration>
                                     <message>
-                                        ${line.separator}
-                                        Fetching QUDT data release zip download (release: ${qudt.release.version}) ${line.separator}
+                                    Fetching QUDT data release zip download (release: ${qudt.release.version}) ${line.separator}
 
-                                        Note: you can alternatively check out a branch of the QUDT repository by passing, for example '-DscmVersion=main'
+                                        NOTE:
+                                        You can alternatively check out a branch, tag or revision of the QUDT repository by passing environment to the mvn command
+                                        For example:
+
+                                            -DscmVersion=main   (uses the main branch)
+
+                                        or
+
+                                            -DscmVersion=0a4bhne23 -DscmVersionType=revision    (uses the specified commit ref)
+
                                     </message>
                                 </configuration>
                             </execution>
