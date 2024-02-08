@@ -100,7 +100,7 @@ public interface Initializer {
         }
 
         public Optional<Unit.Definition> getUnitDefinition(String iri) {
-            return Optional.of(this.unitDefinitions.get(iri));
+            return Optional.ofNullable(this.unitDefinitions.get(iri));
         }
 
         public Optional<QuantityKind.Definition> getQuantityKindDefinition(String iri) {
