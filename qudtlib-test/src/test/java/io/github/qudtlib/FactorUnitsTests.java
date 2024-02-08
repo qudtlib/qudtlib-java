@@ -5,10 +5,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -411,7 +413,7 @@ public class FactorUnitsTests {
     @MethodSource
     public void testSortAccordingToUnitLabel(
             List<FactorUnit> factorUnits, String label, List<FactorUnit> expectedResult) {
-        assertEquals(expectedResult, FactorUnits.sortAccordingToUnitLabel(label, factorUnits));
+        assertEquals(expectedResult, FactorUnits.sortAccordingToUnitLocalname(label, factorUnits));
     }
 
     public static Stream<Arguments> testSortAccordingToUnitLabel() {
@@ -444,5 +446,46 @@ public class FactorUnitsTests {
 
         FactorUnits ms_9 = FactorUnits.ofFactorUnitSpec(MilliSEC, -9);
         Assertions.assertEquals("/ms⁹", ms_9.getSymbol().get());
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testConversionMultiplierOpt(Unit unit) {
+        Optional<BigDecimal> result = unit.getFactorUnits().getConversionMultiplierOpt();
+        if (hasNoFactorUnitsWithoutConversionMultiplier(unit)) {
+            assertTrue(
+                    result.isPresent(),
+                    String.format(
+                            "%s.getConversionMultiplierOpt() is expected to return a value",
+                            unit.getIriAbbreviated()));
+            assertEquals(
+                    unit.getFactorUnits().getConversionMultiplierWithFallbackOne(),
+                    result.get(),
+                    String.format("Wrong result for %s", unit.getIriAbbreviated()));
+        } else {
+            assertTrue(
+                    result.isEmpty(),
+                    String.format(
+                            "%s.getConversionMultiplierOpt() is expected to return Optional.empty()",
+                            unit.getIriAbbreviated()));
+        }
+    }
+
+    public static Stream<Arguments> testConversionMultiplierOpt() {
+        return Qudt.allUnits().stream().map(u -> Arguments.of(u));
+    }
+
+    private boolean hasNoFactorUnitsWithoutConversionMultiplier(Unit unit) {
+        FactorUnits reduced =
+                unit.getFactorUnits().reduceExponents(); // reduce here because we also reduce in
+        if (reduced.getFactorUnits().size() == 0) {
+            return true; // all units cancel out, we have no missing units
+        }
+        // FactorUnits.getConversionMultiplierOpt()
+        if (reduced.hasFactorUnits()) {
+            return reduced.getFactorUnits().stream()
+                    .allMatch(fu -> hasNoFactorUnitsWithoutConversionMultiplier(fu.getUnit()));
+        }
+        return unit.getConversionMultiplier().isPresent();
     }
 }
