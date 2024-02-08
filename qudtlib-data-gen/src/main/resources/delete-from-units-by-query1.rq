@@ -1,0 +1,7 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+DELETE { ?u qudt:conversionMultiplier ?m }
+WHERE { ?u qudt:conversionMultiplier ?m .
+VALUES  ?u {
+	dont:find-this
+}}

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -96,6 +98,15 @@ public abstract class RdfOps {
         con.commit();
     }
 
+    public static void updateDataUsingNQueries(
+            RepositoryConnection con, String queryFileRegex, int n) {
+        List<String> queries = loadNQueries(queryFileRegex, n);
+        for (String query : queries) {
+            con.prepareUpdate(query).execute();
+        }
+        con.commit();
+    }
+
     public static void addStatementsFromFile(RepositoryConnection con, String filename) {
         con.add(loadTurtleToModel(filename));
         con.commit();
@@ -122,6 +133,23 @@ public abstract class RdfOps {
             throw new IllegalStateException(
                     "Error loading data from classpath resource " + ttlFile, e);
         }
+    }
+
+    public static List<String> loadNQueries(String queryFilepattern, int n) {
+        List<String> ret = new ArrayList<>();
+        for (int num = 0; num < n; num++) {
+            String queryFile = queryFilepattern.replaceAll("\\[N\\]", num + "");
+            try (InputStream in =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream(queryFile)) {
+                if (in != null) {
+                    ret.add(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+                }
+            } catch (Exception e) {
+                throw new IllegalStateException(
+                        "Error loading query from classpath resource " + queryFile, e);
+            }
+        }
+        return ret;
     }
 
     public static String loadQuery(String queryFile) {
