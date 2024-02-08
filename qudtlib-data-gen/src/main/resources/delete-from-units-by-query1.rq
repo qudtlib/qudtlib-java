@@ -3,5 +3,5 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
 DELETE { ?u qudt:conversionMultiplier ?m }
 WHERE { ?u qudt:conversionMultiplier ?m .
 VALUES  ?u {
-	dont:find-this
+	<dont:find-this>
 }}
