@@ -72,6 +72,9 @@ public class InitializerImpl implements Initializer {
             <#if unit.isDeprecated()>
             .deprecated(true)
             </#if>
+            <#if unit.isGenerated()>
+            .generated(true)
+            </#if>
             <#if unit.prefix.isPresent() >
             .prefix(definitions.expectPrefixDefinition(${optValIri(unit.prefix)}))
             </#if>

@@ -9,7 +9,8 @@ CONSTRUCT {
     ?unit a qudt:Unit ;
         qudt:hasDimensionVector ?dimensionVector ;
         rdfs:label ?unitLocalName;
-        rdfs:comment  ?comment .
+        rdfs:comment  ?comment ;
+        qudt:generated true .
 }
 #SELECT distinct ?unit WHERE
 #select count(*) where
