@@ -30,9 +30,19 @@ public class CheckSymbols {
                             Qudt.allUnits().stream()
                                     .filter(u -> !u.isCurrencyUnit() && !u.isDeprecated())
                                     .filter(u -> !u.isGenerated())
+                                    .filter(
+                                            u ->
+                                                    u.getIriLocalname()
+                                                            .contains("-")) // units that don't
+                                    // contain a hyphen cannot
+                                    // profit from this
+                                    // algorithm
                                     .sorted(Comparator.comparing(u -> u.getIri()))
                                     .collect(Collectors.toList());
                     int correctUnits = -1;
+                    Qudt.allUnits().stream()
+                            .filter(u -> !u.getIriLocalname().contains("-"))
+                            .forEach(globalData.correctUnits::add);
                     while (correctUnits < globalData.correctUnits.size()) {
                         correctUnits = globalData.correctUnits.size();
                         unitsToCheck.stream()
