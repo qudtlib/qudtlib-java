@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,18 +31,12 @@ public class CheckSymbols {
                             Qudt.allUnits().stream()
                                     .filter(u -> !u.isCurrencyUnit() && !u.isDeprecated())
                                     .filter(u -> !u.isGenerated())
-                                    .filter(
-                                            u ->
-                                                    u.getIriLocalname()
-                                                            .contains("-")) // units that don't
-                                    // contain a hyphen cannot
-                                    // profit from this
-                                    // algorithm
+                                    .filter(isLikelyDerivedUnit())
                                     .sorted(Comparator.comparing(u -> u.getIri()))
                                     .collect(Collectors.toList());
                     int correctUnits = -1;
                     Qudt.allUnits().stream()
-                            .filter(u -> !u.getIriLocalname().contains("-"))
+                            .filter(isLikelyDerivedUnit().negate())
                             .forEach(globalData.correctUnits::add);
                     while (correctUnits < globalData.correctUnits.size()) {
                         correctUnits = globalData.correctUnits.size();
@@ -78,6 +73,14 @@ public class CheckSymbols {
                         });
         printStatements(ttlOut);
         printDeleteQuery(globalData);
+    }
+
+    private static Predicate<Unit> isLikelyDerivedUnit() {
+        return u ->
+                u.getIriLocalname().contains("-")
+                        || (u.getFactorUnits().getLocalname().matches(".+\\d$")
+                                && u.getFactorUnits().getFactorUnits().size() == 1
+                                && u.getFactorUnits().getFactorUnits().get(0).getExponent() != 1);
     }
 
     private static void printStatements(ByteArrayOutputStream ttlOut) {
