@@ -7,14 +7,12 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.stream.Collectors;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.util.RepositoryUtil;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
@@ -129,7 +127,6 @@ public class DataGenerator {
             RdfOps.removeStatementsFromFile(outputCon, DELETE_FROM_QUANTITYKINDS);
             // add missing triples
             RdfOps.addStatementsFromFile(outputCon, ADD_TO_QUANTITYKINDS);
-
             RdfOps.writeTurtleFile(outputCon, outFile(QUANTITYKINDS_OUTFILE));
         }
     }
@@ -167,12 +164,23 @@ public class DataGenerator {
                 // we generate some units in the above, add basic unit info for those, write to
                 // INPUT and OUTPUT repos
                 RdfOps.addDataUsingQuery(inputCon, MISSING_UNITS_QUERY, inputCon, outputCon);
+                copyNamespaces(inputCon, outputCon);
                 // write units file from OUTPUT repo
                 RdfOps.writeTurtleFile(outputCon, outFile(UNITS_OUTFILE));
                 // comparison with expected is useful during version upgrades, keep it commented out
                 // during normal execution
                 // compareWithExpected(outputCon);
             }
+        }
+    }
+
+    private static void copyNamespaces(RepositoryConnection fromCon, RepositoryConnection toCon) {
+        try (RepositoryResult<Namespace> namespaces = fromCon.getNamespaces()) {
+            namespaces.stream()
+                    .forEach(
+                            n -> {
+                                toCon.setNamespace(n.getPrefix(), n.getName());
+                            });
         }
     }
 

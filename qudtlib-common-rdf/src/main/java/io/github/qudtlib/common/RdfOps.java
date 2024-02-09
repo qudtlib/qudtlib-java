@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
@@ -16,10 +17,8 @@ import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFParser;
-import org.eclipse.rdf4j.rio.RDFWriter;
-import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.*;
+import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 /**
@@ -36,7 +35,15 @@ public abstract class RdfOps {
         System.out.println("writing RDF data to file " + outfile.toFile().getAbsolutePath());
         try (FileOutputStream out = new FileOutputStream(outfile.toFile())) {
             RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
+            WriterConfig config =
+                    writer.getWriterConfig()
+                            .set(BasicWriterSettings.PRETTY_PRINT, true)
+                            .set(BasicWriterSettings.INLINE_BLANK_NODES, true);
+            writer.setWriterConfig(config);
             writer.startRDF();
+            try (RepositoryResult<Namespace> namespaces = con.getNamespaces()) {
+                namespaces.forEach(n -> writer.handleNamespace(n.getPrefix(), n.getName()));
+            }
             try (RepositoryResult<Statement> statements =
                     con.getStatements(null, null, null, (Resource) null)) {
                 for (Statement st : statements) {
@@ -53,7 +60,13 @@ public abstract class RdfOps {
         System.out.println("writing RDF data to file " + outfile.toFile().getAbsolutePath());
         try (FileOutputStream out = new FileOutputStream(outfile.toFile())) {
             RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
+            WriterConfig config =
+                    writer.getWriterConfig()
+                            .set(BasicWriterSettings.PRETTY_PRINT, true)
+                            .set(BasicWriterSettings.INLINE_BLANK_NODES, true);
+            writer.setWriterConfig(config);
             writer.startRDF();
+            model.getNamespaces().forEach(n -> writer.handleNamespace(n.getPrefix(), n.getName()));
             for (Statement st : model.getStatements(null, null, null, (Resource) null)) {
                 writer.handleStatement(st);
             }
@@ -108,7 +121,9 @@ public abstract class RdfOps {
     }
 
     public static void addStatementsFromFile(RepositoryConnection con, String filename) {
-        con.add(loadTurtleToModel(filename));
+        Model model = loadTurtleToModel(filename);
+        con.add(model);
+        model.getNamespaces().forEach(ns -> con.setNamespace(ns.getPrefix(), ns.getName()));
         con.commit();
     }
 
