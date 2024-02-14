@@ -14,4 +14,7 @@ quantitykind:WaterVaporDiffusionCoefficient a qudt:QuantityKind;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H0T1D0>;
   rdfs:label "Wasserdampfdiffusionsleitkoeffizient"@de, "Water vapour diffusion coefficient"@en;
   qudt:informativeReference "https://www.wufi-wiki.com/mediawiki/index.php/Details:WaterVaporDiffusion"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
-  qudt:plainTextDescription "The Water vapour diffusion coefficient describes how easy vapor diffusion happens in a given material." .
+  qudt:plainTextDescription "The Water vapour diffusion coefficient describes how easy vapor diffusion happens in a given material." ;
+  qudt:applicableUnit unit:KiloGM-PER-PA-SEC-M .
+
+quantitykind:ThermalInsulance qudt:applicableUnit unit:M2-K-PER-W .
