@@ -103,6 +103,8 @@ class ToolImpl implements Tool {
         writer.handleNamespace(
                 QudtNamespaces.qudt.getAbbreviationPrefix(), QudtNamespaces.qudt.getBaseIri());
         writer.handleNamespace(
+                QudtNamespaces.prefix.getAbbreviationPrefix(), QudtNamespaces.prefix.getBaseIri());
+        writer.handleNamespace(
                 QudtNamespaces.unit.getAbbreviationPrefix(), QudtNamespaces.unit.getBaseIri());
         writer.handleNamespace(
                 QudtNamespaces.systemOfUnits.getAbbreviationPrefix(),
@@ -646,6 +648,13 @@ class ToolImpl implements Tool {
                     RDFS.LABEL,
                     ToolImpl.stringLiteral(label.getString(), label.getLanguageTag().orElse(null)));
         }
+        addIfPresent(
+                mb,
+                QUDT.prefix,
+                unit.getPrefix()
+                        .map(p -> p.getIri())
+                        .map(iri -> SimpleValueFactory.getInstance().createIRI(iri))
+                        .orElse(null));
         saveCommonMetadata(mb, unitForContribution.getMetadata());
         Model model = mb.build();
         System.err.println("Adding these triples: ");
