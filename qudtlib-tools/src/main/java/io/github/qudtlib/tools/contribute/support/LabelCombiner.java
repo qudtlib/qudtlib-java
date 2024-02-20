@@ -330,7 +330,7 @@ public class LabelCombiner {
                     return safeString(prefixIfFirstNull) + second;
                 }
             } else if (second == null) {
-                return safeString(prefixIfFirstNull) + second;
+                return first + safeString(suffixIfSecondNull);
             }
             return first + safeString(joinString) + second;
         }
