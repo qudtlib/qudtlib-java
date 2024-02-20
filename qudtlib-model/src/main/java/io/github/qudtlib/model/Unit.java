@@ -293,10 +293,12 @@ public class Unit extends SelfSmuggler {
             BigDecimal multiplier =
                     this.prefix == null
                             ? definition.conversionMultiplier
-                            : this.prefix.getMultiplier();
+                            : this.prefix
+                                    .getMultiplier()
+                                    .pow(fu.getFactorUnits().get(0).getExponent());
             FactorUnits fuForSclaingOf =
                     FactorUnits.ofFactorUnitSpec(multiplier, this.scalingOf, 1);
-            if (!fu.equals(fuForSclaingOf)) {
+            if (!fu.normalize().equals(fuForSclaingOf.normalize())) {
                 throw new IllegalArgumentException(
                         String.format(
                                 "Unit %s has conflicting definition of factor units (%s) and scalingOf (%s, which implies factor units %s)",
@@ -456,6 +458,10 @@ public class Unit extends SelfSmuggler {
     }
 
     public boolean hasFactorUnits() {
+        if (this.factorUnits == null) {
+            // defensive check for calculations during instantiation
+            return false;
+        }
         return this.factorUnits.hasFactorUnits();
     }
 
@@ -473,6 +479,10 @@ public class Unit extends SelfSmuggler {
             return this.factorUnits.normalize();
         } else if (this.isScaled()) {
             return this.scalingOf.normalize().scale(this.getConversionMultiplier(this.scalingOf));
+        }
+        if (this.factorUnits == null) {
+            // defensive branch for use during initialization
+            return FactorUnits.ofUnit(this);
         }
         return this.factorUnits;
     }
