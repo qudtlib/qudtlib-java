@@ -36,3 +36,29 @@ unit:M2-K-PER-W a qudt:Unit;
     "метрквадратный -кельвин на ватт"@ru, " kwadratowymetrokelwin na wat"@pl;
   qudt:informativeReference "https://en.wikipedia.org/wiki/R-value_(insulation)"^^<http://www.w3.org/2001/XMLSchema#anyURI>;
   qudt:plainTextDescription "Common unit for the R-Value. In the context of construction, the R-value is a measure of how well a two-dimensional barrier, such as a layer of insulation, a window or a complete wall or ceiling, resists the conductive flow of heat." .
+
+
+unit:KiloM2 a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind quantitykind:Area;
+  qudt:conversionMultiplier 1000000.0;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L2I0M0H0T0D0>;
+  qudt:symbol "km²";
+  qudt:ucumCode "km2"^^qudt:UCUMcs;
+  rdfs:label "square Kilometre"@en;
+  qudt:prefix prefix:Kilo;
+  qudt:plainTextDescription "A unit of area equal to that of a square of sides 1000 m." .
+
+unit:CentiM4 a qudt:Unit;
+  rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
+  qudt:applicableSystem sou:SI;
+  qudt:hasQuantityKind quantitykind:SecondMomentOfArea, quantitykind:SecondPolarMomentOfArea,
+    quantitykind:SecondAxialMomentOfArea;
+  qudt:conversionMultiplier 0.00000001;
+  qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L4I0M0H0T0D0>;
+  qudt:symbol "cm⁴";
+  qudt:ucumCode "cm4"^^qudt:UCUMcs;
+  rdfs:label "quartic Centimetre"@en;
+  qudt:prefix prefix:Centi;
+  qudt:plainTextDescription "0.01-fold of the SI base unit metre with the exponent 4" .

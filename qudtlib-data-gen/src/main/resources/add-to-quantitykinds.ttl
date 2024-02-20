@@ -18,3 +18,11 @@ quantitykind:WaterVaporDiffusionCoefficient a qudt:QuantityKind;
   qudt:applicableUnit unit:KiloGM-PER-PA-SEC-M .
 
 quantitykind:ThermalInsulance qudt:applicableUnit unit:M2-K-PER-W .
+
+quantitykind:Area qudt:applicableUnit unit:KiloM2 .
+
+quantitykind:SecondMomentOfArea qudt:applicableUnit unit:CentiM4 .
+
+quantitykind:SecondPolarMomentOfArea qudt:applicableUnit unit:CentiM4 .
+
+quantitykind:SecondAxialMomentOfArea qudt:applicableUnit unit:CentiM4 .
