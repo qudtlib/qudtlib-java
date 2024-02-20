@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add units `unit:KiloGM-PER-PA-SEC-M`, `unit:M2-K-PER-W`, `KiloM2`, `CentiM4`
+
+### Changed
+
+- Improve qudtlib-tools for contributions to QUDT
+
 ## [6.4.2] - 2024-02-20
 
 ## [6.4.1] - 2024-02-08
