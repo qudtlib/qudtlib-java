@@ -100,12 +100,13 @@ public class ContributionHelper {
                     baseUnits.stream()
                             .filter(
                                     bu ->
-                                            factorUnits
-                                                    .getFactorUnits()
-                                                    .get(0)
-                                                    .getUnit()
-                                                    .getQuantityKinds()
-                                                    .stream()
+                                            Qudt.allQuantityKinds().stream()
+                                                    .filter(
+                                                            qk ->
+                                                                    qk.getDimensionVectorIri()
+                                                                            .equals(
+                                                                                    factorUnits
+                                                                                            .getDimensionVectorIri()))
                                                     .allMatch(
                                                             qk ->
                                                                     bu.getQuantityKinds()
