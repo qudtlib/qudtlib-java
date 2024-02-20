@@ -110,9 +110,7 @@ class ToolImpl implements Tool {
                 QudtNamespaces.systemOfUnits.getAbbreviationPrefix(),
                 QudtNamespaces.systemOfUnits.getBaseIri());
         writer.handleNamespace("rdfs", RDFS.NAMESPACE);
-        writer.handleNamespace(
-                QudtNamespaces.quantityKind.getAbbreviationPrefix(),
-                QudtNamespaces.quantityKind.getBaseIri());
+        writer.handleNamespace("quantitykind", QudtNamespaces.quantityKind.getBaseIri());
         try {
             for (Statement st : con.getStatements(null, null, null)) {
                 if (statementPredicate.test(st)) {
