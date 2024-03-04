@@ -47,6 +47,10 @@ public class InitializerImpl implements Initializer {
     private final String queryLoadFactorUnits;
     private final String queryLoadSystemsOfUnits;
 
+    private final String queryLoadConstantValue;
+
+    private final String queryLoadPhysicalConstant;
+
     public InitializerImpl() {
         Model m = loadQudtModel();
         qudtRepository = new SailRepository(new MemoryStore());
@@ -59,6 +63,8 @@ public class InitializerImpl implements Initializer {
         queryLoadPrefix = loadQuery("qudtlib/query/prefix.rq");
         queryLoadFactorUnits = loadQuery("qudtlib/query/factor-units.rq");
         queryLoadSystemsOfUnits = loadQuery("qudtlib/query/system-of-units.rq");
+        queryLoadConstantValue = loadQuery("qudtlib/query/constantValue.rq");
+        queryLoadPhysicalConstant = loadQuery("qudtlib/query/physicalConstant.rq");
     }
 
     @Override
@@ -70,6 +76,8 @@ public class InitializerImpl implements Initializer {
             populatePrefixDefinitions(con, definitions);
             populateFactorUnits(con, definitions);
             populateSystemOfUnitsDefinitions(con, definitions);
+            populateConstantValues(con, definitions);
+            populatePhysicalConstants(con, definitions);
         }
         return definitions;
     }
@@ -320,6 +328,93 @@ public class InitializerImpl implements Initializer {
         }
     }
 
+    private void populateConstantValues(RepositoryConnection con, Definitions definitions) {
+        TupleQuery query = con.prepareTupleQuery(queryLoadConstantValue);
+        try (TupleQueryResult result = query.evaluate()) {
+            Iterator<BindingSet> solutions = result.iterator();
+            ConstantValue.Definition constantValueDef = null;
+            while (solutions.hasNext()) {
+                BindingSet bs = solutions.next();
+                String currentIri = bs.getValue("constantValue").stringValue();
+                if (constantValueDef != null && !constantValueDef.getId().equals(currentIri)) {
+                    definitions.addConstantValueDefinition(constantValueDef);
+                    constantValueDef = null;
+                }
+                if (constantValueDef == null) {
+                    constantValueDef = makeConstantValueBuilder(bs, definitions);
+                }
+                constantValueDef
+                        .standardUncertainty(
+                                (String)
+                                        getIfPresent(
+                                                bs, "standardUncertainty", v -> v.stringValue()))
+                        .deprecated(
+                                Optional.ofNullable(
+                                                getIfPresent(
+                                                        bs,
+                                                        "deprecated",
+                                                        v -> ((Literal) v).booleanValue()))
+                                        .orElse(false))
+                        .addLabel(
+                                (LangString)
+                                        getIfPresent(
+                                                bs,
+                                                "label",
+                                                v ->
+                                                        new LangString(
+                                                                ((Literal) v).getLabel(),
+                                                                ((Literal) v)
+                                                                        .getLanguage()
+                                                                        .orElse(null))));
+            }
+            if (constantValueDef != null) {
+                definitions.addConstantValueDefinition(constantValueDef);
+            }
+        }
+    }
+
+    private void populatePhysicalConstants(RepositoryConnection con, Definitions definitions) {
+        TupleQuery query = con.prepareTupleQuery(queryLoadPhysicalConstant);
+        try (TupleQueryResult result = query.evaluate()) {
+            Iterator<BindingSet> solutions = result.iterator();
+            PhysicalConstant.Definition physicalConstantDef = null;
+            while (solutions.hasNext()) {
+                BindingSet bs = solutions.next();
+                String currentIri = bs.getValue("physicalConstant").stringValue();
+                if (physicalConstantDef != null
+                        && !physicalConstantDef.getId().equals(currentIri)) {
+                    definitions.addPhysicalConstantDefinition(physicalConstantDef);
+                    physicalConstantDef = null;
+                }
+                if (physicalConstantDef == null) {
+                    physicalConstantDef = makePhysicalConstantBuilder(bs, definitions);
+                }
+                physicalConstantDef
+                        .deprecated(
+                                Optional.ofNullable(
+                                                getIfPresent(
+                                                        bs,
+                                                        "deprecated",
+                                                        v -> ((Literal) v).booleanValue()))
+                                        .orElse(false))
+                        .addLabel(
+                                (LangString)
+                                        getIfPresent(
+                                                bs,
+                                                "label",
+                                                v ->
+                                                        new LangString(
+                                                                ((Literal) v).getLabel(),
+                                                                ((Literal) v)
+                                                                        .getLanguage()
+                                                                        .orElse(null))));
+            }
+            if (physicalConstantDef != null) {
+                definitions.addPhysicalConstantDefinition(physicalConstantDef);
+            }
+        }
+    }
+
     private String loadQuery(String queryFile) {
         try (InputStream in =
                 Thread.currentThread().getContextClassLoader().getResourceAsStream(queryFile)) {
@@ -341,6 +436,7 @@ public class InitializerImpl implements Initializer {
         loadTtlFile("qudtlib/qudt-quantitykinds.ttl", parser);
         loadTtlFile("qudtlib/qudt-units.ttl", parser);
         loadTtlFile("qudtlib/qudt-systems-of-units.ttl", parser);
+        loadTtlFile("qudtlib/qudt-constants.ttl", parser);
         return model;
     }
 
@@ -402,6 +498,24 @@ public class InitializerImpl implements Initializer {
                 .qkdvNumeratorIri(getIfPresent(bs, "qkdvNumerator", Value::stringValue))
                 .qkdvDenominatorIri(getIfPresent(bs, "qkdvDenominator", Value::stringValue))
                 .symbol(getIfPresent(bs, "symbol", Value::stringValue));
+    }
+
+    private static ConstantValue.Definition makeConstantValueBuilder(
+            BindingSet bs, Definitions definitions) {
+        return ConstantValue.definition(bs.getValue("constantValue").stringValue())
+                .value(bs.getValue("value").stringValue())
+                .unit(definitions.expectUnitDefinition(bs.getValue("unit").stringValue()));
+    }
+
+    private static PhysicalConstant.Definition makePhysicalConstantBuilder(
+            BindingSet bs, Definitions definitions) {
+        return PhysicalConstant.definition(bs.getValue("physicalConstant").stringValue())
+                .constantValue(
+                        definitions.expectConstantValueDefinition(
+                                bs.getValue("quantityValue").stringValue()))
+                .quantityKind(
+                        definitions.expectQuantityKindDefinition(
+                                bs.getValue("quantityKind").stringValue()));
     }
 
     private static Prefix.Definition makePrefixBuilder(BindingSet bs) {

@@ -364,8 +364,14 @@ public class QUDT {
     /** <code>conversion multiplier</code> * */
     public static final IRI conversionMultiplier = create("conversionMultiplier");
 
+    /** <code>conversion multiplier</code> * */
+    public static final IRI conversionMultiplierSN = create("conversionMultiplierSN");
+
     /** <code>conversion offset</code> * */
     public static final IRI conversionOffset = create("conversionOffset");
+
+    /** <code>conversion offset</code> * */
+    public static final IRI conversionOffsetSN = create("conversionOffsetSN");
 
     /** <code>currency exponent</code> * */
     public static final IRI currencyExponent = create("currencyExponent");
@@ -741,6 +747,9 @@ public class QUDT {
     /** <code>standard uncertainty</code> * */
     public static final IRI standardUncertainty = create("standardUncertainty");
 
+    /** <code>standard uncertainty</code> * */
+    public static final IRI standardUncertaintySN = create("standardUncertaintySN");
+
     /** <code>symbol</code> * */
     public static final IRI symbol = create("symbol");
 
@@ -785,6 +794,9 @@ public class QUDT {
 
     /** <code>value</code> * */
     public static final IRI value = create("value");
+
+    /** <code>value</code> * */
+    public static final IRI valueSN = create("valueSN");
 
     /** <code>value for quantity</code> * */
     public static final IRI valueQuantity = create("valueQuantity");

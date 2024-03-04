@@ -32,11 +32,13 @@ public class ConstantsGenerator {
     private static final String DATA_QUANTITYKINDS = "qudtlib/qudt-quantitykinds.ttl";
     private static final String DATA_PREFIXES = "qudtlib/qudt-prefixes.ttl";
     private static final String DATA_SYSTEMS_OF_UNITS = "qudtlib/qudt-systems-of-units.ttl";
+    private static final String DATA_PHYSICAL_CONSTANTS = "qudtlib/qudt-constants.ttl";
     // queries
     private static final String QUERY_UNITS = "query/units.rq";
     private static final String QUERY_QUANTITYKINDS = "query/quantitykinds.rq";
     private static final String QUERY_PREFIXES = "query/prefixes.rq";
     private static final String QUERY_SYSTEMS_OF_UNITS = "query/systems-of-units.rq";
+    private static final String QUERY_PHYSICAL_CONSTANTS = "query/physicalConstants.rq";
     // output
     private static final String DESTINATION_PACKAGE = "io.github.qudtlib.model";
     // template
@@ -72,6 +74,7 @@ public class ConstantsGenerator {
         generateQuantityKindConstants(cfg);
         generatePrefixConstants(cfg);
         generateSystemOfUnitsConstants(cfg);
+        generatePhysicalConstantConstants(cfg);
     }
 
     private void generatePrefixConstants(Configuration config)
@@ -97,6 +100,13 @@ public class ConstantsGenerator {
         Map<String, Object> templateVars =
                 getConstantNamesByQuery(QUERY_SYSTEMS_OF_UNITS, DATA_SYSTEMS_OF_UNITS);
         generateJavaFile(config, templateVars, "SystemOfUnits", "SystemsOfUnits");
+    }
+
+    private void generatePhysicalConstantConstants(Configuration config)
+            throws IOException, TemplateException {
+        Map<String, Object> templateVars =
+                getConstantNamesByQuery(QUERY_PHYSICAL_CONSTANTS, DATA_PHYSICAL_CONSTANTS);
+        generateJavaFile(config, templateVars, "PhysicalConstant", "PhysicalConstants");
     }
 
     private Map<String, Object> getConstantNamesByQuery(String queryFile, String dataFile) {

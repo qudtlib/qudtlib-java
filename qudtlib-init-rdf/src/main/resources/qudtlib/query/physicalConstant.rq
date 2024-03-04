@@ -1,0 +1,16 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT * where
+{
+    ?physicalConstant
+          a qudt:PhysicalConstant ;
+          qudt:hasQuantityKind ?quantityKind ;
+          qudt:quantityValue ?quantityValue ;
+          rdfs:label ?label .
+    OPTIONAL {
+        ?physicalConstant qudt:deprecated ?deprecated ;
+    }
+} order by ?physicalConstant
