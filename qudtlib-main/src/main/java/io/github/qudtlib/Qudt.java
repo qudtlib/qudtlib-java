@@ -46,6 +46,11 @@ public class Qudt {
     private static final Map<String, QuantityKind> quantityKinds;
     private static final Map<String, Prefix> prefixes;
     private static final Map<String, SystemOfUnits> systemsOfUnits;
+
+    private static final Map<String, ConstantValue> constantValues;
+
+    private static final Map<String, PhysicalConstant> physicalConstants;
+
     private static final BigDecimal BD_1000 = new BigDecimal("1000");
 
     public abstract static class NAMESPACES extends QudtNamespaces {}
@@ -61,6 +66,9 @@ public class Qudt {
     public abstract static class Prefixes extends io.github.qudtlib.model.Prefixes {}
 
     public abstract static class SystemsOfUnits extends io.github.qudtlib.model.SystemsOfUnits {}
+
+    public abstract static class PhysicalConstants
+            extends io.github.qudtlib.model.PhysicalConstants {}
 
     /* Use the Initializer to load and wire all prefixes, units and quantityKinds. */
     static {
@@ -85,11 +93,15 @@ public class Qudt {
             units = initializer.buildUnits(definitions);
             quantityKinds = initializer.buildQuantityKinds(definitions);
             systemsOfUnits = initializer.buildSystemsOfUnits(definitions);
+            constantValues = initializer.buildConstantValues(definitions);
+            physicalConstants = initializer.buildPhysicalConstants(definitions);
         } else {
             prefixes = new HashMap<>();
             units = new HashMap<>();
             quantityKinds = new HashMap<>();
             systemsOfUnits = new HashMap<>();
+            constantValues = new HashMap<>();
+            physicalConstants = new HashMap<>();
             System.err.println(
                     "\n\n\n ERROR: The QUDTlib data model has not been initialized properly and will not work\n\n\n");
         }
@@ -712,6 +724,100 @@ public class Qudt {
     }
 
     /**
+     * Returns a constantValue IRI with the specified localname (even if no such constantValue
+     * exists in the model).
+     *
+     * @param localname the local name of the IRI that identifies the requested constantValue.
+     * @return the full IRI, possibly identifying a constantValue
+     */
+    public static String constantValueIriFromLocalname(String localname) {
+        return NAMESPACES.constant.makeIriInNamespace(localname);
+    }
+
+    /**
+     * Returns a {@link ConstantValue} for the specified localname (i.e. the last element of the
+     * Unit IRI). For example, <code>constantValueFromLocalName("Mega")</code> yields the
+     * constantValue with IRI <code>
+     * http://qudt.org/vocab/constantValue/Mega</code>.
+     *
+     * @param localname the local name of the IRI that identifies the requested constantValue.
+     * @return the constantValue
+     * @throws NotFoundException if no such constantValue is found.
+     */
+    public static ConstantValue constantValueFromLocalnameRequired(String localname) {
+        return constantValueRequired(constantValueIriFromLocalname(localname));
+    }
+
+    public static Optional<ConstantValue> constantValueFromLocalname(String localname) {
+        return constantValue(constantValueIriFromLocalname(localname));
+    }
+
+    /**
+     * Returns the {@link ConstantValue} identified the specified IRI. For example, <code>
+     * constantValue("http://qudt.org/vocab/constantValue/Mega")</code> yields {@code
+     * Qudt.ConstantValuees.Mega};
+     *
+     * @param iri the requested constantValue IRI
+     * @return the constantValue
+     * @throws NotFoundException if no such constantValue is found.
+     */
+    public static Optional<ConstantValue> constantValue(String iri) {
+        return Optional.ofNullable(constantValues.get(iri));
+    }
+
+    public static ConstantValue constantValueRequired(String iri) {
+        return constantValue(iri)
+                .orElseThrow(() -> new NotFoundException("ConstantValue not found: " + iri));
+    }
+
+    /**
+     * Returns a physicalConstant IRI with the specified localname (even if no such physicalConstant
+     * exists in the model).
+     *
+     * @param localname the local name of the IRI that identifies the requested physicalConstant.
+     * @return the full IRI, possibly identifying a physicalConstant
+     */
+    public static String physicalConstantIriFromLocalname(String localname) {
+        return NAMESPACES.constant.makeIriInNamespace(localname);
+    }
+
+    /**
+     * Returns a {@link PhysicalConstant} for the specified localname (i.e. the last element of the
+     * Unit IRI). For example, <code>physicalConstantFromLocalName("Mega")</code> yields the
+     * physicalConstant with IRI <code>
+     * http://qudt.org/vocab/physicalConstant/Mega</code>.
+     *
+     * @param localname the local name of the IRI that identifies the requested physicalConstant.
+     * @return the physicalConstant
+     * @throws NotFoundException if no such physicalConstant is found.
+     */
+    public static PhysicalConstant physicalConstantFromLocalnameRequired(String localname) {
+        return physicalConstantRequired(physicalConstantIriFromLocalname(localname));
+    }
+
+    public static Optional<PhysicalConstant> physicalConstantFromLocalname(String localname) {
+        return physicalConstant(physicalConstantIriFromLocalname(localname));
+    }
+
+    /**
+     * Returns the {@link PhysicalConstant} identified the specified IRI. For example, <code>
+     * physicalConstant("http://qudt.org/vocab/physicalConstant/Mega")</code> yields {@code
+     * Qudt.PhysicalConstantes.Mega};
+     *
+     * @param iri the requested physicalConstant IRI
+     * @return the physicalConstant
+     * @throws NotFoundException if no such physicalConstant is found.
+     */
+    public static Optional<PhysicalConstant> physicalConstant(String iri) {
+        return Optional.ofNullable(physicalConstants.get(iri));
+    }
+
+    public static PhysicalConstant physicalConstantRequired(String iri) {
+        return physicalConstant(iri)
+                .orElseThrow(() -> new NotFoundException("PhysicalConstant not found: " + iri));
+    }
+
+    /**
      * Returns a {@link SystemOfUnits} for the specified localname (i.e. the last element of the
      * SystemOfUnits IRI). For example, <code>systemOfUnitsFromLocalName("N-PER-M2")</code> yields
      * the systemOfUnits with IRI <code>
@@ -929,6 +1035,14 @@ public class Qudt {
         return Collections.unmodifiableMap(systemsOfUnits);
     }
 
+    static Map<String, PhysicalConstant> getPhysicalConstantsMap() {
+        return Collections.unmodifiableMap(physicalConstants);
+    }
+
+    static Map<String, ConstantValue> getConstantValuesMap() {
+        return Collections.unmodifiableMap(constantValues);
+    }
+
     /**
      * Returns all {@link Unit}s in the model.
      *
@@ -963,6 +1077,14 @@ public class Qudt {
      */
     public static Collection<SystemOfUnits> allSystemsOfUnits() {
         return Collections.unmodifiableCollection(systemsOfUnits.values());
+    }
+
+    public static Collection<PhysicalConstant> allPhysicalConstant() {
+        return Collections.unmodifiableCollection(physicalConstants.values());
+    }
+
+    public static Collection<ConstantValue> allConstantValues() {
+        return Collections.unmodifiableCollection(constantValues.values());
     }
 
     public static Collection<Unit> allUnitsOfSystem(SystemOfUnits system) {

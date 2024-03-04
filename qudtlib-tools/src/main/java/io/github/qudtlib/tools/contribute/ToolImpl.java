@@ -132,17 +132,23 @@ class ToolImpl implements Tool {
     public void writeOut(Model model, OutputStream out, Predicate<Statement> statementPredicate) {
         RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
         writer.startRDF();
-        writer.handleNamespace(
-                QudtNamespaces.qudt.getAbbreviationPrefix(), QudtNamespaces.qudt.getBaseIri());
-        writer.handleNamespace(
-                QudtNamespaces.unit.getAbbreviationPrefix(), QudtNamespaces.unit.getBaseIri());
-        writer.handleNamespace(
-                QudtNamespaces.systemOfUnits.getAbbreviationPrefix(),
-                QudtNamespaces.systemOfUnits.getBaseIri());
-        writer.handleNamespace("rdfs", RDFS.NAMESPACE);
-        writer.handleNamespace(
-                QudtNamespaces.quantityKind.getAbbreviationPrefix(),
-                QudtNamespaces.quantityKind.getBaseIri());
+        model.setNamespace(
+                QudtNamespaces.qudt.getBaseIri(), QudtNamespaces.qudt.getAbbreviationPrefix());
+        model.setNamespace(
+                QudtNamespaces.unit.getBaseIri(), QudtNamespaces.unit.getAbbreviationPrefix());
+        model.setNamespace(
+                QudtNamespaces.systemOfUnits.getBaseIri(),
+                QudtNamespaces.systemOfUnits.getAbbreviationPrefix());
+        model.setNamespace(
+                QudtNamespaces.systemOfUnits.getBaseIri(),
+                QudtNamespaces.systemOfUnits.getAbbreviationPrefix());
+        model.setNamespace(
+                QudtNamespaces.quantityKind.getBaseIri(),
+                QudtNamespaces.quantityKind.getAbbreviationPrefix());
+        model.setNamespace(RDFS.NAMESPACE, "rdfs");
+        model.getNamespaces().stream()
+                .forEach(ns -> writer.handleNamespace(ns.getName(), ns.getPrefix()));
+
         try {
             for (Statement st : model.getStatements(null, null, null)) {
                 if (statementPredicate.test(st)) {

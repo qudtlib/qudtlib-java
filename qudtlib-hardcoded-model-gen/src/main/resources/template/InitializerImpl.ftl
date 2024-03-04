@@ -56,6 +56,8 @@ public class InitializerImpl implements Initializer {
             populatePrefixDefinitions(definitions);
             populateFactorUnits(definitions);
             populateSystemOfUnitsDefinitions(definitions);
+            populateConstantValueDefinitions(definitions);
+            populatePhysicalConstantDefinitions(definitions);
             return definitions;
         }
 
@@ -220,6 +222,40 @@ public class InitializerImpl implements Initializer {
                 </#list>
                 ;
             definitions.addSystemOfUnitsDefinition(def);
+        </#list>
+    }
+
+    private void populateConstantValueDefinitions(Definitions definitions) {
+        ConstantValue.Definition def =  null;
+        <#list constantValues as iri, cv>
+            def = ConstantValue.definition(${q(iri)})
+                <#list cv.labels as label>
+                .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
+                </#list>
+                <#if cv.isDeprecated()>
+                .deprecated(true)
+                </#if>
+                .value(${bigDec(cv.value)})
+                .standardUncertainty((BigDecimal) ${optBigDec(cv.standardUncertainty)})
+                .unit(definitions.expectUnitDefinition(${q(cv.unit.iri)}));
+            definitions.addConstantValueDefinition(def);
+        </#list>
+    }
+
+
+    private void populatePhysicalConstantDefinitions(Definitions definitions) {
+        PhysicalConstant.Definition def =  null;
+        <#list physicalConstants as iri, pc>
+            def = PhysicalConstant.definition(${q(iri)})
+                <#list pc.labels as label>
+                .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
+                </#list>
+                <#if pc.isDeprecated()>
+                .deprecated(true)
+                </#if>
+                .constantValue(definitions.expectConstantValueDefinition(${q(pc.constantValue.iri)}))
+                .quantityKind(definitions.expectQuantityKindDefinition(${q(pc.quantityKind.iri)}));
+            definitions.addPhysicalConstantDefinition(def);
         </#list>
     }
 }

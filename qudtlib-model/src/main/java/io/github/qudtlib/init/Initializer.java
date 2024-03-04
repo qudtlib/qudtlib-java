@@ -3,10 +3,7 @@ package io.github.qudtlib.init;
 import static java.util.stream.Collectors.toMap;
 
 import io.github.qudtlib.exception.NotFoundException;
-import io.github.qudtlib.model.Prefix;
-import io.github.qudtlib.model.QuantityKind;
-import io.github.qudtlib.model.SystemOfUnits;
-import io.github.qudtlib.model.Unit;
+import io.github.qudtlib.model.*;
 import io.github.qudtlib.nodedef.MapBackedNodeDefinition;
 import io.github.qudtlib.nodedef.NodeDefinition;
 import java.util.Collections;
@@ -28,11 +25,17 @@ public interface Initializer {
         private Map<String, QuantityKind.Definition> quantityKindDefinitions;
         private Map<String, SystemOfUnits.Definition> systemOfUnitsDefinitions;
 
+        private Map<String, ConstantValue.Definition> constantValueDefinitions;
+
+        private Map<String, PhysicalConstant.Definition> physicalConstantDefinitions;
+
         public Definitions() {
             this.prefixDefinitions = new HashMap<>();
             this.unitDefinitions = new HashMap<>();
             this.quantityKindDefinitions = new HashMap<>();
             this.systemOfUnitsDefinitions = new HashMap<>();
+            this.constantValueDefinitions = new HashMap<>();
+            this.physicalConstantDefinitions = new HashMap<>();
         }
 
         public void addUnitDefinition(Unit.Definition definition) {
@@ -49,6 +52,14 @@ public interface Initializer {
 
         public void addSystemOfUnitsDefinition(SystemOfUnits.Definition definition) {
             this.systemOfUnitsDefinitions.put(definition.getId(), definition);
+        }
+
+        public void addConstantValueDefinition(ConstantValue.Definition definition) {
+            this.constantValueDefinitions.put(definition.getId(), definition);
+        }
+
+        public void addPhysicalConstantDefinition(PhysicalConstant.Definition definition) {
+            this.physicalConstantDefinitions.put(definition.getId(), definition);
         }
 
         public NodeDefinition<String, Unit> expectUnitDefinition(String iri) {
@@ -95,6 +106,31 @@ public interface Initializer {
                                     String.format("No System of Units found with iri %s", iri)));
         }
 
+        public NodeDefinition<String, PhysicalConstant> expectPhysicalConstantDefinition(
+                String iri) {
+            if (iri == null) {
+                return null;
+            }
+            return new MapBackedNodeDefinition<>(
+                    this.physicalConstantDefinitions,
+                    iri,
+                    () ->
+                            new NotFoundException(
+                                    String.format("No PhysicalConstant found with iri %s", iri)));
+        }
+
+        public NodeDefinition<String, ConstantValue> expectConstantValueDefinition(String iri) {
+            if (iri == null) {
+                return null;
+            }
+            return new MapBackedNodeDefinition<>(
+                    this.constantValueDefinitions,
+                    iri,
+                    () ->
+                            new NotFoundException(
+                                    String.format("No ConstantValue found with iri %s", iri)));
+        }
+
         public boolean hasUnitDefinitions() {
             return !this.unitDefinitions.isEmpty();
         }
@@ -113,6 +149,14 @@ public interface Initializer {
 
         public Optional<SystemOfUnits.Definition> getSystemOfUnitsDefinition(String iri) {
             return Optional.of(this.systemOfUnitsDefinitions.get(iri));
+        }
+
+        public Optional<ConstantValue.Definition> getConstantValueDefinition(String iri) {
+            return Optional.of(this.constantValueDefinitions.get(iri));
+        }
+
+        public Optional<PhysicalConstant.Definition> getPhysicalConstantDefinition(String iri) {
+            return Optional.of(this.physicalConstantDefinitions.get(iri));
         }
     }
 
@@ -138,5 +182,15 @@ public interface Initializer {
         return Collections.unmodifiableMap(
                 definitions.systemOfUnitsDefinitions.entrySet().stream()
                         .collect(toMap(e -> e.getKey(), e -> e.getValue().build())));
+    }
+
+    default Map<String, PhysicalConstant> buildPhysicalConstants(Definitions definitions) {
+        return definitions.physicalConstantDefinitions.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue().build()));
+    }
+
+    default Map<String, ConstantValue> buildConstantValues(Definitions definitions) {
+        return definitions.constantValueDefinitions.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue().build()));
     }
 }

@@ -1,0 +1,18 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT * where
+{
+     ?constantValue
+        a qudt:ConstantValue ;
+        qudt:hasUnit ?unit ;
+        qudt:value ?value .
+     OPTIONAL {
+        ?constantValue qudt:standardUncertainty ?standardUncertainty ;
+     }
+     OPTIONAL {
+             ?constantValue qudt:deprecated ?deprecated ;
+     }
+} order by ?constantValue

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add model classes PhysicalConstant and ConstantValue, populate from data.
+
 ## [6.4.3] - 2024-02-20
 
 ### Added
