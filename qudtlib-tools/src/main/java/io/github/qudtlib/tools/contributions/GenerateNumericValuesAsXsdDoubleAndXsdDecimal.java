@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.model.base.CoreDatatype;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 
-public class OuputNewNumericValues {
+public class GenerateNumericValuesAsXsdDoubleAndXsdDecimal {
 
     public static void main(String[] args) {
         QudtEntityGenerator generator = new QudtEntityGenerator();
