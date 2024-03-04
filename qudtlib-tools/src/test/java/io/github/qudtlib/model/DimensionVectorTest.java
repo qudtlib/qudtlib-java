@@ -15,7 +15,7 @@ class DimensionVectorTest {
         String iri = dimensionVector.getDimensionVectorIri();
 
         Assertions.assertEquals(
-                "http://qudt.org/vocab/dimensionvector/A0E1L0I0pt5M-1H2pt5T0D0", iri);
+                "http://qudt.org/vocab/dimensionvector/A0E1L0I0dot5M-1H2dot5T0D0", iri);
 
         DimensionVector fromString = new DimensionVector(iri);
 
