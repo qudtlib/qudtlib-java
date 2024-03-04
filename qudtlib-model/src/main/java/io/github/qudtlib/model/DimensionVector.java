@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Represents the QUDT dimension vector and allows for converting between a dimension vector IRI and
@@ -34,7 +35,9 @@ public class DimensionVector {
         FORMAT = new DecimalFormat("0.#", symbols);
     }
 
-    private static String PT = "pt";
+    private static String DOT = "dot";
+
+    private static Pattern DECIMAL_POINT_PATTERN = Pattern.compile("(pt|dot)");
 
     public static DimensionVector DIMENSIONLESS =
             new DimensionVector(new int[] {0, 0, 0, 0, 0, 0, 0, 1});
@@ -71,7 +74,7 @@ public class DimensionVector {
         this.dimensionVectorIri = dimensionVectorIri;
         String localName = dimensionVectorIri.substring(dimensionVectorIri.lastIndexOf("/") + 1);
         float[] dimValues = new float[8];
-        String[] numbers = localName.split("[^\\-\\dpt]");
+        String[] numbers = localName.split("[^\\-\\d((pt|dot)\\d+)?]");
         String[] indicators = localName.split("[^[AELIMHTD]]+");
         if (indicators.length != 8) {
             Logger.getLogger(DimensionVector.class.getName())
@@ -91,8 +94,10 @@ public class DimensionVector {
                 }
                 dimValues[i] =
                         Float.parseFloat(
-                                numbers[i + 1].replace(
-                                        "pt", ".")); // split produces an empty first array element
+                                DECIMAL_POINT_PATTERN
+                                        .matcher(numbers[i + 1])
+                                        .replaceAll(".")); // split produces an empty first array
+                // element
             }
         }
 
@@ -147,7 +152,7 @@ public class DimensionVector {
             return "0";
         }
 
-        return FORMAT.format(dimensionValues).replace(".", "pt");
+        return FORMAT.format(dimensionValues).replace(".", DOT);
     }
 
     public DimensionVector() {
