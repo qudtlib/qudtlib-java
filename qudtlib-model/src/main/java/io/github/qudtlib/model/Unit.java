@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 public class Unit extends SelfSmuggler {
+    private static final String TEMPERATURE_DIFFERENCE = "TemperatureDifference";
 
     public static Definition definition(String iri) {
         return new Definition(iri);
@@ -329,8 +330,30 @@ public class Unit extends SelfSmuggler {
 
     public BigDecimal convert(BigDecimal value, Unit toUnit)
             throws InconvertibleQuantitiesException {
+        return convert(value, toUnit, null);
+    }
+
+    /**
+     * Convert method allowing for special handling depending on the specified quantity kind.
+     * Introduced to ignore the offset when converting a temperature difference.
+     *
+     * @param value
+     * @param toUnit
+     * @param quantityKind optional quantity kind for handling edge cases. Pass null for normal
+     *     conversion.
+     * @return
+     * @throws InconvertibleQuantitiesException
+     */
+    public BigDecimal convert(BigDecimal value, Unit toUnit, QuantityKind quantityKind)
+            throws InconvertibleQuantitiesException {
         Objects.requireNonNull(value);
         Objects.requireNonNull(toUnit);
+        boolean ignoreOffset = false;
+        if (quantityKind != null) {
+            if (quantityKind.getIriLocalname().equals(TEMPERATURE_DIFFERENCE)) {
+                ignoreOffset = true;
+            }
+        }
         if (this.equals(toUnit)) {
             return value;
         }
@@ -343,9 +366,13 @@ public class Unit extends SelfSmuggler {
                             "Cannot convert from %s to %s: dimension vectors differ",
                             this.getIri(), toUnit.getIri()));
         }
-        BigDecimal fromOffset = this.getConversionOffset().orElse(BigDecimal.ZERO);
+        BigDecimal fromOffset =
+                ignoreOffset ? BigDecimal.ZERO : this.getConversionOffset().orElse(BigDecimal.ZERO);
         BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(BigDecimal.ONE);
-        BigDecimal toOffset = toUnit.getConversionOffset().orElse(BigDecimal.ZERO);
+        BigDecimal toOffset =
+                ignoreOffset
+                        ? BigDecimal.ZERO
+                        : toUnit.getConversionOffset().orElse(BigDecimal.ZERO);
         BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
         return value.add(fromOffset)
                 .multiply(fromMultiplier, MathContext.DECIMAL128)

@@ -67,7 +67,7 @@ unit:DecaPOISE a qudt:Unit;
   rdfs:isDefinedBy <http://qudt.org/2.1/vocab/unit>;
   qudt:applicableSystem sou:CGS-GAUSS, sou:CGS;
   qudt:hasQuantityKind quantitykind:Viscosity, quantitykind:DynamicViscosity;
-  qudt:conversionMultiplier 10.0;
+  qudt:conversionMultiplier 1.0;
   qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-1I0M1H0T-1D0>;
   qudt:symbol "daP";
   qudt:ucumCode "daP"^^qudt:UCUMcs;

@@ -37,7 +37,18 @@ public class QuantityValue {
     }
 
     public QuantityValue convert(Unit toUnit) throws InconvertibleQuantitiesException {
-        return new QuantityValue(this.unit.convert(this.value, toUnit), toUnit);
+        return convert(toUnit, null);
+    }
+
+    /**
+     * @param toUnit
+     * @param quantityKind optional quantity kind for handling edge cases
+     * @return
+     * @throws InconvertibleQuantitiesException
+     */
+    public QuantityValue convert(Unit toUnit, QuantityKind quantityKind)
+            throws InconvertibleQuantitiesException {
+        return new QuantityValue(this.unit.convert(this.value, toUnit, quantityKind), toUnit);
     }
 
     @Override
