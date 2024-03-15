@@ -476,6 +476,7 @@ public class InitializerImpl implements Initializer {
                                 "conversionOffset",
                                 compose(Value::stringValue, s -> new BigDecimal(s))))
                 .symbol(getIfPresent(bs, "symbol", Value::stringValue))
+                .description(getIfPresent(bs, "description", Value::stringValue))
                 .ucumCode(getIfPresent(bs, "ucumCode", Value::stringValue))
                 .currencyCode(getIfPresent(bs, "currencyCode", Value::stringValue))
                 .currencyNumber(
@@ -497,7 +498,8 @@ public class InitializerImpl implements Initializer {
                 .dimensionVectorIri(getIfPresent(bs, "dimensionVector", Value::stringValue))
                 .qkdvNumeratorIri(getIfPresent(bs, "qkdvNumerator", Value::stringValue))
                 .qkdvDenominatorIri(getIfPresent(bs, "qkdvDenominator", Value::stringValue))
-                .symbol(getIfPresent(bs, "symbol", Value::stringValue));
+                .symbol(getIfPresent(bs, "symbol", Value::stringValue))
+                .description(getIfPresent(bs, "description", Value::stringValue));
     }
 
     private static ConstantValue.Definition makeConstantValueBuilder(
@@ -510,6 +512,7 @@ public class InitializerImpl implements Initializer {
     private static PhysicalConstant.Definition makePhysicalConstantBuilder(
             BindingSet bs, Definitions definitions) {
         return PhysicalConstant.definition(bs.getValue("physicalConstant").stringValue())
+                .description(getIfPresent(bs, "description", Value::stringValue))
                 .constantValue(
                         definitions.expectConstantValueDefinition(
                                 bs.getValue("quantityValue").stringValue()))

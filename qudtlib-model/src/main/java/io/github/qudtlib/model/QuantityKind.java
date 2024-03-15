@@ -41,7 +41,7 @@ public class QuantityKind extends SelfSmuggler {
         private String qkdvNumeratorIri;
         private String qkdvDenominatorIri;
         private String symbol;
-
+        private String description;
         private Boolean deprecated;
 
         public Definition(String iri) {
@@ -76,6 +76,11 @@ public class QuantityKind extends SelfSmuggler {
 
         public <T extends Definition> T symbol(String symbol) {
             this.symbol = symbol;
+            return (T) this;
+        }
+
+        public <T extends Definition> T description(String description) {
+            this.description = description;
             return (T) this;
         }
 
@@ -147,7 +152,7 @@ public class QuantityKind extends SelfSmuggler {
     private String qkdvNumeratorIri;
     private String qkdvDenominatorIri;
     private final String symbol;
-
+    private final String description;
     private boolean deprecated;
 
     protected QuantityKind(Definition definition) {
@@ -160,7 +165,7 @@ public class QuantityKind extends SelfSmuggler {
         if (definition.dimensionVectorIri != null) {
             this.dimensionVector = new DimensionVector(definition.dimensionVectorIri);
         }
-
+        this.description = definition.description;
         this.qkdvDenominatorIri = definition.qkdvDenominatorIri;
         this.qkdvNumeratorIri = definition.qkdvNumeratorIri;
         this.symbol = definition.symbol;
@@ -235,6 +240,10 @@ public class QuantityKind extends SelfSmuggler {
 
     public Optional<String> getSymbol() {
         return Optional.ofNullable(symbol);
+    }
+
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(this.description);
     }
 
     public Set<LangString> getLabels() {

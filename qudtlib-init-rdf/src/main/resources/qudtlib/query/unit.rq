@@ -2,6 +2,9 @@ PREFIX qudt: <http://qudt.org/schema/qudt/>
 PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+
 
 SELECT * where
 {
@@ -50,6 +53,9 @@ SELECT * where
     }
     optional {
         ?unit qudt:currencyNumber ?currencyNumber
+    }
+    OPTIONAL {
+         ?unit dcterms:description ?description ;
     }
     optional {
         ?unit qudt:applicableSystem|qudt:systemOfUnit|qudt:baseUnitOfSystem|qudt:derivedCoherentUnitOfSystem|qudt:derivedNonCoherentUnitOfSystem|qudt:derivedUnitOfSystem|qudt:coherentUnitOfSystem|qudt:definedUnitOfSystem|qudt:allowedUnitOfSystem ?systemOfUnits

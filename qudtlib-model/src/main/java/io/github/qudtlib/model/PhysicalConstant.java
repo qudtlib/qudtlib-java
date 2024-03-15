@@ -18,6 +18,8 @@ public class PhysicalConstant extends SelfSmuggler {
 
     private final LangStrings labels;
 
+    private final String description;
+
     private final boolean deprecated;
 
     public PhysicalConstant(Definition definition) {
@@ -27,6 +29,7 @@ public class PhysicalConstant extends SelfSmuggler {
         this.constantValue = definition.constantValueDef.build();
         this.labels = new LangStrings(definition.labels);
         this.deprecated = definition.deprecated;
+        this.description = definition.description;
     }
 
     public static Definition definition(String iri) {
@@ -47,6 +50,8 @@ public class PhysicalConstant extends SelfSmuggler {
         private Set<LangString> labels = new HashSet<>();
 
         private boolean deprecated = false;
+
+        private String description;
 
         public Definition(String id, PhysicalConstant presetProduct) {
             super(id, presetProduct);
@@ -89,6 +94,11 @@ public class PhysicalConstant extends SelfSmuggler {
 
         public <T extends Definition> T constantValue(ConstantValue constantValue) {
             this.constantValueDef = ConstantValue.definition(constantValue);
+            return (T) this;
+        }
+
+        public <T extends Definition> T description(String description) {
+            this.description = description;
             return (T) this;
         }
 
@@ -140,6 +150,10 @@ public class PhysicalConstant extends SelfSmuggler {
 
     public Optional<LangString> getLabelForLanguageTag(String languageTag) {
         return labels.getLangStringForLanguageTag(languageTag, null, true);
+    }
+
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(this.description);
     }
 
     public Optional<String> getLabelForLanguageTag(
