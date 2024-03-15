@@ -95,6 +95,9 @@ public class InitializerImpl implements Initializer {
             <#if unit.symbol.isPresent()>
             .symbol(${optStr(unit.symbol)})
             </#if>
+            <#if unit.description.isPresent()>
+            .description(${optStr(unit.description)})
+            </#if>
             <#if unit.ucumCode.isPresent()>
             .ucumCode(${optStr(unit.ucumCode)})
             </#if>
@@ -140,6 +143,9 @@ public class InitializerImpl implements Initializer {
                 </#if>
                 <#if quantityKind.symbol.isPresent()>
                 .symbol(${optStr(quantityKind.symbol)})
+                </#if>
+                <#if quantityKind.description.isPresent()>
+                .description(${optStr(quantityKind.description)})
                 </#if>
                 <#list quantityKind.labels as label>
                 .addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}))
@@ -252,6 +258,9 @@ public class InitializerImpl implements Initializer {
                 </#list>
                 <#if pc.isDeprecated()>
                 .deprecated(true)
+                </#if>
+                <#if pc.description.isPresent()>
+                    .description(${optStr(pc.description)})
                 </#if>
                 .constantValue(definitions.expectConstantValueDefinition(${q(pc.constantValue.iri)}))
                 .quantityKind(definitions.expectQuantityKindDefinition(${q(pc.quantityKind.iri)}));

@@ -7,6 +7,7 @@ import io.github.qudtlib.model.QuantityKind;
 import java.lang.reflect.Array;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.AggregateWith;
@@ -75,5 +76,10 @@ public class QuantityKindTests {
                     .mapToObj(index -> accessor.get(index, componentType))
                     .toArray(size -> (Object[]) Array.newInstance(componentType, size));
         }
+    }
+
+    @Test
+    public void testDescription() {
+        assertTrue(Qudt.QuantityKinds.Length.getDescription().isPresent());
     }
 }

@@ -1,6 +1,6 @@
 package io.github.qudtlib;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.qudtlib.model.PhysicalConstant;
 import java.math.BigDecimal;
@@ -19,5 +19,9 @@ public class ConstantTests {
         MatcherAssert.assertThat(
                 new BigDecimal("9.80665"),
                 Matchers.comparesEqualTo(g.getConstantValue().getValue()));
+    }
+
+    public void descriptionTest() {
+        assertTrue(Qudt.PhysicalConstants.AvogadroConstant.getDescription().isPresent());
     }
 }

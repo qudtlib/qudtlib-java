@@ -3,6 +3,8 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
 
 SELECT DISTINCT * where
 {
@@ -32,6 +34,9 @@ SELECT DISTINCT * where
             optional {
                ?quantityKind skos:broader ?broaderQuantityKind
             }
+            OPTIONAL {
+               ?quantityKind dcterms:description ?description ;
+            }
         } UNION {
             optional {
                 ?quantityKind qudt:exactMatch ?exactMatch
@@ -55,6 +60,9 @@ SELECT DISTINCT * where
                 }
                 optional {
                    ?exactMatch skos:broader ?broaderQuantityKind
+                }
+                OPTIONAL {
+                   ?quantityKind dcterms:description ?description ;
                 }
             }
     }

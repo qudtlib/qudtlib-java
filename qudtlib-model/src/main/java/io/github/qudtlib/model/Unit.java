@@ -62,6 +62,7 @@ public class Unit extends SelfSmuggler {
         private Set<Builder<QuantityKind>> quantityKinds = new HashSet<>();
         private String symbol;
 
+        private String description;
         private boolean generated = false;
         private String ucumCode;
         private Set<LangString> labels = new HashSet<>();
@@ -114,6 +115,11 @@ public class Unit extends SelfSmuggler {
 
         public <T extends Definition> T clearLabels() {
             this.labels.clear();
+            return (T) this;
+        }
+
+        public <T extends Definition> T description(String description) {
+            this.description = description;
             return (T) this;
         }
 
@@ -252,6 +258,8 @@ public class Unit extends SelfSmuggler {
     private final BigDecimal conversionOffset;
     private final Set<QuantityKind> quantityKinds;
     private final String symbol;
+    private final String description;
+
     private final String ucumCode;
     private final LangStrings labels;
     private final Unit scalingOf;
@@ -283,6 +291,7 @@ public class Unit extends SelfSmuggler {
         this.currencyCode = definition.currencyCode;
         this.currencyNumber = definition.currencyNumber;
         this.labels = new LangStrings(definition.labels);
+        this.description = definition.description;
         this.prefix = definition.prefix == null ? null : definition.prefix.build();
         this.scalingOf = definition.scalingOf == null ? null : definition.scalingOf.build();
         this.exactMatches = buildSet(definition.exactMatches);
@@ -492,6 +501,14 @@ public class Unit extends SelfSmuggler {
         return this.factorUnits.hasFactorUnits();
     }
 
+    /**
+     * Returns true if this unit is defined to be another unit, such as litre is defined as cubic
+     * decimetre.
+     */
+    public boolean isDefinedAsOtherUnit() {
+        return this.factorUnits.isOneOtherUnitWithExponentOne();
+    }
+
     public boolean isScaled() {
         return this.scalingOf != null;
     }
@@ -604,6 +621,10 @@ public class Unit extends SelfSmuggler {
                             + this.scalingOf.getUcumCode().get());
         }
         return Optional.empty();
+    }
+
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(this.description);
     }
 
     public Set<LangString> getLabels() {

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add model classes PhysicalConstant and ConstantValue, populate from data.
 - Add tool for generating the decimal/scientific values for QUDT
+- Add description to `Unit, QuantityKind and PhysicalConstant` (i.e. the string value of `dcterms:description`)
 
 ## [6.4.3] - 2024-02-20
 

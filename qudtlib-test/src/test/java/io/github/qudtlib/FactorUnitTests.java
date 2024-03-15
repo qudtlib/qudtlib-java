@@ -1,10 +1,13 @@
 package io.github.qudtlib;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.github.qudtlib.model.FactorUnit;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,5 +24,10 @@ public class FactorUnitTests {
     public void testConversionMultiplier(FactorUnit factorUnit, BigDecimal expectedResult) {
         MatcherAssert.assertThat(
                 factorUnit.conversionMultiplier(), Matchers.comparesEqualTo(expectedResult));
+    }
+
+    @Test
+    public void testDefinedAsOtherUnit() {
+        assertTrue(Qudt.Units.L.isDefinedAsOtherUnit());
     }
 }

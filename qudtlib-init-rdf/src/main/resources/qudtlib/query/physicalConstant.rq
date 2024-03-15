@@ -2,6 +2,7 @@ PREFIX qudt: <http://qudt.org/schema/qudt/>
 PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX kind: <http://qudt.org/vocab/quantitykind/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 
 SELECT * where
 {
@@ -13,4 +14,8 @@ SELECT * where
     OPTIONAL {
         ?physicalConstant qudt:deprecated ?deprecated ;
     }
+    OPTIONAL {
+             ?physicalConstant dcterms:description ?description ;
+    }
 } order by ?physicalConstant
+

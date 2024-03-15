@@ -84,6 +84,23 @@ public class FactorUnits {
         return true;
     }
 
+    public boolean isOneOtherUnitWithExponentOne() {
+        if (this.factorUnits == null) {
+            return false;
+        }
+        if (this.factorUnits.size() != 1) {
+            return false;
+        }
+        FactorUnit factorUnit = this.factorUnits.get(0);
+        if (factorUnit.getExponent() != 1) {
+            return false;
+        }
+        if (this.equals(factorUnit.getUnit().getFactorUnits())) {
+            return false;
+        }
+        return true;
+    }
+
     public static boolean hasFactorUnits(List<FactorUnit> factorUnits) {
         if (factorUnits == null) {
             return false;
