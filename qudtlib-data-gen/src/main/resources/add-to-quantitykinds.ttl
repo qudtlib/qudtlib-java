@@ -30,3 +30,5 @@ quantitykind:SecondAxialMomentOfArea qudt:applicableUnit unit:CentiM4 .
 quantitykind:Viscosity qudt:applicableUnit unit:DecaPOISE .
 
 quantitykind:DynamicViscosity qudt:applicableUnit unit:DecaPOISE .
+
+quantitykind:SpecificHeatCapacity qudt:applicableUnit unit:KiloJ-PER-KiloGM-K .

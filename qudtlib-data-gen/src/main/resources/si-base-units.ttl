@@ -189,8 +189,8 @@ unit:R
     ] .
 
 unit:L qudt:factorUnit [
-    qudt:unit unit:DeciM;
-    qudt:exponent 3
+    qudt:unit unit:DeciM3;
+    qudt:exponent 1
 ] .
 
 unit:PSI

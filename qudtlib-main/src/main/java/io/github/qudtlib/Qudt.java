@@ -920,7 +920,22 @@ public class Qudt {
      */
     public static QuantityValue convert(QuantityValue from, Unit toUnit)
             throws InconvertibleQuantitiesException {
-        return from.convert(toUnit);
+        return convert(from, toUnit, null);
+    }
+
+    /**
+     * Convert the specified {@link QuantityValue} <code>from</code> into the specified target
+     * {@link Unit} <code>toUnit</code>.
+     *
+     * @param from the quantity value to convert
+     * @param toUnit the target unit
+     * @param quantityKind optional quantity kind for handling edge cases (temperature difference)
+     * @return a new {@link QuantityValue} object holding the result.
+     * @throws InconvertibleQuantitiesException if the conversion is not possible
+     */
+    public static QuantityValue convert(QuantityValue from, Unit toUnit, QuantityKind quantityKind)
+            throws InconvertibleQuantitiesException {
+        return from.convert(toUnit, quantityKind);
     }
 
     /**
@@ -968,6 +983,23 @@ public class Qudt {
      * @throws InconvertibleQuantitiesException if the conversion is not possible
      */
     public static BigDecimal convert(BigDecimal fromValue, Unit fromUnit, Unit toUnit)
+            throws InconvertibleQuantitiesException {
+        return convert(fromValue, fromUnit, toUnit, null);
+    }
+
+    /**
+     * Convert the specified <code>fromValue</code>, interpreted to be in the {@link Unit} <code>
+     * fromUnit</code> into the unit <code>toUnit</code>.
+     *
+     * @param fromValue the value to convert
+     * @param fromUnit the unit of the <code>value</code>
+     * @param toUnit the target unit
+     * @param quantityKind optional quantity kind for handling edge cases (temperature difference)
+     * @return the resulting value
+     * @throws InconvertibleQuantitiesException if the conversion is not possible
+     */
+    public static BigDecimal convert(
+            BigDecimal fromValue, Unit fromUnit, Unit toUnit, QuantityKind quantityKind)
             throws InconvertibleQuantitiesException {
         return fromUnit.convert(fromValue, toUnit);
     }
