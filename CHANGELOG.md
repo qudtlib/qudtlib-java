@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update to qudt-public-repo@16f1b30
+- Handle TemperatureDifference edge case (ignore offset when converting)
+
 ### Added
 
 - Add model classes PhysicalConstant and ConstantValue, populate from data.
