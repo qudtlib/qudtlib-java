@@ -7,16 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- Update to qudt-public-repo@16f1b30
-- Handle TemperatureDifference edge case (ignore offset when converting)
+## [6.5.0] - 2024-03-17
 
 ### Added
 
 - Add model classes PhysicalConstant and ConstantValue, populate from data.
 - Add tool for generating the decimal/scientific values for QUDT
 - Add description to `Unit, QuantityKind and PhysicalConstant` (i.e. the string value of `dcterms:description`)
+
+### Changed
+
+- Update to qudt-public-repo@16f1b30
+- Handle TemperatureDifference edge case (ignore offset when converting)
 
 ## [6.4.3] - 2024-02-20
 
@@ -271,7 +273,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.3...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.5.0...HEAD
+[6.5.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.3...v6.5.0
 [6.4.3]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.2...v6.4.3
 [6.4.2]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.1...v6.4.2
 [6.4.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.0...v6.4.1
