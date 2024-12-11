@@ -292,6 +292,7 @@ public class QUDT {
 
     /** <code>applicable System of Units for a unit</code> */
     public static final IRI applicableSystem = create("applicableSystem");
+
     /** /** <code>base CGS unit dimensions</code> * */
     public static final IRI baseCGSUnitDimensions = create("baseCGSUnitDimensions");
 

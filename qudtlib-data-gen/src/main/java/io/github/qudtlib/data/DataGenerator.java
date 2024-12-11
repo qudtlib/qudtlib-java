@@ -34,15 +34,14 @@ public class DataGenerator {
     private static final String CONSTANTS_OUTFILE = "qudt-constants.ttl";
 
     // QUDT files
-    private static final String UNITS_FILE = "qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL-v2.1.ttl";
+    private static final String UNITS_FILE = "qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL.ttl";
     private static final String CURRENCIES_FILE =
-            "qudt/vocab/currency/VOCAB_QUDT-UNITS-CURRENCY-v2.1.ttl";
-    private static final String PREFIXES_FILE = "qudt/vocab/prefixes/VOCAB_QUDT-PREFIXES-v2.1.ttl";
+            "qudt/vocab/currency/VOCAB_QUDT-UNITS-CURRENCY.ttl";
+    private static final String PREFIXES_FILE = "qudt/vocab/prefixes/VOCAB_QUDT-PREFIXES.ttl";
     private static final String QUANTITYKINDS_FILE =
-            "qudt/vocab/quantitykinds/VOCAB_QUDT-QUANTITY-KINDS-ALL-v2.1.ttl";
+            "qudt/vocab/quantitykinds/VOCAB_QUDT-QUANTITY-KINDS-ALL.ttl";
 
-    private static final String CONSTANTS_FILE =
-            "qudt/vocab/constants/VOCAB_QUDT-CONSTANTS-v2.1.ttl";
+    private static final String CONSTANTS_FILE = "qudt/vocab/constants/VOCAB_QUDT-CONSTANTS.ttl";
 
     // queries
     private static final String FACTOR_UNITS_QUERY = "factorUnit.rq";
@@ -52,6 +51,8 @@ public class DataGenerator {
 
     private static final String DELETE_FROM_UNITS_BY_QUERY_PATTERN =
             "delete-from-units-by-query[N].rq";
+    private static final String DELETE_FROM_QUANTITYKINDS_BY_QUERY_PATTERN =
+            "delete-from-quantitykinds-by-query[N].rq";
     // additional data
     private static final String SI_BASE_UNITS_DATA = "si-base-units.ttl";
     private static final String ADD_TO_UNITS = "add-to-units.ttl";
@@ -61,7 +62,7 @@ public class DataGenerator {
     private static final String UNITS_EXPECTED_DATA = "tmpExpected/qudt-unit.ttl";
 
     private static final String SYSTEM_OF_UNITS_FILE =
-            "qudt/vocab/systems/VOCAB_QUDT-SYSTEM-OF-UNITS-ALL-v2.1.ttl";
+            "qudt/vocab/systems/VOCAB_QUDT-SYSTEM-OF-UNITS-ALL.ttl";
 
     private static final String SYSTEM_OF_UNITS_QUERY = "system-of-units.rq";
 
@@ -135,9 +136,9 @@ public class DataGenerator {
         Repository outputRepo = new SailRepository(new MemoryStore());
         try (RepositoryConnection outputCon = outputRepo.getConnection()) {
             RdfOps.addStatementsFromFile(outputCon, QUANTITYKINDS_FILE);
-            // the currencies file contains the qk:Currency definition:
-            RdfOps.addStatementsFromFile(outputCon, CURRENCIES_FILE);
             // remove unwanted individual triples
+            RdfOps.updateDataUsingNQueries(
+                    outputCon, DELETE_FROM_QUANTITYKINDS_BY_QUERY_PATTERN, 5);
             RdfOps.removeStatementsFromFile(outputCon, DELETE_FROM_QUANTITYKINDS);
             // add missing triples
             RdfOps.addStatementsFromFile(outputCon, ADD_TO_QUANTITYKINDS);

@@ -37,6 +37,9 @@ SELECT * where
        ?unit qudt:symbol ?symbol
     }
     optional {
+       ?unit qudt:altSymbol ?altSymbol
+    }
+    optional {
        ?unit qudt:ucumCode ?ucumCode
     }
     optional {

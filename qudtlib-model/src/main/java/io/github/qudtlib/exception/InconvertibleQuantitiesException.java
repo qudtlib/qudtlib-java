@@ -1,4 +1,5 @@
 package io.github.qudtlib.exception;
+
 /**
  * Indicates that quantities cannot be converted.
  *

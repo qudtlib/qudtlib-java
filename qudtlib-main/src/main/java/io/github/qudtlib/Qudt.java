@@ -3,12 +3,16 @@ package io.github.qudtlib;
 import static java.util.stream.Collectors.toList;
 
 import com.java2s.Log10BigDecimal;
+import io.github.qudtlib.exception.IncompleteDataException;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.exception.NotFoundException;
 import io.github.qudtlib.init.Initializer;
 import io.github.qudtlib.model.*;
 import io.github.qudtlib.support.fractional.FractionalDimensionVector;
 import io.github.qudtlib.support.fractional.FractionalUnits;
+import io.github.qudtlib.support.index.Flag;
+import io.github.qudtlib.support.index.SearchIndex;
+import io.github.qudtlib.support.parse.UnitParser;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -70,6 +74,10 @@ public class Qudt {
     public abstract static class PhysicalConstants
             extends io.github.qudtlib.model.PhysicalConstants {}
 
+    private static final SearchIndex<Unit> unitIndex = new SearchIndex<>(true);
+    private static final Map<DimensionVector, SortedSet<Unit>> unitsByDimensionVector =
+            new HashMap<>();
+
     /* Use the Initializer to load and wire all prefixes, units and quantityKinds. */
     static {
         Initializer initializer = null;
@@ -104,6 +112,62 @@ public class Qudt {
             physicalConstants = new HashMap<>();
             System.err.println(
                     "\n\n\n ERROR: The QUDTlib data model has not been initialized properly and will not work\n\n\n");
+        }
+        reindexUnitsForSearch();
+        reindexUnitsForComparison();
+    }
+
+    private enum UNIT_INDEX_KEYS {
+        SYMBOL,
+        UCUM_CODE,
+        LABEL,
+        IRI_LOCALNAME,
+        EMPTY_VALUE
+    }
+
+    private static void reindexUnitsForComparison() {
+        unitsByDimensionVector.clear();
+        for (Unit u : units.values()) {
+            try {
+                Optional<DimensionVector> dvOpt = u.getDimensionVector();
+                if (dvOpt.isEmpty()) {
+                    System.err.println("no dimension vector for: " + u.getIriAbbreviated());
+                    continue;
+                }
+                DimensionVector dv = dvOpt.get();
+                SortedSet<Unit> similarUnits = unitsByDimensionVector.get(dv);
+                if (similarUnits == null) {
+                    similarUnits = new TreeSet<>(Comparator.comparing(Unit::getIri));
+                    unitsByDimensionVector.put(dv, similarUnits);
+                }
+                similarUnits.add(u);
+            } catch (IncompleteDataException e) {
+                System.err.println(
+                        "error calculating dimension vector for: " + u.getIriAbbreviated());
+            }
+        }
+    }
+
+    private static void reindexUnitsForSearch() {
+        unitIndex.clear();
+        for (Unit u : Qudt.units.values()) {
+            unitIndex.put(
+                    UNIT_INDEX_KEYS.SYMBOL
+                            + u.getSymbol().orElse(UNIT_INDEX_KEYS.EMPTY_VALUE.toString()),
+                    u);
+            u.getAltSymbols().stream()
+                    .forEach(symbol -> unitIndex.put(UNIT_INDEX_KEYS.SYMBOL + symbol, u));
+            unitIndex.put(
+                    UNIT_INDEX_KEYS.UCUM_CODE
+                            + u.getUcumCode().orElse(UNIT_INDEX_KEYS.EMPTY_VALUE.toString()),
+                    u);
+            unitIndex.put(UNIT_INDEX_KEYS.IRI_LOCALNAME + u.getIriLocalname(), u);
+            u.getLabels().stream()
+                    .map(LangString::getString)
+                    .forEach(
+                            s -> {
+                                unitIndex.put(UNIT_INDEX_KEYS.UCUM_CODE + s, u);
+                            });
         }
     }
 
@@ -149,6 +213,50 @@ public class Qudt {
         return units.values().stream()
                 .filter(u -> u.getLabels().stream().anyMatch(labelMatcher::matches))
                 .findFirst();
+    }
+
+    public static Set<Unit> unitsByIriLocalname(
+            String iriLocalname, boolean matchPrefix, boolean caseInsensitive) {
+        return unitIndex.get(
+                UNIT_INDEX_KEYS.IRI_LOCALNAME + iriLocalname,
+                Flag.matchPrefix(matchPrefix).caseInsensitive(caseInsensitive).getBits());
+    }
+
+    public static Set<Unit> unitsBySymbol(
+            String symbol, boolean matchPrefix, boolean caseInsensitive) {
+        return unitIndex.get(
+                UNIT_INDEX_KEYS.SYMBOL + symbol,
+                Flag.matchPrefix(matchPrefix).caseInsensitive(caseInsensitive).getBits());
+    }
+
+    public static Set<Unit> unitsByUcumCode(
+            String ucumCode, boolean matchPrefix, boolean caseInsensitive) {
+        return unitIndex.get(
+                UNIT_INDEX_KEYS.UCUM_CODE + ucumCode,
+                Flag.matchPrefix(matchPrefix).caseInsensitive(caseInsensitive).getBits());
+    }
+
+    public static Set<Unit> unitsByLabel(
+            String label, boolean matchPrefix, boolean caseInsensitive) {
+        return unitIndex.get(
+                UNIT_INDEX_KEYS.LABEL + label,
+                Flag.matchPrefix(matchPrefix).caseInsensitive(caseInsensitive).getBits());
+    }
+
+    /**
+     * Parse the unit specified in the `input` String and filter the result by the specific
+     * quantityKind's applicableUnits.
+     *
+     * @param input the string to parse
+     * @param quantityKind the quantitykind that the units are required to be applicable to
+     * @return the set of units that match the input string and quantitykind
+     */
+    public static Set<Unit> parseUnit(String input, QuantityKind quantityKind) {
+        return new UnitParser(input, quantityKind).parse();
+    }
+
+    public static Set<Unit> parseUnit(String input) {
+        return new UnitParser(input).parse();
     }
 
     public static Unit unitFromLabelRequired(String label) {
@@ -471,11 +579,15 @@ public class Qudt {
      */
     private static List<Unit> derivedUnitListFromFactorUnits(
             DerivedUnitSearchMode searchMode, FactorUnits selection) {
+        Set<Unit> matchingUnits = unitsByDimensionVector.get(selection.getDimensionVector());
+        if (matchingUnits == null) {
+            return List.of();
+        }
 
-        List<Unit> matchingUnits =
-                units.values().stream()
-                        .filter(d -> d.matches(selection))
-                        .collect(Collectors.toList());
+        matchingUnits =
+                matchingUnits.stream()
+                        .filter(u -> u.matches(selection))
+                        .collect(Collectors.toSet());
         if (searchMode == DerivedUnitSearchMode.ALL || matchingUnits.size() < 2) {
             return matchingUnits.stream()
                     .sorted(bestMatchForFactorUnitsComparator(selection))

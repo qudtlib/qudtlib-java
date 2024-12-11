@@ -383,7 +383,7 @@ public class DerivedUnitTests {
                         Qudt.Units.KiloN__M.matches(FactorUnits.ofFactorUnitSpec(factors)),
                         () -> "failed for " + factorUnits);
                 assertTrue(
-                        Qudt.Units.KiloN__M.matches(FactorUnits.ofFactorUnitSpec(factors)),
+                        Qudt.Units.KiloJ.matches(FactorUnits.ofFactorUnitSpec(factors)),
                         () -> "failed for " + factorUnits);
                 successfulFor.add(new ArrayList<>(factorUnits));
             }

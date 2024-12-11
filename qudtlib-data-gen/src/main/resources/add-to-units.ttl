@@ -1,6 +1,2 @@
-@prefix qudt: <http://qudt.org/schema/qudt/> .
-@prefix unit: <http://qudt.org/vocab/unit/> .
-@prefix sou: <http://qudt.org/vocab/sou/> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
-@prefix prefix: <http://qudt.org/vocab/prefix/> .
+
+
