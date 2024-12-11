@@ -61,7 +61,7 @@ public class Unit extends SelfSmuggler {
         private BigDecimal conversionOffset;
         private Set<Builder<QuantityKind>> quantityKinds = new HashSet<>();
         private String symbol;
-
+        private Set<String> altSymbols = new HashSet<>();
         private String description;
         private boolean generated = false;
         private String ucumCode;
@@ -100,6 +100,13 @@ public class Unit extends SelfSmuggler {
 
         public <T extends Definition> T symbol(String symbol) {
             this.symbol = symbol;
+            return (T) this;
+        }
+
+        public <T extends Definition> T altSymbol(String symbol) {
+            if (symbol != null && !symbol.trim().isEmpty()) {
+                this.altSymbols.add(symbol);
+            }
             return (T) this;
         }
 
@@ -258,6 +265,7 @@ public class Unit extends SelfSmuggler {
     private final BigDecimal conversionOffset;
     private final Set<QuantityKind> quantityKinds;
     private final String symbol;
+    private final Set<String> altSymbols;
     private final String description;
 
     private final String ucumCode;
@@ -287,6 +295,7 @@ public class Unit extends SelfSmuggler {
         this.conversionMultiplier = definition.conversionMultiplier;
         this.conversionOffset = definition.conversionOffset;
         this.symbol = definition.symbol;
+        this.altSymbols = definition.altSymbols;
         this.ucumCode = definition.ucumCode;
         this.currencyCode = definition.currencyCode;
         this.currencyNumber = definition.currencyNumber;
@@ -316,7 +325,7 @@ public class Unit extends SelfSmuggler {
             }
         }
         if (fu.hasFactorUnits()) {
-            this.factorUnits = fu;
+            this.factorUnits = new FactorUnits(fu);
         } else if (this.scalingOf != null) {
             BigDecimal multiplier =
                     this.prefix == null
@@ -609,6 +618,10 @@ public class Unit extends SelfSmuggler {
             return Optional.of(this.prefix.getSymbol() + this.scalingOf.getSymbol());
         }
         return Optional.empty();
+    }
+
+    public Set<String> getAltSymbols() {
+        return Collections.unmodifiableSet(this.altSymbols);
     }
 
     public Optional<String> getUcumCode() {

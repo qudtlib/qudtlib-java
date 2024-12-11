@@ -1,0 +1,10 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+prefix quantitykind: <http://qudt.org/vocab/quantitykind/>
+DELETE { ?u qudt:symbol ?symb }
+INSERT { ?u qudt:symbol ?repl }
+WHERE {
+    ?u qudt:symbol ?symb
+    filter(regex(?symb, "^1/.+"))
+    BIND (replace(?symb, "^1", "") as ?repl)
+}

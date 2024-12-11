@@ -98,6 +98,7 @@ public class InitializerImpl implements Initializer {
                     unitDefinition = makeUnitBuilder(bs, definitions);
                 }
                 unitDefinition
+                        .altSymbol(getIfPresent(bs, "altSymbol", Value::stringValue))
                         .addLabel(
                                 getIfPresent(
                                         bs,

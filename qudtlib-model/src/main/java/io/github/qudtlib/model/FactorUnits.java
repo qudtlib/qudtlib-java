@@ -3,6 +3,7 @@ package io.github.qudtlib.model;
 import static io.github.qudtlib.math.BigDec.isRelativeDifferenceGreaterThan;
 import static java.util.stream.Collectors.toList;
 
+import io.github.qudtlib.exception.IncompleteDataException;
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.math.BigDec;
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ public class FactorUnits {
     private final List<FactorUnit> factorUnits;
     private final BigDecimal scaleFactor;
     private DimensionVector dimensionVector;
+    private transient FactorUnits normalized = null;
 
     public FactorUnits(
             List<FactorUnit> factorUnits, BigDecimal scaleFactor, String iriForSortingFactors) {
@@ -291,6 +293,14 @@ public class FactorUnits {
     }
 
     public FactorUnits normalize() {
+        if (this.normalized != null) {
+            return this.normalized;
+        }
+        this.normalized = calculateNormalized();
+        return this.normalized;
+    }
+
+    private FactorUnits calculateNormalized() {
         FactorUnits normalized = FactorUnits.empty();
         if (this.hasFactorUnits()) {
             normalized =
@@ -323,7 +333,7 @@ public class FactorUnits {
         for (FactorUnit fu : this.factorUnits) {
             Optional<String> fudvOpt = fu.getDimensionVectorIri();
             if (fudvOpt.isEmpty()) {
-                throw new RuntimeException(
+                throw new IncompleteDataException(
                         String.format(
                                 "Cannot compute dimension vector of factor units %s: %s does not have a dimension vector",
                                 this.toString(), fu.getUnit().getIriAbbreviated()));

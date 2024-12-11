@@ -37,7 +37,7 @@
                     <includePluginDependencies>true</includePluginDependencies>
                     <mainClass>be.belgif.vocgen.Main</mainClass>
                     <arguments>
-                        <argument>--file</argument><argument>qudt/schema/SCHEMA_QUDT-v2.1.18.ttl</argument>
+                        <argument>--file</argument><argument>qudt/schema/SCHEMA_QUDT.ttl</argument>
                         <argument>--searchClasspath</argument>
                         <argument>--long</argument><argument>"Quantities, Units, Dimensions and Data Types Ontology"</argument>
                         <argument>--short</argument><argument>QUDT</argument>

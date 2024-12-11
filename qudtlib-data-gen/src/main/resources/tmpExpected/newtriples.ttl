@@ -1,1515 +1,1896 @@
-@prefix qudt:  <http://qudt.org/schema/qudt/> .
-@prefix constant: <http://qudt.org/vocab/constant/> .
-@prefix vaem:  <http://www.linkedmodel.org/schema/vaem#> .
-@prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix prefix: <http://qudt.org/vocab/prefix/> .
-@prefix kind:  <http://qudt.org/vocab/quantitykind/> .
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix voag:  <http://voag.linkedmodel.org/schema/voag#> .
-@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
-@prefix unit:  <http://qudt.org/vocab/unit/> .
-@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix mc:    <http://www.linkedmodel.org/owl/schema/core#> .
-@prefix qkdv:  <http://qudt.org/vocab/dimensionvector/> .
-@prefix sou:   <http://qudt.org/vocab/sou/> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix prov:  <http://www.w3.org/ns/prov#> .
-@prefix dc:    <http://purl.org/dc/elements/1.1/> .
-
-unit:PicoMOL-PER-M3-SEC
-        qudt:convertsTo   unit:MOL-PER-M3-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M3-SEC .
-
-unit:PebiBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Pebi .
-
-unit:GM-PER-KiloM  qudt:isScalingOf  unit:GM-PER-M .
-
-unit:CentiM3-PER-HR  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:PicoGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Pico .
-
-unit:KiloCi  qudt:isScalingOf  unit:Ci ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MilliM3-PER-M3  qudt:convertsTo  unit:M3-PER-M3 ;
-        qudt:isScalingOf  unit:M3-PER-M3 .
-
-unit:KiloSEC  qudt:convertsTo  unit:SEC ;
-        qudt:isScalingOf  unit:SEC ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MicroPA  qudt:convertsTo  unit:PA ;
-        qudt:isScalingOf  unit:PA ;
-        qudt:prefix       prefix:Micro .
-
-unit:KiloJ-PER-MOL  qudt:convertsTo  unit:J-PER-MOL ;
-        qudt:isScalingOf  unit:J-PER-MOL .
-
-unit:C-PER-CentiM3  qudt:convertsTo  unit:C-PER-M3 ;
-        qudt:isScalingOf  unit:C-PER-M3 .
-
-unit:GigaJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Giga .
-
-unit:TeraW-HR  qudt:convertsTo  unit:W-SEC ;
-        qudt:isScalingOf  unit:W-SEC .
-
-unit:PER-CentiM3  qudt:convertsTo  unit:PER-M3 ;
-        qudt:isScalingOf  unit:PER-M3 .
-
-unit:MegaBQ  qudt:convertsTo  unit:BQ ;
-        qudt:isScalingOf  unit:BQ ;
-        qudt:prefix       prefix:Mega .
-
-unit:V-PER-MicroSEC  qudt:convertsTo  unit:V-PER-SEC ;
-        qudt:isScalingOf  unit:V-PER-SEC .
-
-unit:FARAD-PER-KiloM  qudt:convertsTo  unit:FARAD-PER-M ;
-        qudt:isScalingOf  unit:FARAD-PER-M .
-
-unit:KiloN-M  qudt:convertsTo  unit:N-M ;
-        qudt:isScalingOf  unit:N-M .
-
-unit:MilliBAR-L-PER-SEC
-        qudt:isScalingOf  unit:BAR-L-PER-SEC .
-
-unit:MicroJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Micro .
-
-unit:CentiM-PER-K  qudt:convertsTo  unit:M-PER-K ;
-        qudt:isScalingOf  unit:M-PER-K .
-
-unit:KiloGM-PER-HR  qudt:isScalingOf  unit:GM-PER-SEC .
-
-unit:MilliT  qudt:convertsTo  unit:T ;
-        qudt:isScalingOf  unit:T ;
-        qudt:prefix       prefix:Milli .
-
-unit:MilliN-PER-M  qudt:convertsTo  unit:N-PER-M ;
-        qudt:isScalingOf  unit:N-PER-M .
-
-unit:PER-CentiM  qudt:convertsTo  unit:PER-M ;
-        qudt:isScalingOf  unit:PER-M .
-
-unit:N-PER-CentiM2  qudt:convertsTo  unit:N-PER-M2 ;
-        qudt:isScalingOf  unit:N-PER-M2 .
-
-unit:PetaBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Peta .
-
-unit:MicroMOL-PER-L  qudt:isScalingOf  unit:MOL-PER-L .
-
-unit:DecaARE  qudt:isScalingOf  unit:ARE ;
-        qudt:prefix       prefix:Deca .
-
-unit:KiloPA-PER-MilliM
-        qudt:convertsTo   unit:PA-PER-M ;
-        qudt:isScalingOf  unit:PA-PER-M .
-
-unit:NanoGM-PER-KiloGM
-        qudt:convertsTo   unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:PicoW-PER-M2  qudt:convertsTo  unit:W-PER-M2 ;
-        qudt:isScalingOf  unit:W-PER-M2 .
-
-unit:KiloV-A_Reactive
-        qudt:convertsTo   unit:V-A_Reactive ;
-        qudt:isScalingOf  unit:V-A_Reactive .
-
-unit:NanoFARAD-PER-M  qudt:convertsTo  unit:FARAD-PER-M ;
-        qudt:isScalingOf  unit:FARAD-PER-M .
-
-unit:GigaBQ  qudt:convertsTo  unit:BQ ;
-        qudt:isScalingOf  unit:BQ ;
-        qudt:prefix       prefix:Giga .
-
-unit:ExaBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Exa .
-
-unit:MilliM3  qudt:convertsTo  unit:M3 ;
-        qudt:isScalingOf  unit:M3 ;
-        qudt:prefix       prefix:Milli .
-
-unit:KiloA-PER-M  qudt:convertsTo  unit:A-PER-M ;
-        qudt:isScalingOf  unit:A-PER-M .
-
-unit:MegaJ-PER-M2  qudt:convertsTo  unit:J-PER-M2 ;
-        qudt:isScalingOf  unit:J-PER-M2 .
-
-unit:GigaOHM  qudt:convertsTo  unit:OHM ;
-        qudt:isScalingOf  unit:OHM ;
-        qudt:prefix       prefix:Giga .
-
-unit:MilliMOL-PER-MOL
-        qudt:convertsTo   unit:MOL-PER-MOL ;
-        qudt:isScalingOf  unit:MOL-PER-MOL .
-
-unit:L-PER-MicroMOL  qudt:isScalingOf  unit:L-PER-MOL .
-
-unit:MicroW-PER-M2  qudt:convertsTo  unit:W-PER-M2 ;
-        qudt:isScalingOf  unit:W-PER-M2 .
-
-unit:MicroMOL-PER-SEC
-        qudt:convertsTo   unit:MOL-PER-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-SEC .
-
-unit:HectoPA-M3-PER-SEC
-        qudt:convertsTo   unit:PA-M3-PER-SEC ;
-        qudt:isScalingOf  unit:PA-M3-PER-SEC .
-
-unit:MilliW-PER-M2-NanoM
-        qudt:convertsTo   unit:W-PER-M2-M ;
-        qudt:isScalingOf  unit:W-PER-M2-M .
-
-unit:PicoS-PER-M  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
-
-unit:MilliGM-PER-M  qudt:isScalingOf  unit:GM-PER-M .
-
-unit:MicroV-PER-M  qudt:convertsTo  unit:V-PER-M ;
-        qudt:isScalingOf  unit:V-PER-M .
-
-unit:TeraHZ  qudt:convertsTo  unit:HZ ;
-        qudt:isScalingOf  unit:HZ ;
-        qudt:prefix       prefix:Tera .
-
-unit:NanoGM-PER-L  qudt:convertsTo  unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:NanoGM-PER-MilliL
-        qudt:convertsTo   unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:MilliW-PER-M2  qudt:convertsTo  unit:W-PER-M2 ;
-        qudt:isScalingOf  unit:W-PER-M2 .
-
-unit:NanoGM-PER-DAY  qudt:isScalingOf  unit:GM-PER-SEC .
-
-unit:W-PER-M2-NanoM-SR
-        qudt:convertsTo   unit:W-PER-M2-M-SR ;
-        qudt:isScalingOf  unit:W-PER-M2-M-SR .
-
-unit:MegaJ-PER-KiloGM
-        qudt:isScalingOf  unit:J-PER-GM .
-
-unit:MilliGM-PER-HR  qudt:isScalingOf  unit:GM-PER-SEC .
-
-unit:CentiC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Centi .
-
-unit:PicoMOL-PER-M3  qudt:convertsTo  unit:MOL-PER-M3 ;
-        qudt:isScalingOf  unit:MOL-PER-M3 .
-
-unit:DeciGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Deci .
-
-unit:CentiM3-PER-SEC  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:MilliH-PER-OHM  qudt:convertsTo  unit:H-PER-OHM ;
-        qudt:isScalingOf  unit:H-PER-OHM .
-
-unit:MicroMOL-PER-M2-DAY
-        qudt:convertsTo   unit:MOL-PER-M2-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M2-SEC .
-
-unit:MicroM3-PER-M3  qudt:convertsTo  unit:M3-PER-M3 ;
-        qudt:isScalingOf  unit:M3-PER-M3 .
-
-unit:KiloJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Kilo .
-
-unit:CentiN  qudt:isScalingOf  unit:N ;
-        qudt:prefix       prefix:Centi .
-
-unit:KiloV-PER-M  qudt:convertsTo  unit:V-PER-M ;
-        qudt:isScalingOf  unit:V-PER-M .
-
-unit:ExbiBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Exbi .
-
-unit:MegaBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Mega .
-
-unit:KiloGM-PER-MilliM
-        qudt:isScalingOf  unit:GM-PER-M .
-
-unit:GM-PER-CentiM2  qudt:isScalingOf  unit:GM-PER-M2 .
-
-unit:NUM-PER-HectoGM  qudt:isScalingOf  unit:NUM-PER-GM .
-
-unit:N-CentiM  qudt:convertsTo  unit:N-M ;
-        qudt:isScalingOf  unit:N-M .
-
-unit:MegaHZ-PER-K  qudt:convertsTo  unit:HZ-PER-K ;
-        qudt:isScalingOf  unit:HZ-PER-K .
-
-unit:MegaJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Mega .
-
-unit:AttoJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Atto .
-
-unit:KiloGM-PER-DAY  qudt:isScalingOf  unit:GM-PER-SEC .
-
-unit:MilliGM-PER-DAY  qudt:isScalingOf  unit:GM-PER-SEC .
-
-unit:PicoGM-PER-GM  qudt:convertsTo  unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:MilliMOL-PER-M3  qudt:convertsTo  unit:MOL-PER-M3 ;
-        qudt:isScalingOf  unit:MOL-PER-M3 .
-
-unit:DeciM3-PER-SEC  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:MicroFARAD-PER-M
-        qudt:convertsTo   unit:FARAD-PER-M ;
-        qudt:isScalingOf  unit:FARAD-PER-M .
-
-unit:NUM-PER-NanoL  qudt:isScalingOf  unit:NUM-PER-L .
-
-unit:DeciM2  qudt:convertsTo  unit:M2 ;
-        qudt:isScalingOf  unit:M2 ;
-        qudt:prefix       prefix:Deci .
-
-unit:MilliM-PER-YR  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
-
-unit:MicroMHO  qudt:convertsTo  unit:MHO ;
-        qudt:isScalingOf  unit:MHO ;
-        qudt:prefix       prefix:Micro .
-
-unit:C-PER-MilliM3  qudt:convertsTo  unit:C-PER-M3 ;
-        qudt:isScalingOf  unit:C-PER-M3 .
-
-unit:PER-MilliM3  qudt:convertsTo  unit:PER-M3 ;
-        qudt:isScalingOf  unit:PER-M3 .
-
-unit:ZettaC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Zetta .
-
-unit:MilliGM-PER-CentiM2
-        qudt:isScalingOf  unit:GM-PER-M2 .
-
-unit:PetaJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Peta .
-
-unit:HectoPA  qudt:convertsTo  unit:PA ;
-        qudt:isScalingOf  unit:PA ;
-        qudt:prefix       prefix:Hecto .
-
-unit:ZeptoC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Zepto .
-
-unit:MilliL-PER-K  qudt:isScalingOf  unit:L-PER-K .
-
-unit:A-PER-CentiM2  qudt:convertsTo  unit:A-PER-M2 ;
-        qudt:isScalingOf  unit:A-PER-M2 .
-
-unit:N-PER-MilliM2  qudt:convertsTo  unit:N-PER-M2 ;
-        qudt:isScalingOf  unit:N-PER-M2 .
-
-unit:J-PER-KiloGM  qudt:isScalingOf  unit:J-PER-GM .
-
-unit:DeciM3-PER-HR  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:MicroH-PER-OHM  qudt:convertsTo  unit:H-PER-OHM ;
-        qudt:isScalingOf  unit:H-PER-OHM .
-
-unit:MilliJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Milli .
-
-unit:MilliMOL-PER-M3-DAY
-        qudt:convertsTo   unit:MOL-PER-M3-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M3-SEC .
-
-unit:KiloEV-PER-MicroM
-        qudt:isScalingOf  unit:EV-PER-M .
-
-unit:N-PER-MilliM  qudt:convertsTo  unit:N-PER-M ;
-        qudt:isScalingOf  unit:N-PER-M .
-
-unit:KiloGM-PER-MOL  qudt:isScalingOf  unit:GM-PER-MOL .
-
-unit:MicroGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Micro .
-
-unit:MicroV  qudt:convertsTo  unit:V ;
-        qudt:isScalingOf  unit:V ;
-        qudt:prefix       prefix:Micro .
-
-unit:KiloTON_Metric  qudt:isScalingOf  unit:TON_Metric ;
-        qudt:prefix       prefix:Kilo .
-
-unit:FemtoJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Femto .
-
-unit:ExaC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Exa .
-
-unit:DecaL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Deca .
-
-unit:PicoGM-PER-KiloGM
-        qudt:convertsTo   unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:MilliM4  qudt:convertsTo  unit:M4 ;
-        qudt:isScalingOf  unit:M4 ;
-        qudt:prefix       prefix:Milli .
-
-unit:CentiN-M  qudt:convertsTo  unit:N-M ;
-        qudt:isScalingOf  unit:N-M .
-
-unit:AttoJ-SEC  qudt:convertsTo  unit:J-SEC ;
-        qudt:isScalingOf  unit:J-SEC .
-
-unit:MicroMOL  qudt:convertsTo  unit:MOL ;
-        qudt:isScalingOf  unit:MOL ;
-        qudt:prefix       prefix:Micro .
-
-unit:KiloWB-PER-M  qudt:convertsTo  unit:WB-PER-M ;
-        qudt:isScalingOf  unit:WB-PER-M .
-
-unit:MicroL-PER-L  qudt:convertsTo  unit:L-PER-L ;
-        qudt:isScalingOf  unit:L-PER-L .
-
-unit:MegaJ-PER-M3  qudt:convertsTo  unit:J-PER-M3 ;
-        qudt:isScalingOf  unit:J-PER-M3 .
-
-unit:DeciBAR  qudt:isScalingOf  unit:BAR ;
-        qudt:prefix       prefix:Deci .
-
-unit:S-PER-CentiM  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
-
-unit:KiloJ-PER-KiloGM
-        qudt:isScalingOf  unit:J-PER-GM .
-
-unit:MegaN-M  qudt:convertsTo  unit:N-M ;
-        qudt:isScalingOf  unit:N-M .
-
-unit:KiloM-PER-DAY  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
-
-unit:MegaGM-PER-M3  qudt:isScalingOf  unit:GM-PER-M3 .
-
-unit:FemtoGM-PER-L  qudt:convertsTo  unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:MicroM2  qudt:convertsTo  unit:M2 ;
-        qudt:isScalingOf  unit:M2 ;
-        qudt:prefix       prefix:Micro .
-
-unit:WB-PER-MilliM  qudt:convertsTo  unit:WB-PER-M ;
-        qudt:isScalingOf  unit:WB-PER-M .
-
-unit:PicoGM-PER-MilliL
-        qudt:convertsTo   unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:KiloL-PER-HR  qudt:isScalingOf  unit:L-PER-SEC .
-
-unit:MilliMOL  qudt:convertsTo  unit:MOL ;
-        qudt:isScalingOf  unit:MOL ;
-        qudt:prefix       prefix:Milli .
-
-unit:DecaPA  qudt:convertsTo  unit:PA ;
-        qudt:isScalingOf  unit:PA ;
-        qudt:prefix       prefix:Deca .
-
-unit:MilliCi  qudt:isScalingOf  unit:Ci ;
-        qudt:prefix       prefix:Milli .
-
-unit:PicoFARAD-PER-M  qudt:convertsTo  unit:FARAD-PER-M ;
-        qudt:isScalingOf  unit:FARAD-PER-M .
-
-unit:KiloA-HR  qudt:convertsTo  unit:A-SEC ;
-        qudt:isScalingOf  unit:A-SEC .
-
-unit:KiloHZ-M  qudt:convertsTo  unit:HZ-M ;
-        qudt:isScalingOf  unit:HZ-M .
-
-unit:KiloV  qudt:convertsTo  unit:V ;
-        qudt:isScalingOf  unit:V ;
-        qudt:prefix       prefix:Kilo .
-
-unit:GM-PER-CentiM3  qudt:isScalingOf  unit:GM-PER-M3 .
-
-unit:MilliARCSEC  qudt:isScalingOf  unit:ARCSEC ;
-        qudt:prefix       prefix:Milli .
-
-unit:KiloBAR  qudt:isScalingOf  unit:BAR ;
-        qudt:prefix       prefix:Kilo .
-
-unit:V-PER-MilliM  qudt:convertsTo  unit:V-PER-M ;
-        qudt:isScalingOf  unit:V-PER-M .
-
-unit:CentiM3-PER-MIN  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:KiloPA  qudt:convertsTo  unit:PA ;
-        qudt:isScalingOf  unit:PA ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MicroPOISE  qudt:isScalingOf  unit:POISE ;
-        qudt:prefix       prefix:Micro .
-
-unit:PicoA  qudt:convertsTo  unit:A ;
-        qudt:isScalingOf  unit:A ;
-        qudt:prefix       prefix:Pico .
-
-unit:FemtoGM-PER-KiloGM
-        qudt:convertsTo   unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:MegaV  qudt:convertsTo  unit:V ;
-        qudt:isScalingOf  unit:V ;
-        qudt:prefix       prefix:Mega .
-
-unit:TeraW  qudt:convertsTo  unit:W ;
-        qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Tera .
-
-unit:MilliM-PER-DAY  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
-
-unit:DeciM3  qudt:convertsTo  unit:M3 ;
-        qudt:isScalingOf  unit:M3 ;
-        qudt:prefix       prefix:Deci .
-
-unit:MilliIN  qudt:isScalingOf  unit:IN ;
-        qudt:prefix       prefix:Milli .
-
-unit:PicoW  qudt:convertsTo  unit:W ;
-        qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Pico .
-
-unit:MicroFARAD-PER-KiloM
-        qudt:convertsTo   unit:FARAD-PER-M ;
-        qudt:isScalingOf  unit:FARAD-PER-M .
-
-unit:A-PER-MilliM2  qudt:convertsTo  unit:A-PER-M2 ;
-        qudt:isScalingOf  unit:A-PER-M2 .
-
-unit:CentiPOISE  qudt:isScalingOf  unit:POISE ;
-        qudt:prefix       prefix:Centi .
-
-unit:NanoS-PER-CentiM
-        qudt:convertsTo   unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
-
-unit:MicroBQ-PER-L  qudt:isScalingOf  unit:BQ-PER-L .
-
-unit:DeciM3-PER-MIN  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:MilliBQ-PER-L  qudt:isScalingOf  unit:BQ-PER-L .
-
-unit:KiloM3-PER-SEC2  qudt:convertsTo  unit:M3-PER-SEC2 ;
-        qudt:isScalingOf  unit:M3-PER-SEC2 .
-
-unit:NanoH-PER-M  qudt:convertsTo  unit:H-PER-M ;
-        qudt:isScalingOf  unit:H-PER-M .
-
-unit:GigaBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Giga .
-
-unit:KiloCAL_TH-PER-SEC
-        qudt:isScalingOf  unit:CAL_TH-PER-SEC .
-
-unit:MicroRAD  qudt:convertsTo  unit:RAD ;
-        qudt:isScalingOf  unit:RAD ;
-        qudt:prefix       prefix:Micro .
-
-unit:MilliL-PER-L  qudt:convertsTo  unit:L-PER-L ;
-        qudt:isScalingOf  unit:L-PER-L .
-
-unit:KiloCAL_IT  qudt:isScalingOf  unit:CAL_IT ;
-        qudt:prefix       prefix:Kilo .
-
-unit:GM-PER-DeciM3  qudt:isScalingOf  unit:GM-PER-M3 .
-
-unit:MilliL-PER-DAY  qudt:isScalingOf  unit:L-PER-SEC .
-
-unit:KiloMOL-PER-M3  qudt:convertsTo  unit:MOL-PER-M3 ;
-        qudt:isScalingOf  unit:MOL-PER-M3 .
-
-unit:MegaPA  qudt:convertsTo  unit:PA ;
-        qudt:isScalingOf  unit:PA ;
-        qudt:prefix       prefix:Mega .
-
-unit:GigaW  qudt:convertsTo  unit:W ;
-        qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Giga .
-
-unit:MicroA  qudt:convertsTo  unit:A ;
-        qudt:isScalingOf  unit:A ;
-        qudt:prefix       prefix:Micro .
-
-unit:NanoA  qudt:convertsTo  unit:A ;
-        qudt:isScalingOf  unit:A ;
-        qudt:prefix       prefix:Nano .
-
-unit:KiloGM-PER-SEC  qudt:isScalingOf  unit:GM-PER-SEC .
-
-unit:MebiBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Mebi .
-
-unit:MilliGM-PER-SEC  qudt:isScalingOf  unit:GM-PER-SEC .
-
-unit:MicroL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Micro .
-
-unit:HectoGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Hecto .
-
-unit:MilliRAD  qudt:convertsTo  unit:RAD ;
-        qudt:isScalingOf  unit:RAD ;
-        qudt:prefix       prefix:Milli .
-
-unit:CentiM2-PER-SEC  qudt:convertsTo  unit:M2-PER-SEC ;
-        qudt:isScalingOf  unit:M2-PER-SEC .
-
-unit:MilliV  qudt:convertsTo  unit:V ;
-        qudt:isScalingOf  unit:V ;
-        qudt:prefix       prefix:Milli .
-
-unit:NanoW  qudt:convertsTo  unit:W ;
-        qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Nano .
-
-unit:MilliA-PER-MilliM
-        qudt:convertsTo   unit:A-PER-M ;
-        qudt:isScalingOf  unit:A-PER-M .
-
-unit:MicroW  qudt:convertsTo  unit:W ;
-        qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Micro .
-
-unit:MicroSEC  qudt:convertsTo  unit:SEC ;
-        qudt:isScalingOf  unit:SEC ;
-        qudt:prefix       prefix:Micro .
-
-unit:MegaHZ-M  qudt:convertsTo  unit:HZ-M ;
-        qudt:isScalingOf  unit:HZ-M .
-
-unit:DecaM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Deca .
-
-unit:MilliL-PER-HR  qudt:isScalingOf  unit:L-PER-SEC .
-
-unit:NanoSEC  qudt:convertsTo  unit:SEC ;
-        qudt:isScalingOf  unit:SEC ;
-        qudt:prefix       prefix:Nano .
-
-unit:GigaPA  qudt:convertsTo  unit:PA ;
-        qudt:isScalingOf  unit:PA ;
-        qudt:prefix       prefix:Giga .
-
-unit:MegaPA-L-PER-SEC
-        qudt:isScalingOf  unit:PA-L-PER-SEC .
-
-unit:GigaHZ-M  qudt:convertsTo  unit:HZ-M ;
-        qudt:isScalingOf  unit:HZ-M .
-
-unit:KiloV-A  qudt:convertsTo  unit:V-A ;
-        qudt:isScalingOf  unit:V-A .
-
-unit:MilliWB  qudt:convertsTo  unit:WB ;
-        qudt:isScalingOf  unit:WB ;
-        qudt:prefix       prefix:Milli .
-
-unit:MilliSV  qudt:convertsTo  unit:SV ;
-        qudt:isScalingOf  unit:SV ;
-        qudt:prefix       prefix:Milli .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+
+unit:A-PER-CentiM
+  qudt:convertsTo unit:A-PER-M ;
+  qudt:isScalingOf unit:A-PER-M .
+
+unit:A-PER-CentiM2
+  qudt:convertsTo unit:A-PER-M2 ;
+  qudt:isScalingOf unit:A-PER-M2 .
+
+unit:A-PER-MilliM
+  qudt:convertsTo unit:A-PER-M ;
+  qudt:isScalingOf unit:A-PER-M .
+
+unit:A-PER-MilliM2
+  qudt:convertsTo unit:A-PER-M2 ;
+  qudt:isScalingOf unit:A-PER-M2 .
+
+unit:AttoC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Atto .
+
+unit:AttoFARAD
+  qudt:convertsTo unit:FARAD ;
+  qudt:isScalingOf unit:FARAD ;
+  qudt:prefix prefix:Atto .
+
+unit:AttoJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Atto .
+
+unit:AttoJ-SEC
+  qudt:convertsTo unit:J-SEC ;
+  qudt:isScalingOf unit:J-SEC .
+
+unit:C-PER-CentiM2
+  qudt:convertsTo unit:C-PER-M2 ;
+  qudt:isScalingOf unit:C-PER-M2 .
+
+unit:C-PER-CentiM3
+  qudt:convertsTo unit:C-PER-M3 ;
+  qudt:isScalingOf unit:C-PER-M3 .
+
+unit:C-PER-MilliM2
+  qudt:convertsTo unit:C-PER-M2 ;
+  qudt:isScalingOf unit:C-PER-M2 .
+
+unit:C-PER-MilliM3
+  qudt:convertsTo unit:C-PER-M3 ;
+  qudt:isScalingOf unit:C-PER-M3 .
+
+unit:CentiBAR
+  qudt:isScalingOf unit:BAR ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiM-PER-HR
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:CentiM-PER-K
+  qudt:convertsTo unit:M-PER-K ;
+  qudt:isScalingOf unit:M-PER-K .
 
 unit:CentiM-PER-KiloYR
-        qudt:isScalingOf  unit:M-PER-YR .
-
-unit:MicroN-M  qudt:convertsTo  unit:N-M ;
-        qudt:isScalingOf  unit:N-M .
-
-unit:MilliSEC  qudt:convertsTo  unit:SEC ;
-        qudt:isScalingOf  unit:SEC ;
-        qudt:prefix       prefix:Milli .
-
-unit:KiloC-PER-M2  qudt:convertsTo  unit:C-PER-M2 ;
-        qudt:isScalingOf  unit:C-PER-M2 .
-
-unit:MicroM3  qudt:convertsTo  unit:M3 ;
-        qudt:isScalingOf  unit:M3 ;
-        qudt:prefix       prefix:Micro .
-
-unit:MilliGRAY  qudt:convertsTo  unit:GRAY ;
-        qudt:isScalingOf  unit:GRAY ;
-        qudt:prefix       prefix:Milli .
-
-unit:KibiBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Kibi .
-
-unit:MegaEV-PER-CentiM
-        qudt:isScalingOf  unit:EV-PER-M .
-
-unit:KiloA  qudt:convertsTo  unit:A ;
-        qudt:isScalingOf  unit:A ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MegaYR  qudt:isScalingOf  unit:YR ;
-        qudt:prefix       prefix:Mega .
-
-unit:MilliPA-SEC  qudt:convertsTo  unit:PA-SEC ;
-        qudt:isScalingOf  unit:PA-SEC .
-
-unit:TeraBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Tera .
-
-unit:KiloTONNE  qudt:isScalingOf  unit:TONNE ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MilliN-M  qudt:convertsTo  unit:N-M ;
-        qudt:isScalingOf  unit:N-M .
-
-unit:KiloL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MegaJ-PER-K  qudt:convertsTo  unit:J-PER-K ;
-        qudt:isScalingOf  unit:J-PER-K .
-
-unit:MicroH-PER-M  qudt:convertsTo  unit:H-PER-M ;
-        qudt:isScalingOf  unit:H-PER-M .
-
-unit:KiloW  qudt:convertsTo  unit:W ;
-        qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Kilo .
-
-unit:V-PER-CentiM  qudt:convertsTo  unit:V-PER-M ;
-        qudt:isScalingOf  unit:V-PER-M .
-
-unit:MicroTORR  qudt:isScalingOf  unit:TORR ;
-        qudt:prefix       prefix:Micro .
-
-unit:NanoGM-PER-M3  qudt:isScalingOf  unit:GM-PER-M3 .
-
-unit:KiloCAL_TH  qudt:isScalingOf  unit:CAL_TH ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MicroG  qudt:isScalingOf  unit:G ;
-        qudt:prefix       prefix:Micro .
-
-unit:MegaA  qudt:convertsTo  unit:A ;
-        qudt:isScalingOf  unit:A ;
-        qudt:prefix       prefix:Mega .
-
-unit:KiloMOL-PER-SEC  qudt:convertsTo  unit:MOL-PER-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-SEC .
-
-unit:CentiM-PER-SEC2  qudt:convertsTo  unit:M-PER-SEC2 ;
-        qudt:isScalingOf  unit:M-PER-SEC2 .
-
-unit:NanoFARAD  qudt:convertsTo  unit:FARAD ;
-        qudt:isScalingOf  unit:FARAD ;
-        qudt:prefix       prefix:Nano .
-
-unit:CentiM3-PER-K  qudt:convertsTo  unit:M3-PER-K ;
-        qudt:isScalingOf  unit:M3-PER-K .
-
-unit:MegaL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Mega .
-
-unit:MegaS-PER-M  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
-
-unit:HectoPA-PER-BAR  qudt:isScalingOf  unit:PA-PER-BAR .
-
-unit:DecaGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Deca .
-
-unit:MegaJ-PER-SEC  qudt:convertsTo  unit:J-PER-SEC ;
-        qudt:isScalingOf  unit:J-PER-SEC .
-
-unit:KiloGM-PER-M2  qudt:isScalingOf  unit:GM-PER-M2 .
-
-unit:MegaW  qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Mega .
-
-unit:ExaJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Exa .
-
-unit:NanoGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Nano .
-
-unit:PicoM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Pico .
-
-unit:MilliGM-PER-GM  qudt:convertsTo  unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:KiloOHM  qudt:convertsTo  unit:OHM ;
-        qudt:isScalingOf  unit:OHM ;
-        qudt:prefix       prefix:Kilo .
-
-unit:KiloM-PER-SEC  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
-
-unit:PicoPA-PER-KiloM
-        qudt:convertsTo   unit:PA-PER-M ;
-        qudt:isScalingOf  unit:PA-PER-M .
-
-unit:KiloGAUSS  qudt:isScalingOf  unit:GAUSS ;
-        qudt:prefix       prefix:Kilo .
-
-unit:FemtoMOL-PER-L  qudt:isScalingOf  unit:MOL-PER-L .
-
-unit:CentiBAR  qudt:isScalingOf  unit:BAR ;
-        qudt:prefix       prefix:Centi .
-
-unit:KiloW-HR  qudt:convertsTo  unit:W-SEC ;
-        qudt:isScalingOf  unit:W-SEC .
-
-unit:KiloGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MilliGM-PER-DeciL
-        qudt:convertsTo   unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:DeciL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Deci .
-
-unit:HectoL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Hecto .
-
-unit:NUM-PER-MilliGM  qudt:isScalingOf  unit:NUM-PER-GM .
-
-unit:KiloA-PER-M2  qudt:convertsTo  unit:A-PER-M2 ;
-        qudt:isScalingOf  unit:A-PER-M2 .
-
-unit:GigaC-PER-M3  qudt:convertsTo  unit:C-PER-M3 ;
-        qudt:isScalingOf  unit:C-PER-M3 .
-
-unit:MegaBAR  qudt:isScalingOf  unit:BAR ;
-        qudt:prefix       prefix:Mega .
-
-unit:PicoMOL-PER-L  qudt:isScalingOf  unit:MOL-PER-L .
-
-unit:NanoM2  qudt:convertsTo  unit:M2 ;
-        qudt:isScalingOf  unit:M2 ;
-        qudt:prefix       prefix:Nano .
-
-unit:KiloR  qudt:isScalingOf  unit:R ;
-        qudt:prefix       prefix:Kilo .
-
-unit:NanoMOL-PER-MicroMOL
-        qudt:convertsTo   unit:MOL-PER-MOL ;
-        qudt:isScalingOf  unit:MOL-PER-MOL .
-
-unit:KiloBIT-PER-SEC  qudt:isScalingOf  unit:BIT-PER-SEC .
-
-unit:MicroGRAY  qudt:convertsTo  unit:GRAY ;
-        qudt:isScalingOf  unit:GRAY ;
-        qudt:prefix       prefix:Micro .
-
-unit:MilliA  qudt:convertsTo  unit:A ;
-        qudt:isScalingOf  unit:A ;
-        qudt:prefix       prefix:Milli .
-
-unit:MilliGM-PER-M2  qudt:isScalingOf  unit:GM-PER-M2 .
-
-unit:MilliFARAD  qudt:convertsTo  unit:FARAD ;
-        qudt:isScalingOf  unit:FARAD ;
-        qudt:prefix       prefix:Milli .
-
-unit:MilliL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Milli .
-
-unit:MicroC-PER-M2  qudt:convertsTo  unit:C-PER-M2 ;
-        qudt:isScalingOf  unit:C-PER-M2 .
-
-unit:KiloHZ  qudt:convertsTo  unit:HZ ;
-        qudt:isScalingOf  unit:HZ ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MicroM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Micro .
-
-unit:NanoM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Nano .
-
-unit:GM-PER-KiloGM  qudt:convertsTo  unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:MilliM-PER-SEC  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
-
-unit:MilliW  qudt:isScalingOf  unit:W ;
-        qudt:prefix       prefix:Milli .
-
-unit:KiloCAL_TH-PER-MIN
-        qudt:isScalingOf  unit:CAL_TH-PER-SEC .
-
-unit:MilliC-PER-M2  qudt:convertsTo  unit:C-PER-M2 ;
-        qudt:isScalingOf  unit:C-PER-M2 .
-
-unit:DecaC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Deca .
+  qudt:isScalingOf unit:M-PER-YR .
+
+unit:CentiM-PER-SEC
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:CentiM-PER-SEC2
+  qudt:convertsTo unit:M-PER-SEC2 ;
+  qudt:isScalingOf unit:M-PER-SEC2 .
+
+unit:CentiM2
+  qudt:convertsTo unit:M2 ;
+  qudt:isScalingOf unit:M2 ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiM2-PER-SEC
+  qudt:convertsTo unit:M2-PER-SEC ;
+  qudt:isScalingOf unit:M2-PER-SEC .
+
+unit:CentiM3
+  qudt:convertsTo unit:M3 ;
+  qudt:isScalingOf unit:M3 ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiM3-PER-DAY
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
+
+unit:CentiM3-PER-HR
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
+
+unit:CentiM3-PER-K
+  qudt:convertsTo unit:M3-PER-K ;
+  qudt:isScalingOf unit:M3-PER-K .
+
+unit:CentiM3-PER-M3
+  qudt:convertsTo unit:M3-PER-M3 ;
+  qudt:isScalingOf unit:M3-PER-M3 .
+
+unit:CentiM3-PER-MIN
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
+
+unit:CentiM3-PER-MOL
+  qudt:convertsTo unit:M3-PER-MOL ;
+  qudt:isScalingOf unit:M3-PER-MOL .
+
+unit:CentiM3-PER-SEC
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
+
+unit:CentiN
+  qudt:isScalingOf unit:N ;
+  qudt:prefix prefix:Centi .
+
+unit:CentiN-M
+  qudt:convertsTo unit:N-M ;
+  qudt:isScalingOf unit:N-M .
+
+unit:CentiPOISE
+  qudt:isScalingOf unit:POISE ;
+  qudt:prefix prefix:Centi .
 
 unit:CentiPOISE-PER-BAR
-        qudt:isScalingOf  unit:POISE-PER-BAR .
+  qudt:isScalingOf unit:POISE-PER-BAR .
 
-unit:MicroMOL-PER-M2-HR
-        qudt:convertsTo   unit:MOL-PER-M2-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M2-SEC .
+unit:CentiST
+  qudt:isScalingOf unit:ST ;
+  qudt:prefix prefix:Centi .
 
-unit:PicoFARAD  qudt:convertsTo  unit:FARAD ;
-        qudt:isScalingOf  unit:FARAD ;
-        qudt:prefix       prefix:Pico .
+unit:DecaARE
+  qudt:isScalingOf unit:ARE ;
+  qudt:prefix prefix:Deca .
 
-unit:PicoH  qudt:convertsTo  unit:H ;
-        qudt:isScalingOf  unit:H ;
-        qudt:prefix       prefix:Pico .
+unit:DecaC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Deca .
 
-unit:NanoMOL-PER-M2-DAY
-        qudt:convertsTo   unit:MOL-PER-M2-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M2-SEC .
+unit:DecaGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Deca .
 
-unit:MegaGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Mega .
+unit:DecaL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Deca .
 
-unit:MilliMOL-PER-M2-DAY
-        qudt:convertsTo   unit:MOL-PER-M2-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M2-SEC .
+unit:DecaM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Deca .
 
-unit:KiloGM-PER-MIN  qudt:isScalingOf  unit:GM-PER-SEC .
+unit:DecaM3
+  qudt:convertsTo unit:M3 ;
+  qudt:isScalingOf unit:M3 ;
+  qudt:prefix prefix:Deca .
 
-unit:MilliPA  qudt:convertsTo  unit:PA ;
-        qudt:isScalingOf  unit:PA ;
-        qudt:prefix       prefix:Milli .
+unit:DecaPA
+  qudt:convertsTo unit:PA ;
+  qudt:isScalingOf unit:PA ;
+  qudt:prefix prefix:Deca .
 
-unit:KiloGM-PER-CentiM2
-        qudt:isScalingOf  unit:GM-PER-M2 .
+unit:DeciB
+  qudt:isScalingOf unit:B ;
+  qudt:prefix prefix:Deci .
 
-unit:MicroMOL-PER-M2-SEC
-        qudt:convertsTo   unit:MOL-PER-M2-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M2-SEC .
+unit:DeciBAR
+  qudt:isScalingOf unit:BAR ;
+  qudt:prefix prefix:Deci .
 
-unit:KiloJ-PER-K  qudt:convertsTo  unit:J-PER-K ;
-        qudt:isScalingOf  unit:J-PER-K .
+unit:DeciC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Deci .
 
-unit:MilliGM-PER-MIN  qudt:isScalingOf  unit:GM-PER-SEC .
+unit:DeciGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Deci .
 
-unit:TeraOHM  qudt:convertsTo  unit:OHM ;
-        qudt:isScalingOf  unit:OHM ;
-        qudt:prefix       prefix:Tera .
+unit:DeciL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Deci .
 
-unit:MilliTORR  qudt:isScalingOf  unit:TORR ;
-        qudt:prefix       prefix:Milli .
+unit:DeciM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Deci .
 
-unit:MicroS-PER-M  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
+unit:DeciM2
+  qudt:convertsTo unit:M2 ;
+  qudt:isScalingOf unit:M2 ;
+  qudt:prefix prefix:Deci .
 
-unit:PicoGM-PER-L  qudt:convertsTo  unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
+unit:DeciM3
+  qudt:convertsTo unit:M3 ;
+  qudt:isScalingOf unit:M3 ;
+  qudt:prefix prefix:Deci .
 
-unit:GM-PER-MilliL  qudt:convertsTo  unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
+unit:DeciM3-PER-DAY
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
 
-unit:MicroGM-PER-GM  qudt:convertsTo  unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
+unit:DeciM3-PER-HR
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
 
-unit:W-PER-CentiM2  qudt:convertsTo  unit:W-PER-M2 ;
-        qudt:isScalingOf  unit:W-PER-M2 .
+unit:DeciM3-PER-M3
+  qudt:convertsTo unit:M3-PER-M3 ;
+  qudt:isScalingOf unit:M3-PER-M3 .
 
-unit:NUM-PER-KiloM2  qudt:convertsTo  unit:NUM-PER-M2 ;
-        qudt:isScalingOf  unit:NUM-PER-M2 .
+unit:DeciM3-PER-MIN
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
 
-unit:N-PER-CentiM  qudt:convertsTo  unit:N-PER-M ;
-        qudt:isScalingOf  unit:N-PER-M .
+unit:DeciM3-PER-MOL
+  qudt:convertsTo unit:M3-PER-MOL ;
+  qudt:isScalingOf unit:M3-PER-MOL .
 
-unit:MOL-PER-DeciM3  qudt:convertsTo  unit:MOL-PER-M3 ;
-        qudt:isScalingOf  unit:MOL-PER-M3 .
+unit:DeciM3-PER-SEC
+  qudt:convertsTo unit:M3-PER-SEC ;
+  qudt:isScalingOf unit:M3-PER-SEC .
 
-unit:MicroBQ  qudt:convertsTo  unit:BQ ;
-        qudt:isScalingOf  unit:BQ ;
-        qudt:prefix       prefix:Micro .
+unit:DeciN
+  qudt:isScalingOf unit:N ;
+  qudt:prefix prefix:Deci .
 
-unit:KiloC-PER-M3  qudt:convertsTo  unit:C-PER-M3 ;
-        qudt:isScalingOf  unit:C-PER-M3 .
+unit:DeciN-M
+  qudt:convertsTo unit:N-M ;
+  qudt:isScalingOf unit:N-M .
 
-unit:AttoFARAD  qudt:convertsTo  unit:FARAD ;
-        qudt:isScalingOf  unit:FARAD ;
-        qudt:prefix       prefix:Atto .
+unit:DeciS-PER-M
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
 
-unit:MilliL-PER-SEC  qudt:isScalingOf  unit:L-PER-SEC .
+unit:DeciTONNE
+  qudt:isScalingOf unit:TONNE ;
+  qudt:prefix prefix:Deci .
 
-unit:KiloS-PER-M  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
+unit:DeciTON_Metric
+  qudt:isScalingOf unit:TON_Metric ;
+  qudt:prefix prefix:Deci .
 
-unit:MegaHZ  qudt:convertsTo  unit:HZ ;
-        qudt:isScalingOf  unit:HZ ;
-        qudt:prefix       prefix:Mega .
+unit:ExaBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Exa .
 
-unit:MilliA-HR  qudt:convertsTo  unit:A-SEC ;
-        qudt:isScalingOf  unit:A-SEC .
+unit:ExaC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Exa .
 
-unit:CentiM3-PER-M3  qudt:convertsTo  unit:M3-PER-M3 ;
-        qudt:isScalingOf  unit:M3-PER-M3 .
+unit:ExaJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Exa .
 
-unit:KiloM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Kilo .
+unit:ExbiBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Exbi .
 
-unit:GibiBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Gibi .
+unit:FARAD-PER-KiloM
+  qudt:convertsTo unit:FARAD-PER-M ;
+  qudt:isScalingOf unit:FARAD-PER-M .
 
-unit:MegaW-HR  qudt:convertsTo  unit:W-SEC ;
-        qudt:isScalingOf  unit:W-SEC .
+unit:FemtoC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Femto .
 
-unit:DeciS-PER-M  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
+unit:FemtoGM-PER-KiloGM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
 
-unit:MilliG  qudt:isScalingOf  unit:G ;
-        qudt:prefix       prefix:Milli .
+unit:FemtoGM-PER-L
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
 
-unit:MicroH  qudt:convertsTo  unit:H ;
-        qudt:isScalingOf  unit:H ;
-        qudt:prefix       prefix:Micro .
+unit:FemtoJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Femto .
 
-unit:NanoH  qudt:convertsTo  unit:H ;
-        qudt:isScalingOf  unit:H ;
-        qudt:prefix       prefix:Nano .
+unit:FemtoM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Femto .
 
-unit:MegaV-A  qudt:convertsTo  unit:V-A ;
-        qudt:isScalingOf  unit:V-A .
+unit:FemtoMOL-PER-L
+  qudt:isScalingOf unit:MOL-PER-L .
 
-unit:MilliR  qudt:isScalingOf  unit:R ;
-        qudt:prefix       prefix:Milli .
+unit:GM-PER-CentiM2
+  qudt:isScalingOf unit:GM-PER-M2 .
 
-unit:MegaC-PER-M2  qudt:convertsTo  unit:C-PER-M2 ;
-        qudt:isScalingOf  unit:C-PER-M2 .
+unit:GM-PER-CentiM3
+  qudt:isScalingOf unit:GM-PER-M3 .
 
-unit:TeraC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Tera .
+unit:GM-PER-DeciM3
+  qudt:isScalingOf unit:GM-PER-M3 .
 
-unit:MegaPA-M3-PER-SEC
-        qudt:convertsTo   unit:PA-M3-PER-SEC ;
-        qudt:isScalingOf  unit:PA-M3-PER-SEC .
+unit:GM-PER-KiloGM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
 
-unit:MicroS  qudt:convertsTo  unit:S ;
-        qudt:isScalingOf  unit:S ;
-        qudt:prefix       prefix:Micro .
+unit:GM-PER-KiloM
+  qudt:isScalingOf unit:GM-PER-M .
 
-unit:CentiGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Centi .
+unit:GM-PER-MilliL
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
 
-unit:YottaC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Yotta .
+unit:GM-PER-MilliM
+  qudt:isScalingOf unit:GM-PER-M .
 
-unit:MilliM2-PER-SEC  qudt:convertsTo  unit:M2-PER-SEC ;
-        qudt:isScalingOf  unit:M2-PER-SEC .
+unit:GibiBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Gibi .
 
-unit:MilliGM-PER-KiloGM
-        qudt:convertsTo   unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
+unit:GigaBQ
+  qudt:convertsTo unit:BQ ;
+  qudt:isScalingOf unit:BQ ;
+  qudt:prefix prefix:Giga .
 
-unit:MicroCi  qudt:isScalingOf  unit:Ci ;
-        qudt:prefix       prefix:Micro .
+unit:GigaBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Giga .
 
-unit:GigaHZ  qudt:convertsTo  unit:HZ ;
-        qudt:isScalingOf  unit:HZ ;
-        qudt:prefix       prefix:Giga .
+unit:GigaC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Giga .
 
-unit:KiloGM-PER-M3  qudt:isScalingOf  unit:GM-PER-M3 .
+unit:GigaC-PER-M3
+  qudt:convertsTo unit:C-PER-M3 ;
+  qudt:isScalingOf unit:C-PER-M3 .
 
-unit:PicoC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Pico .
+unit:GigaEV
+  qudt:isScalingOf unit:EV ;
+  qudt:prefix prefix:Giga .
 
-unit:CentiM-PER-HR  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
+unit:GigaHZ
+  qudt:convertsTo unit:HZ ;
+  qudt:isScalingOf unit:HZ ;
+  qudt:prefix prefix:Giga .
 
-unit:NUM-PER-MicroL  qudt:isScalingOf  unit:NUM-PER-L .
+unit:GigaHZ-M
+  qudt:convertsTo unit:HZ-M ;
+  qudt:isScalingOf unit:HZ-M .
 
-unit:MilliMOL-PER-L  qudt:isScalingOf  unit:MOL-PER-L .
+unit:GigaJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Giga .
 
-unit:MicroS-PER-CentiM
-        qudt:convertsTo   unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
+unit:GigaOHM
+  qudt:convertsTo unit:OHM ;
+  qudt:isScalingOf unit:OHM ;
+  qudt:prefix prefix:Giga .
 
-unit:H-PER-KiloOHM  qudt:convertsTo  unit:H-PER-OHM ;
-        qudt:isScalingOf  unit:H-PER-OHM .
+unit:GigaPA
+  qudt:convertsTo unit:PA ;
+  qudt:isScalingOf unit:PA ;
+  qudt:prefix prefix:Giga .
+
+unit:GigaW
+  qudt:convertsTo unit:W ;
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Giga .
+
+unit:GigaW-HR
+  qudt:convertsTo unit:W-SEC ;
+  qudt:isScalingOf unit:W-SEC .
+
+unit:H-PER-KiloOHM
+  qudt:convertsTo unit:H-PER-OHM ;
+  qudt:isScalingOf unit:H-PER-OHM .
+
+unit:HectoBAR
+  qudt:isScalingOf unit:BAR ;
+  qudt:prefix prefix:Hecto .
+
+unit:HectoC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Hecto .
+
+unit:HectoGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Hecto .
+
+unit:HectoL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Hecto .
+
+unit:HectoM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Hecto .
+
+unit:HectoPA
+  qudt:convertsTo unit:PA ;
+  qudt:isScalingOf unit:PA ;
+  qudt:prefix prefix:Hecto .
 
 unit:HectoPA-L-PER-SEC
-        qudt:isScalingOf  unit:PA-L-PER-SEC .
+  qudt:isScalingOf unit:PA-L-PER-SEC .
 
-unit:MilliBAR-PER-K  qudt:isScalingOf  unit:BAR-PER-K .
+unit:HectoPA-M3-PER-SEC
+  qudt:convertsTo unit:PA-M3-PER-SEC ;
+  qudt:isScalingOf unit:PA-M3-PER-SEC .
 
-unit:KiloMOL-PER-MIN  qudt:convertsTo  unit:MOL-PER-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-SEC .
+unit:HectoPA-PER-BAR
+  qudt:isScalingOf unit:PA-PER-BAR .
 
-unit:M2-PER-KiloGM  qudt:isScalingOf  unit:M2-PER-GM .
+unit:HectoPA-PER-HR
+  qudt:convertsTo unit:PA-PER-SEC ;
+  qudt:isScalingOf unit:PA-PER-SEC .
 
-unit:DeciB  qudt:isScalingOf  unit:B ;
-        qudt:prefix       prefix:Deci .
+unit:HectoPA-PER-K
+  qudt:isScalingOf unit:PA-PER-K .
 
-unit:KiloGM-PER-KiloMOL
-        qudt:isScalingOf  unit:GM-PER-MOL .
+unit:J-PER-CentiM2
+  qudt:convertsTo unit:J-PER-M2 ;
+  qudt:isScalingOf unit:J-PER-M2 .
 
-unit:CentiM2  qudt:convertsTo  unit:M2 ;
-        qudt:isScalingOf  unit:M2 ;
-        qudt:prefix       prefix:Centi .
+unit:J-PER-KiloGM
+  qudt:isScalingOf unit:J-PER-GM .
 
-unit:KiloMOL-PER-HR  qudt:convertsTo  unit:MOL-PER-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-SEC .
+unit:KibiBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Kibi .
 
-unit:DeciM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Deci .
+unit:KiloA
+  qudt:convertsTo unit:A ;
+  qudt:isScalingOf unit:A ;
+  qudt:prefix prefix:Kilo .
 
-unit:HectoM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Hecto .
+unit:KiloA-HR
+  qudt:convertsTo unit:A-SEC ;
+  qudt:isScalingOf unit:A-SEC .
 
-unit:KiloM-PER-HR  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
+unit:KiloA-PER-M
+  qudt:convertsTo unit:A-PER-M ;
+  qudt:isScalingOf unit:A-PER-M .
 
-unit:GigaC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Giga .
+unit:KiloA-PER-M2
+  qudt:convertsTo unit:A-PER-M2 ;
+  qudt:isScalingOf unit:A-PER-M2 .
 
-unit:MicroIN  qudt:isScalingOf  unit:IN ;
-        qudt:prefix       prefix:Micro .
+unit:KiloBAR
+  qudt:isScalingOf unit:BAR ;
+  qudt:prefix prefix:Kilo .
 
-unit:MicroBAR  qudt:isScalingOf  unit:BAR ;
-        qudt:prefix       prefix:Micro .
+unit:KiloBIT-PER-SEC
+  qudt:isScalingOf unit:BIT-PER-SEC .
 
-unit:DecaM3  qudt:convertsTo  unit:M3 ;
-        qudt:isScalingOf  unit:M3 ;
-        qudt:prefix       prefix:Deca .
+unit:KiloBQ
+  qudt:convertsTo unit:BQ ;
+  qudt:isScalingOf unit:BQ ;
+  qudt:prefix prefix:Kilo .
 
-unit:HectoBAR  qudt:isScalingOf  unit:BAR ;
-        qudt:prefix       prefix:Hecto .
+unit:KiloBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Kilo .
 
-unit:MilliS-PER-M  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
+unit:KiloC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Kilo .
 
-unit:PicoSEC  qudt:convertsTo  unit:SEC ;
-        qudt:isScalingOf  unit:SEC ;
-        qudt:prefix       prefix:Pico .
+unit:KiloC-PER-M2
+  qudt:convertsTo unit:C-PER-M2 ;
+  qudt:isScalingOf unit:C-PER-M2 .
 
-unit:CentiL  qudt:isScalingOf  unit:L ;
-        qudt:prefix       prefix:Centi .
+unit:KiloC-PER-M3
+  qudt:convertsTo unit:C-PER-M3 ;
+  qudt:isScalingOf unit:C-PER-M3 .
 
-unit:KiloS  qudt:convertsTo  unit:S ;
-        qudt:isScalingOf  unit:S ;
-        qudt:prefix       prefix:Kilo .
+unit:KiloCAL_IT
+  qudt:isScalingOf unit:CAL_IT ;
+  qudt:prefix prefix:Kilo .
 
-unit:KiloPA-PER-K  qudt:isScalingOf  unit:PA-PER-K .
-
-unit:A-PER-MilliM  qudt:convertsTo  unit:A-PER-M ;
-        qudt:isScalingOf  unit:A-PER-M .
-
-unit:MilliGM-PER-M3  qudt:isScalingOf  unit:GM-PER-M3 .
-
-unit:NanoC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Nano .
-
-unit:MicroC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Micro .
-
-unit:DeciTON_Metric  qudt:isScalingOf  unit:TON_Metric ;
-        qudt:prefix       prefix:Deci .
-
-unit:MegaOHM  qudt:convertsTo  unit:OHM ;
-        qudt:isScalingOf  unit:OHM ;
-        qudt:prefix       prefix:Mega .
-
-unit:MilliM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Milli .
-
-unit:MicroN  qudt:convertsTo  unit:N ;
-        qudt:isScalingOf  unit:N ;
-        qudt:prefix       prefix:Micro .
-
-unit:MicroC-PER-M3  qudt:convertsTo  unit:C-PER-M3 ;
-        qudt:isScalingOf  unit:C-PER-M3 .
-
-unit:MilliBAR  qudt:isScalingOf  unit:BAR ;
-        qudt:prefix       prefix:Milli .
-
-unit:NanoS-PER-M  qudt:convertsTo  unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
-
-unit:KiloGM-PER-L  qudt:convertsTo  unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:NanoMOL-PER-CentiM3-HR
-        qudt:convertsTo   unit:MOL-PER-M3-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M3-SEC .
-
-unit:MegaHZ-PER-T  qudt:convertsTo  unit:HZ-PER-T ;
-        qudt:isScalingOf  unit:HZ-PER-T .
-
-unit:MegaA-PER-M2  qudt:convertsTo  unit:A-PER-M2 ;
-        qudt:isScalingOf  unit:A-PER-M2 .
-
-unit:MilliC-PER-M3  qudt:convertsTo  unit:C-PER-M3 ;
-        qudt:isScalingOf  unit:C-PER-M3 .
-
-unit:FemtoM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Femto .
-
-unit:J-PER-CentiM2  qudt:convertsTo  unit:J-PER-M2 ;
-        qudt:isScalingOf  unit:J-PER-M2 .
-
-unit:MilliDEG_C  qudt:isScalingOf  unit:DEG_C ;
-        qudt:prefix       prefix:Milli .
-
-unit:PER-MilliSEC  qudt:convertsTo  unit:PER-SEC ;
-        qudt:isScalingOf  unit:PER-SEC .
-
-unit:W-PER-M2-NanoM  qudt:convertsTo  unit:W-PER-M2-M ;
-        qudt:isScalingOf  unit:W-PER-M2-M .
-
-unit:KiloGM-PER-CentiM3
-        qudt:isScalingOf  unit:GM-PER-M3 .
-
-unit:TebiBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Tebi .
-
-unit:MilliH-PER-KiloOHM
-        qudt:convertsTo   unit:H-PER-OHM ;
-        qudt:isScalingOf  unit:H-PER-OHM .
-
-unit:MilliM-PER-MIN  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
-
-unit:NanoBQ-PER-L  qudt:isScalingOf  unit:BQ-PER-L .
-
-unit:MegaLB_F  qudt:isScalingOf  unit:LB_F ;
-        qudt:prefix       prefix:Mega .
-
-unit:GM-PER-MilliM  qudt:isScalingOf  unit:GM-PER-M .
-
-unit:MicroM-PER-K  qudt:convertsTo  unit:M-PER-K ;
-        qudt:isScalingOf  unit:M-PER-K .
-
-unit:MegaBIT-PER-SEC  qudt:isScalingOf  unit:BIT-PER-SEC .
-
-unit:YoctoC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Yocto .
-
-unit:MegaTOE  qudt:isScalingOf  unit:TOE ;
-        qudt:prefix       prefix:Mega .
-
-unit:MilliBAR-M3-PER-SEC
-        qudt:isScalingOf  unit:BAR-M3-PER-SEC .
-
-unit:C-PER-CentiM2  qudt:convertsTo  unit:C-PER-M2 ;
-        qudt:isScalingOf  unit:C-PER-M2 .
-
-unit:KiloPA-PER-BAR  qudt:isScalingOf  unit:PA-PER-BAR .
-
-unit:KiloC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Kilo .
-
-unit:MilliGM  qudt:isScalingOf  unit:GM ;
-        qudt:prefix       prefix:Milli .
-
-unit:MicroSV  qudt:convertsTo  unit:SV ;
-        qudt:isScalingOf  unit:SV ;
-        qudt:prefix       prefix:Micro .
-
-unit:KiloMOL  qudt:convertsTo  unit:MOL ;
-        qudt:isScalingOf  unit:MOL ;
-        qudt:prefix       prefix:Kilo .
-
-unit:KiloN  qudt:convertsTo  unit:N ;
-        qudt:isScalingOf  unit:N ;
-        qudt:prefix       prefix:Kilo .
-
-unit:CentiM3-PER-DAY  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:MicroGM-PER-KiloGM
-        qudt:convertsTo   unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:MilliH  qudt:convertsTo  unit:H ;
-        qudt:isScalingOf  unit:H ;
-        qudt:prefix       prefix:Milli .
-
-unit:MicroFARAD  qudt:convertsTo  unit:FARAD ;
-        qudt:isScalingOf  unit:FARAD ;
-        qudt:prefix       prefix:Micro .
-
-unit:MilliV-PER-MIN  qudt:convertsTo  unit:V-PER-SEC ;
-        qudt:isScalingOf  unit:V-PER-SEC .
-
-unit:NanoT  qudt:convertsTo  unit:T ;
-        qudt:isScalingOf  unit:T ;
-        qudt:prefix       prefix:Nano .
-
-unit:MilliS  qudt:convertsTo  unit:S ;
-        qudt:isScalingOf  unit:S ;
-        qudt:prefix       prefix:Milli .
+unit:KiloCAL_TH
+  qudt:isScalingOf unit:CAL_TH ;
+  qudt:prefix prefix:Kilo .
 
 unit:KiloCAL_TH-PER-HR
-        qudt:isScalingOf  unit:CAL_TH-PER-SEC .
+  qudt:isScalingOf unit:CAL_TH-PER-SEC .
 
-unit:MegaC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Mega .
+unit:KiloCAL_TH-PER-MIN
+  qudt:isScalingOf unit:CAL_TH-PER-SEC .
 
-unit:AttoC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Atto .
+unit:KiloCAL_TH-PER-SEC
+  qudt:isScalingOf unit:CAL_TH-PER-SEC .
 
-unit:MilliL-PER-MIN  qudt:isScalingOf  unit:L-PER-SEC .
+unit:KiloCi
+  qudt:isScalingOf unit:Ci ;
+  qudt:prefix prefix:Kilo .
 
-unit:MicroGM-PER-M3  qudt:isScalingOf  unit:GM-PER-M3 .
+unit:KiloEV
+  qudt:isScalingOf unit:EV ;
+  qudt:prefix prefix:Kilo .
 
-unit:MicroATM  qudt:isScalingOf  unit:ATM ;
-        qudt:prefix       prefix:Micro .
+unit:KiloEV-PER-MicroM
+  qudt:isScalingOf unit:EV-PER-M .
 
-unit:MegaC-PER-M3  qudt:convertsTo  unit:C-PER-M3 ;
-        qudt:isScalingOf  unit:C-PER-M3 .
+unit:KiloGAUSS
+  qudt:isScalingOf unit:GAUSS ;
+  qudt:prefix prefix:Kilo .
 
-unit:KiloEV  qudt:isScalingOf  unit:EV ;
-        qudt:prefix       prefix:Kilo .
+unit:KiloGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Kilo .
 
-unit:MegaPA-PER-BAR  qudt:isScalingOf  unit:PA-PER-BAR .
+unit:KiloGM-PER-CentiM2
+  qudt:isScalingOf unit:GM-PER-M2 .
 
-unit:DeciM3-PER-M3  qudt:convertsTo  unit:M3-PER-M3 ;
-        qudt:isScalingOf  unit:M3-PER-M3 .
+unit:KiloGM-PER-CentiM3
+  qudt:isScalingOf unit:GM-PER-M3 .
 
-unit:MicroT  qudt:convertsTo  unit:T ;
-        qudt:isScalingOf  unit:T ;
-        qudt:prefix       prefix:Micro .
-
-unit:MilliMOL-PER-M2-SEC
-        qudt:convertsTo   unit:MOL-PER-M2-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M2-SEC .
-
-unit:MegaN  qudt:convertsTo  unit:N ;
-        qudt:isScalingOf  unit:N ;
-        qudt:prefix       prefix:Mega .
-
-unit:MilliM-PER-HR  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
-
-unit:MilliM2  qudt:convertsTo  unit:M2 ;
-        qudt:isScalingOf  unit:M2 ;
-        qudt:prefix       prefix:Milli .
-
-unit:PicoMOL-PER-M2-DAY
-        qudt:convertsTo   unit:MOL-PER-M2-SEC ;
-        qudt:isScalingOf  unit:MOL-PER-M2-SEC .
-
-unit:MicroGM-PER-MilliL
-        qudt:convertsTo   unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:MegaV-A_Reactive
-        qudt:convertsTo   unit:V-A_Reactive ;
-        qudt:isScalingOf  unit:V-A_Reactive .
-
-unit:DeciM3-PER-DAY  qudt:convertsTo  unit:M3-PER-SEC ;
-        qudt:isScalingOf  unit:M3-PER-SEC .
-
-unit:KiloGM-PER-KiloGM
-        qudt:convertsTo   unit:GM-PER-GM ;
-        qudt:isScalingOf  unit:GM-PER-GM .
-
-unit:MicroGM-PER-L  qudt:convertsTo  unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:HectoPA-PER-K  qudt:isScalingOf  unit:PA-PER-K .
-
-unit:PetaC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Peta .
-
-unit:HectoPA-PER-HR  qudt:convertsTo  unit:PA-PER-SEC ;
-        qudt:isScalingOf  unit:PA-PER-SEC .
-
-unit:MilliPA-SEC-PER-BAR
-        qudt:isScalingOf  unit:PA-SEC-PER-BAR .
-
-unit:DeciC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Deci .
-
-unit:KiloLB_F-PER-IN2
-        qudt:isScalingOf  unit:LB_F-PER-IN2 .
-
-unit:HectoC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Hecto .
-
-unit:MilliGM-PER-L  qudt:convertsTo  unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:CentiM3  qudt:convertsTo  unit:M3 ;
-        qudt:isScalingOf  unit:M3 ;
-        qudt:prefix       prefix:Centi .
-
-unit:MilliBAR-PER-BAR
-        qudt:convertsTo   unit:BAR-PER-BAR ;
-        qudt:isScalingOf  unit:BAR-PER-BAR .
-
-unit:DeciN  qudt:isScalingOf  unit:N ;
-        qudt:prefix       prefix:Deci .
-
-unit:NanoGM-PER-MicroL
-        qudt:convertsTo   unit:GM-PER-L ;
-        qudt:isScalingOf  unit:GM-PER-L .
-
-unit:MicroMOL-PER-MOL
-        qudt:convertsTo   unit:MOL-PER-MOL ;
-        qudt:isScalingOf  unit:MOL-PER-MOL .
-
-unit:MicroMOL-PER-M2  qudt:convertsTo  unit:MOL-PER-M2 ;
-        qudt:isScalingOf  unit:MOL-PER-M2 .
-
-unit:MilliS-PER-CentiM
-        qudt:convertsTo   unit:S-PER-M ;
-        qudt:isScalingOf  unit:S-PER-M .
-
-unit:A-PER-CentiM  qudt:convertsTo  unit:A-PER-M ;
-        qudt:isScalingOf  unit:A-PER-M .
-
-unit:GigaW-HR  qudt:convertsTo  unit:W-SEC ;
-        qudt:isScalingOf  unit:W-SEC .
-
-unit:CentiST  qudt:isScalingOf  unit:ST ;
-        qudt:prefix       prefix:Centi .
-
-unit:MegaEV  qudt:isScalingOf  unit:EV ;
-        qudt:prefix       prefix:Mega .
-
-unit:CentiM  qudt:convertsTo  unit:M ;
-        qudt:isScalingOf  unit:M ;
-        qudt:prefix       prefix:Centi .
-
-unit:MilliC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Milli .
-
-unit:MilliM-PER-K  qudt:convertsTo  unit:M-PER-K ;
-        qudt:isScalingOf  unit:M-PER-K .
+unit:KiloGM-PER-DAY
+  qudt:isScalingOf unit:GM-PER-SEC .
 
 unit:KiloGM-PER-DeciM3
-        qudt:isScalingOf  unit:GM-PER-M3 .
+  qudt:isScalingOf unit:GM-PER-M3 .
 
-unit:CentiM3-PER-MOL  qudt:convertsTo  unit:M3-PER-MOL ;
-        qudt:isScalingOf  unit:M3-PER-MOL .
+unit:KiloGM-PER-HR
+  qudt:isScalingOf unit:GM-PER-SEC .
 
-unit:MilliW-PER-CentiM2-MicroM-SR
-        qudt:convertsTo   unit:W-PER-M2-M-SR ;
-        qudt:isScalingOf  unit:W-PER-M2-M-SR .
-
-unit:MicroOHM  qudt:convertsTo  unit:OHM ;
-        qudt:isScalingOf  unit:OHM ;
-        qudt:prefix       prefix:Micro .
+unit:KiloGM-PER-KiloGM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
 
 unit:KiloGM-PER-KiloM2
-        qudt:isScalingOf  unit:GM-PER-M2 .
+  qudt:isScalingOf unit:GM-PER-M2 .
 
-unit:MilliN  qudt:convertsTo  unit:N ;
-        qudt:isScalingOf  unit:N ;
-        qudt:prefix       prefix:Milli .
+unit:KiloGM-PER-KiloMOL
+  qudt:isScalingOf unit:GM-PER-MOL .
 
-unit:KiloGM-PER-M  qudt:isScalingOf  unit:GM-PER-M .
+unit:KiloGM-PER-L
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
 
-unit:KiloBQ  qudt:convertsTo  unit:BQ ;
-        qudt:isScalingOf  unit:BQ ;
-        qudt:prefix       prefix:Kilo .
+unit:KiloGM-PER-M
+  qudt:isScalingOf unit:GM-PER-M .
 
-unit:TeraJ  qudt:convertsTo  unit:J ;
-        qudt:isScalingOf  unit:J ;
-        qudt:prefix       prefix:Tera .
+unit:KiloGM-PER-M2
+  qudt:isScalingOf unit:GM-PER-M2 .
 
-unit:FemtoC  qudt:convertsTo  unit:C ;
-        qudt:isScalingOf  unit:C ;
-        qudt:prefix       prefix:Femto .
+unit:KiloGM-PER-M3
+  qudt:isScalingOf unit:GM-PER-M3 .
+
+unit:KiloGM-PER-MIN
+  qudt:isScalingOf unit:GM-PER-SEC .
+
+unit:KiloGM-PER-MOL
+  qudt:isScalingOf unit:GM-PER-MOL .
+
+unit:KiloGM-PER-MilliM
+  qudt:isScalingOf unit:GM-PER-M .
+
+unit:KiloGM-PER-SEC
+  qudt:isScalingOf unit:GM-PER-SEC .
+
+unit:KiloHZ
+  qudt:convertsTo unit:HZ ;
+  qudt:isScalingOf unit:HZ ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloHZ-M
+  qudt:convertsTo unit:HZ-M ;
+  qudt:isScalingOf unit:HZ-M .
+
+unit:KiloJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloJ-PER-K
+  qudt:convertsTo unit:J-PER-K ;
+  qudt:isScalingOf unit:J-PER-K .
+
+unit:KiloJ-PER-KiloGM
+  qudt:isScalingOf unit:J-PER-GM .
+
+unit:KiloJ-PER-MOL
+  qudt:convertsTo unit:J-PER-MOL ;
+  qudt:isScalingOf unit:J-PER-MOL .
+
+unit:KiloL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloL-PER-HR
+  qudt:isScalingOf unit:L-PER-SEC .
+
+unit:KiloLB_F-PER-FT
+  qudt:isScalingOf unit:LB_F-PER-FT .
+
+unit:KiloLB_F-PER-IN2
+  qudt:isScalingOf unit:LB_F-PER-IN2 .
+
+unit:KiloM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloM-PER-DAY
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:KiloM-PER-HR
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:KiloM-PER-SEC
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:KiloM3-PER-SEC2
+  qudt:convertsTo unit:M3-PER-SEC2 ;
+  qudt:isScalingOf unit:M3-PER-SEC2 .
+
+unit:KiloMOL
+  qudt:convertsTo unit:MOL ;
+  qudt:isScalingOf unit:MOL ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloMOL-PER-HR
+  qudt:convertsTo unit:MOL-PER-SEC ;
+  qudt:isScalingOf unit:MOL-PER-SEC .
+
+unit:KiloMOL-PER-M3
+  qudt:convertsTo unit:MOL-PER-M3 ;
+  qudt:isScalingOf unit:MOL-PER-M3 .
+
+unit:KiloMOL-PER-MIN
+  qudt:convertsTo unit:MOL-PER-SEC ;
+  qudt:isScalingOf unit:MOL-PER-SEC .
+
+unit:KiloMOL-PER-SEC
+  qudt:convertsTo unit:MOL-PER-SEC ;
+  qudt:isScalingOf unit:MOL-PER-SEC .
+
+unit:KiloN
+  qudt:convertsTo unit:N ;
+  qudt:isScalingOf unit:N ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloN-M
+  qudt:convertsTo unit:N-M ;
+  qudt:isScalingOf unit:N-M .
+
+unit:KiloOHM
+  qudt:convertsTo unit:OHM ;
+  qudt:isScalingOf unit:OHM ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloPA
+  qudt:convertsTo unit:PA ;
+  qudt:isScalingOf unit:PA ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloPA-PER-BAR
+  qudt:isScalingOf unit:PA-PER-BAR .
+
+unit:KiloPA-PER-K
+  qudt:isScalingOf unit:PA-PER-K .
+
+unit:KiloPA-PER-MilliM
+  qudt:convertsTo unit:PA-PER-M ;
+  qudt:isScalingOf unit:PA-PER-M .
+
+unit:KiloR
+  qudt:isScalingOf unit:R ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloS
+  qudt:convertsTo unit:S ;
+  qudt:isScalingOf unit:S ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloS-PER-M
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:KiloSEC
+  qudt:convertsTo unit:SEC ;
+  qudt:isScalingOf unit:SEC ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloTONNE
+  qudt:isScalingOf unit:TONNE ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloTON_Metric
+  qudt:isScalingOf unit:TON_Metric ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloV
+  qudt:convertsTo unit:V ;
+  qudt:isScalingOf unit:V ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloV-A
+  qudt:convertsTo unit:V-A ;
+  qudt:isScalingOf unit:V-A .
+
+unit:KiloV-A_Reactive
+  qudt:convertsTo unit:V-A_Reactive ;
+  qudt:isScalingOf unit:V-A_Reactive .
+
+unit:KiloV-PER-M
+  qudt:convertsTo unit:V-PER-M ;
+  qudt:isScalingOf unit:V-PER-M .
+
+unit:KiloW
+  qudt:convertsTo unit:W ;
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Kilo .
+
+unit:KiloW-HR
+  qudt:convertsTo unit:W-SEC ;
+  qudt:isScalingOf unit:W-SEC .
+
+unit:KiloWB-PER-M
+  qudt:convertsTo unit:WB-PER-M ;
+  qudt:isScalingOf unit:WB-PER-M .
+
+unit:L-PER-MicroMOL
+  qudt:isScalingOf unit:L-PER-MOL .
+
+unit:M2-PER-KiloGM
+  qudt:isScalingOf unit:M2-PER-GM .
+
+unit:MOL-PER-DeciM3
+  qudt:convertsTo unit:MOL-PER-M3 ;
+  qudt:isScalingOf unit:MOL-PER-M3 .
+
+unit:MebiBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Mebi .
+
+unit:MegaA
+  qudt:convertsTo unit:A ;
+  qudt:isScalingOf unit:A ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaA-PER-M2
+  qudt:convertsTo unit:A-PER-M2 ;
+  qudt:isScalingOf unit:A-PER-M2 .
+
+unit:MegaBAR
+  qudt:isScalingOf unit:BAR ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaBIT-PER-SEC
+  qudt:isScalingOf unit:BIT-PER-SEC .
+
+unit:MegaBQ
+  qudt:convertsTo unit:BQ ;
+  qudt:isScalingOf unit:BQ ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaC-PER-M2
+  qudt:convertsTo unit:C-PER-M2 ;
+  qudt:isScalingOf unit:C-PER-M2 .
+
+unit:MegaC-PER-M3
+  qudt:convertsTo unit:C-PER-M3 ;
+  qudt:isScalingOf unit:C-PER-M3 .
+
+unit:MegaEV
+  qudt:isScalingOf unit:EV ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaEV-PER-CentiM
+  qudt:isScalingOf unit:EV-PER-M .
+
+unit:MegaGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaGM-PER-M3
+  qudt:isScalingOf unit:GM-PER-M3 .
+
+unit:MegaHZ
+  qudt:convertsTo unit:HZ ;
+  qudt:isScalingOf unit:HZ ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaHZ-M
+  qudt:convertsTo unit:HZ-M ;
+  qudt:isScalingOf unit:HZ-M .
+
+unit:MegaHZ-PER-K
+  qudt:convertsTo unit:HZ-PER-K ;
+  qudt:isScalingOf unit:HZ-PER-K .
+
+unit:MegaHZ-PER-T
+  qudt:convertsTo unit:HZ-PER-T ;
+  qudt:isScalingOf unit:HZ-PER-T .
+
+unit:MegaJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaJ-PER-K
+  qudt:convertsTo unit:J-PER-K ;
+  qudt:isScalingOf unit:J-PER-K .
+
+unit:MegaJ-PER-KiloGM
+  qudt:isScalingOf unit:J-PER-GM .
+
+unit:MegaJ-PER-M2
+  qudt:convertsTo unit:J-PER-M2 ;
+  qudt:isScalingOf unit:J-PER-M2 .
+
+unit:MegaJ-PER-M3
+  qudt:convertsTo unit:J-PER-M3 ;
+  qudt:isScalingOf unit:J-PER-M3 .
+
+unit:MegaJ-PER-SEC
+  qudt:convertsTo unit:J-PER-SEC ;
+  qudt:isScalingOf unit:J-PER-SEC .
+
+unit:MegaL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaLB_F
+  qudt:isScalingOf unit:LB_F ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaN
+  qudt:convertsTo unit:N ;
+  qudt:isScalingOf unit:N ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaN-M
+  qudt:convertsTo unit:N-M ;
+  qudt:isScalingOf unit:N-M .
+
+unit:MegaOHM
+  qudt:convertsTo unit:OHM ;
+  qudt:isScalingOf unit:OHM ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaPA
+  qudt:convertsTo unit:PA ;
+  qudt:isScalingOf unit:PA ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaPA-L-PER-SEC
+  qudt:isScalingOf unit:PA-L-PER-SEC .
+
+unit:MegaPA-M3-PER-SEC
+  qudt:convertsTo unit:PA-M3-PER-SEC ;
+  qudt:isScalingOf unit:PA-M3-PER-SEC .
+
+unit:MegaPA-PER-BAR
+  qudt:isScalingOf unit:PA-PER-BAR .
+
+unit:MegaPA-PER-K
+  qudt:isScalingOf unit:PA-PER-K .
+
+unit:MegaS-PER-M
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:MegaTOE
+  qudt:isScalingOf unit:TOE ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaV
+  qudt:convertsTo unit:V ;
+  qudt:isScalingOf unit:V ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaV-A
+  qudt:convertsTo unit:V-A ;
+  qudt:isScalingOf unit:V-A .
+
+unit:MegaV-A_Reactive
+  qudt:convertsTo unit:V-A_Reactive ;
+  qudt:isScalingOf unit:V-A_Reactive .
+
+unit:MegaV-PER-M
+  qudt:convertsTo unit:V-PER-M ;
+  qudt:isScalingOf unit:V-PER-M .
+
+unit:MegaW
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Mega .
+
+unit:MegaW-HR
+  qudt:convertsTo unit:W-SEC ;
+  qudt:isScalingOf unit:W-SEC .
+
+unit:MegaYR
+  qudt:isScalingOf unit:YR ;
+  qudt:prefix prefix:Mega .
+
+unit:MicroA
+  qudt:convertsTo unit:A ;
+  qudt:isScalingOf unit:A ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroATM
+  qudt:isScalingOf unit:ATM ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroBAR
+  qudt:isScalingOf unit:BAR ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroBQ
+  qudt:convertsTo unit:BQ ;
+  qudt:isScalingOf unit:BQ ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroBQ-PER-L
+  qudt:isScalingOf unit:BQ-PER-L .
+
+unit:MicroC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroC-PER-M2
+  qudt:convertsTo unit:C-PER-M2 ;
+  qudt:isScalingOf unit:C-PER-M2 .
+
+unit:MicroC-PER-M3
+  qudt:convertsTo unit:C-PER-M3 ;
+  qudt:isScalingOf unit:C-PER-M3 .
+
+unit:MicroCi
+  qudt:isScalingOf unit:Ci ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroFARAD
+  qudt:convertsTo unit:FARAD ;
+  qudt:isScalingOf unit:FARAD ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroFARAD-PER-KiloM
+  qudt:convertsTo unit:FARAD-PER-M ;
+  qudt:isScalingOf unit:FARAD-PER-M .
+
+unit:MicroFARAD-PER-M
+  qudt:convertsTo unit:FARAD-PER-M ;
+  qudt:isScalingOf unit:FARAD-PER-M .
+
+unit:MicroG
+  qudt:isScalingOf unit:G ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroGM-PER-GM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
+
+unit:MicroGM-PER-KiloGM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
+
+unit:MicroGM-PER-L
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:MicroGM-PER-M3
+  qudt:isScalingOf unit:GM-PER-M3 .
+
+unit:MicroGM-PER-MilliL
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:MicroGRAY
+  qudt:convertsTo unit:GRAY ;
+  qudt:isScalingOf unit:GRAY ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroH
+  qudt:convertsTo unit:H ;
+  qudt:isScalingOf unit:H ;
+  qudt:prefix prefix:Micro .
 
 unit:MicroH-PER-KiloOHM
-        qudt:convertsTo   unit:H-PER-OHM ;
-        qudt:isScalingOf  unit:H-PER-OHM .
+  qudt:convertsTo unit:H-PER-OHM ;
+  qudt:isScalingOf unit:H-PER-OHM .
 
-unit:MilliMOL-PER-M2  qudt:convertsTo  unit:MOL-PER-M2 ;
-        qudt:isScalingOf  unit:MOL-PER-M2 .
+unit:MicroH-PER-M
+  qudt:convertsTo unit:H-PER-M ;
+  qudt:isScalingOf unit:H-PER-M .
 
-unit:MilliV-PER-M  qudt:convertsTo  unit:V-PER-M ;
-        qudt:isScalingOf  unit:V-PER-M .
+unit:MicroH-PER-OHM
+  qudt:convertsTo unit:H-PER-OHM ;
+  qudt:isScalingOf unit:H-PER-OHM .
 
-unit:GigaEV  qudt:isScalingOf  unit:EV ;
-        qudt:prefix       prefix:Giga .
+unit:MicroIN
+  qudt:isScalingOf unit:IN ;
+  qudt:prefix prefix:Micro .
 
-unit:MilliOHM  qudt:convertsTo  unit:OHM ;
-        qudt:isScalingOf  unit:OHM ;
-        qudt:prefix       prefix:Milli .
+unit:MicroJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Micro .
 
-unit:DeciN-M  qudt:convertsTo  unit:N-M ;
-        qudt:isScalingOf  unit:N-M .
+unit:MicroL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Micro .
 
-unit:MegaPA-PER-K  qudt:isScalingOf  unit:PA-PER-K .
+unit:MicroL-PER-L
+  qudt:convertsTo unit:L-PER-L ;
+  qudt:isScalingOf unit:L-PER-L .
 
-unit:MegaV-PER-M  qudt:convertsTo  unit:V-PER-M ;
-        qudt:isScalingOf  unit:V-PER-M .
+unit:MicroM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Micro .
 
-unit:DeciTONNE  qudt:isScalingOf  unit:TONNE ;
-        qudt:prefix       prefix:Deci .
+unit:MicroM-PER-K
+  qudt:convertsTo unit:M-PER-K ;
+  qudt:isScalingOf unit:M-PER-K .
 
-unit:C-PER-MilliM2  qudt:convertsTo  unit:C-PER-M2 ;
-        qudt:isScalingOf  unit:C-PER-M2 .
+unit:MicroM2
+  qudt:convertsTo unit:M2 ;
+  qudt:isScalingOf unit:M2 ;
+  qudt:prefix prefix:Micro .
 
-unit:KiloLB_F-PER-FT  qudt:isScalingOf  unit:LB_F-PER-FT .
+unit:MicroM3
+  qudt:convertsTo unit:M3 ;
+  qudt:isScalingOf unit:M3 ;
+  qudt:prefix prefix:Micro .
 
-unit:DeciM3-PER-MOL  qudt:convertsTo  unit:M3-PER-MOL ;
-        qudt:isScalingOf  unit:M3-PER-MOL .
+unit:MicroM3-PER-M3
+  qudt:convertsTo unit:M3-PER-M3 ;
+  qudt:isScalingOf unit:M3-PER-M3 .
+
+unit:MicroMHO
+  qudt:convertsTo unit:MHO ;
+  qudt:isScalingOf unit:MHO ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroMOL
+  qudt:convertsTo unit:MOL ;
+  qudt:isScalingOf unit:MOL ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroMOL-PER-L
+  qudt:isScalingOf unit:MOL-PER-L .
+
+unit:MicroMOL-PER-M2
+  qudt:convertsTo unit:MOL-PER-M2 ;
+  qudt:isScalingOf unit:MOL-PER-M2 .
+
+unit:MicroMOL-PER-M2-DAY
+  qudt:convertsTo unit:MOL-PER-M2-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M2-SEC .
+
+unit:MicroMOL-PER-M2-HR
+  qudt:convertsTo unit:MOL-PER-M2-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M2-SEC .
+
+unit:MicroMOL-PER-M2-SEC
+  qudt:convertsTo unit:MOL-PER-M2-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M2-SEC .
+
+unit:MicroMOL-PER-MOL
+  qudt:convertsTo unit:MOL-PER-MOL ;
+  qudt:isScalingOf unit:MOL-PER-MOL .
+
+unit:MicroMOL-PER-SEC
+  qudt:convertsTo unit:MOL-PER-SEC ;
+  qudt:isScalingOf unit:MOL-PER-SEC .
+
+unit:MicroN
+  qudt:convertsTo unit:N ;
+  qudt:isScalingOf unit:N ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroN-M
+  qudt:convertsTo unit:N-M ;
+  qudt:isScalingOf unit:N-M .
+
+unit:MicroOHM
+  qudt:convertsTo unit:OHM ;
+  qudt:isScalingOf unit:OHM ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroPA
+  qudt:convertsTo unit:PA ;
+  qudt:isScalingOf unit:PA ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroPOISE
+  qudt:isScalingOf unit:POISE ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroRAD
+  qudt:convertsTo unit:RAD ;
+  qudt:isScalingOf unit:RAD ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroS
+  qudt:convertsTo unit:S ;
+  qudt:isScalingOf unit:S ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroS-PER-CentiM
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:MicroS-PER-M
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:MicroSEC
+  qudt:convertsTo unit:SEC ;
+  qudt:isScalingOf unit:SEC ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroSV
+  qudt:convertsTo unit:SV ;
+  qudt:isScalingOf unit:SV ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroT
+  qudt:convertsTo unit:T ;
+  qudt:isScalingOf unit:T ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroTORR
+  qudt:isScalingOf unit:TORR ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroV
+  qudt:convertsTo unit:V ;
+  qudt:isScalingOf unit:V ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroV-PER-M
+  qudt:convertsTo unit:V-PER-M ;
+  qudt:isScalingOf unit:V-PER-M .
+
+unit:MicroW
+  qudt:convertsTo unit:W ;
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Micro .
+
+unit:MicroW-PER-M2
+  qudt:convertsTo unit:W-PER-M2 ;
+  qudt:isScalingOf unit:W-PER-M2 .
+
+unit:MilliA
+  qudt:convertsTo unit:A ;
+  qudt:isScalingOf unit:A ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliA-HR
+  qudt:convertsTo unit:A-SEC ;
+  qudt:isScalingOf unit:A-SEC .
+
+unit:MilliA-PER-MilliM
+  qudt:convertsTo unit:A-PER-M ;
+  qudt:isScalingOf unit:A-PER-M .
+
+unit:MilliARCSEC
+  qudt:isScalingOf unit:ARCSEC ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliBAR
+  qudt:isScalingOf unit:BAR ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliBAR-L-PER-SEC
+  qudt:isScalingOf unit:BAR-L-PER-SEC .
+
+unit:MilliBAR-M3-PER-SEC
+  qudt:isScalingOf unit:BAR-M3-PER-SEC .
+
+unit:MilliBAR-PER-BAR
+  qudt:convertsTo unit:BAR-PER-BAR ;
+  qudt:isScalingOf unit:BAR-PER-BAR .
+
+unit:MilliBAR-PER-K
+  qudt:isScalingOf unit:BAR-PER-K .
+
+unit:MilliBQ-PER-L
+  qudt:isScalingOf unit:BQ-PER-L .
+
+unit:MilliC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliC-PER-M2
+  qudt:convertsTo unit:C-PER-M2 ;
+  qudt:isScalingOf unit:C-PER-M2 .
+
+unit:MilliC-PER-M3
+  qudt:convertsTo unit:C-PER-M3 ;
+  qudt:isScalingOf unit:C-PER-M3 .
+
+unit:MilliCi
+  qudt:isScalingOf unit:Ci ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliDEG_C
+  qudt:isScalingOf unit:DEG_C ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliFARAD
+  qudt:convertsTo unit:FARAD ;
+  qudt:isScalingOf unit:FARAD ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliG
+  qudt:isScalingOf unit:G ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliGM-PER-CentiM2
+  qudt:isScalingOf unit:GM-PER-M2 .
+
+unit:MilliGM-PER-DAY
+  qudt:isScalingOf unit:GM-PER-SEC .
+
+unit:MilliGM-PER-DeciL
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:MilliGM-PER-GM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
+
+unit:MilliGM-PER-HR
+  qudt:isScalingOf unit:GM-PER-SEC .
+
+unit:MilliGM-PER-KiloGM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
+
+unit:MilliGM-PER-L
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:MilliGM-PER-M
+  qudt:isScalingOf unit:GM-PER-M .
+
+unit:MilliGM-PER-M2
+  qudt:isScalingOf unit:GM-PER-M2 .
+
+unit:MilliGM-PER-M3
+  qudt:isScalingOf unit:GM-PER-M3 .
+
+unit:MilliGM-PER-MIN
+  qudt:isScalingOf unit:GM-PER-SEC .
+
+unit:MilliGM-PER-SEC
+  qudt:isScalingOf unit:GM-PER-SEC .
+
+unit:MilliGRAY
+  qudt:convertsTo unit:GRAY ;
+  qudt:isScalingOf unit:GRAY ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliH
+  qudt:convertsTo unit:H ;
+  qudt:isScalingOf unit:H ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliH-PER-KiloOHM
+  qudt:convertsTo unit:H-PER-OHM ;
+  qudt:isScalingOf unit:H-PER-OHM .
+
+unit:MilliH-PER-OHM
+  qudt:convertsTo unit:H-PER-OHM ;
+  qudt:isScalingOf unit:H-PER-OHM .
+
+unit:MilliIN
+  qudt:isScalingOf unit:IN ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliL
+  qudt:isScalingOf unit:L ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliL-PER-DAY
+  qudt:isScalingOf unit:L-PER-SEC .
+
+unit:MilliL-PER-HR
+  qudt:isScalingOf unit:L-PER-SEC .
+
+unit:MilliL-PER-K
+  qudt:isScalingOf unit:L-PER-K .
+
+unit:MilliL-PER-L
+  qudt:convertsTo unit:L-PER-L ;
+  qudt:isScalingOf unit:L-PER-L .
+
+unit:MilliL-PER-MIN
+  qudt:isScalingOf unit:L-PER-SEC .
+
+unit:MilliL-PER-SEC
+  qudt:isScalingOf unit:L-PER-SEC .
+
+unit:MilliM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliM-PER-DAY
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:MilliM-PER-HR
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:MilliM-PER-K
+  qudt:convertsTo unit:M-PER-K ;
+  qudt:isScalingOf unit:M-PER-K .
+
+unit:MilliM-PER-MIN
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:MilliM-PER-SEC
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:MilliM-PER-YR
+  qudt:convertsTo unit:M-PER-SEC ;
+  qudt:isScalingOf unit:M-PER-SEC .
+
+unit:MilliM2
+  qudt:convertsTo unit:M2 ;
+  qudt:isScalingOf unit:M2 ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliM2-PER-SEC
+  qudt:convertsTo unit:M2-PER-SEC ;
+  qudt:isScalingOf unit:M2-PER-SEC .
+
+unit:MilliM3
+  qudt:convertsTo unit:M3 ;
+  qudt:isScalingOf unit:M3 ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliM3-PER-M3
+  qudt:convertsTo unit:M3-PER-M3 ;
+  qudt:isScalingOf unit:M3-PER-M3 .
+
+unit:MilliM4
+  qudt:convertsTo unit:M4 ;
+  qudt:isScalingOf unit:M4 ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliMOL
+  qudt:convertsTo unit:MOL ;
+  qudt:isScalingOf unit:MOL ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliMOL-PER-L
+  qudt:isScalingOf unit:MOL-PER-L .
+
+unit:MilliMOL-PER-M2
+  qudt:convertsTo unit:MOL-PER-M2 ;
+  qudt:isScalingOf unit:MOL-PER-M2 .
+
+unit:MilliMOL-PER-M2-DAY
+  qudt:convertsTo unit:MOL-PER-M2-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M2-SEC .
+
+unit:MilliMOL-PER-M2-SEC
+  qudt:convertsTo unit:MOL-PER-M2-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M2-SEC .
+
+unit:MilliMOL-PER-M3
+  qudt:convertsTo unit:MOL-PER-M3 ;
+  qudt:isScalingOf unit:MOL-PER-M3 .
+
+unit:MilliMOL-PER-M3-DAY
+  qudt:convertsTo unit:MOL-PER-M3-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M3-SEC .
+
+unit:MilliMOL-PER-MOL
+  qudt:convertsTo unit:MOL-PER-MOL ;
+  qudt:isScalingOf unit:MOL-PER-MOL .
+
+unit:MilliN
+  qudt:convertsTo unit:N ;
+  qudt:isScalingOf unit:N ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliN-M
+  qudt:convertsTo unit:N-M ;
+  qudt:isScalingOf unit:N-M .
+
+unit:MilliN-PER-M
+  qudt:convertsTo unit:N-PER-M ;
+  qudt:isScalingOf unit:N-PER-M .
+
+unit:MilliOHM
+  qudt:convertsTo unit:OHM ;
+  qudt:isScalingOf unit:OHM ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliPA
+  qudt:convertsTo unit:PA ;
+  qudt:isScalingOf unit:PA ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliPA-SEC
+  qudt:convertsTo unit:PA-SEC ;
+  qudt:isScalingOf unit:PA-SEC .
+
+unit:MilliPA-SEC-PER-BAR
+  qudt:isScalingOf unit:PA-SEC-PER-BAR .
+
+unit:MilliR
+  qudt:isScalingOf unit:R ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliRAD
+  qudt:convertsTo unit:RAD ;
+  qudt:isScalingOf unit:RAD ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliS
+  qudt:convertsTo unit:S ;
+  qudt:isScalingOf unit:S ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliS-PER-CentiM
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:MilliS-PER-M
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:MilliSEC
+  qudt:convertsTo unit:SEC ;
+  qudt:isScalingOf unit:SEC ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliSV
+  qudt:convertsTo unit:SV ;
+  qudt:isScalingOf unit:SV ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliT
+  qudt:convertsTo unit:T ;
+  qudt:isScalingOf unit:T ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliTORR
+  qudt:isScalingOf unit:TORR ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliV
+  qudt:convertsTo unit:V ;
+  qudt:isScalingOf unit:V ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliV-PER-M
+  qudt:convertsTo unit:V-PER-M ;
+  qudt:isScalingOf unit:V-PER-M .
+
+unit:MilliV-PER-MIN
+  qudt:convertsTo unit:V-PER-SEC ;
+  qudt:isScalingOf unit:V-PER-SEC .
+
+unit:MilliW
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Milli .
+
+unit:MilliW-PER-CentiM2-MicroM-SR
+  qudt:convertsTo unit:W-PER-M2-M-SR ;
+  qudt:isScalingOf unit:W-PER-M2-M-SR .
+
+unit:MilliW-PER-M2
+  qudt:convertsTo unit:W-PER-M2 ;
+  qudt:isScalingOf unit:W-PER-M2 .
+
+unit:MilliW-PER-M2-NanoM
+  qudt:convertsTo unit:W-PER-M2-M ;
+  qudt:isScalingOf unit:W-PER-M2-M .
 
 unit:MilliW-PER-M2-NanoM-SR
-        qudt:convertsTo   unit:W-PER-M2-M-SR ;
-        qudt:isScalingOf  unit:W-PER-M2-M-SR .
+  qudt:convertsTo unit:W-PER-M2-M-SR ;
+  qudt:isScalingOf unit:W-PER-M2-M-SR .
 
-unit:CentiM-PER-SEC  qudt:convertsTo  unit:M-PER-SEC ;
-        qudt:isScalingOf  unit:M-PER-SEC .
+unit:MilliWB
+  qudt:convertsTo unit:WB ;
+  qudt:isScalingOf unit:WB ;
+  qudt:prefix prefix:Milli .
 
-unit:KiloBYTE  qudt:isScalingOf  unit:BYTE ;
-        qudt:prefix       prefix:Kilo .
+unit:N-CentiM
+  qudt:convertsTo unit:N-M ;
+  qudt:isScalingOf unit:N-M .
+
+unit:N-PER-CentiM
+  qudt:convertsTo unit:N-PER-M ;
+  qudt:isScalingOf unit:N-PER-M .
+
+unit:N-PER-CentiM2
+  qudt:convertsTo unit:N-PER-M2 ;
+  qudt:isScalingOf unit:N-PER-M2 .
+
+unit:N-PER-MilliM
+  qudt:convertsTo unit:N-PER-M ;
+  qudt:isScalingOf unit:N-PER-M .
+
+unit:N-PER-MilliM2
+  qudt:convertsTo unit:N-PER-M2 ;
+  qudt:isScalingOf unit:N-PER-M2 .
+
+unit:NUM-PER-HectoGM
+  qudt:isScalingOf unit:NUM-PER-GM .
+
+unit:NUM-PER-KiloM2
+  qudt:convertsTo unit:NUM-PER-M2 ;
+  qudt:isScalingOf unit:NUM-PER-M2 .
+
+unit:NUM-PER-MicroL
+  qudt:isScalingOf unit:NUM-PER-L .
+
+unit:NUM-PER-MilliGM
+  qudt:isScalingOf unit:NUM-PER-GM .
+
+unit:NUM-PER-NanoL
+  qudt:isScalingOf unit:NUM-PER-L .
+
+unit:NanoA
+  qudt:convertsTo unit:A ;
+  qudt:isScalingOf unit:A ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoBQ-PER-L
+  qudt:isScalingOf unit:BQ-PER-L .
+
+unit:NanoC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoFARAD
+  qudt:convertsTo unit:FARAD ;
+  qudt:isScalingOf unit:FARAD ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoFARAD-PER-M
+  qudt:convertsTo unit:FARAD-PER-M ;
+  qudt:isScalingOf unit:FARAD-PER-M .
+
+unit:NanoGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoGM-PER-DAY
+  qudt:isScalingOf unit:GM-PER-SEC .
+
+unit:NanoGM-PER-KiloGM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
+
+unit:NanoGM-PER-L
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:NanoGM-PER-M3
+  qudt:isScalingOf unit:GM-PER-M3 .
+
+unit:NanoGM-PER-MicroL
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:NanoGM-PER-MilliL
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:NanoH
+  qudt:convertsTo unit:H ;
+  qudt:isScalingOf unit:H ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoH-PER-M
+  qudt:convertsTo unit:H-PER-M ;
+  qudt:isScalingOf unit:H-PER-M .
+
+unit:NanoM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoM2
+  qudt:convertsTo unit:M2 ;
+  qudt:isScalingOf unit:M2 ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoMOL-PER-CentiM3-HR
+  qudt:convertsTo unit:MOL-PER-M3-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M3-SEC .
+
+unit:NanoMOL-PER-M2-DAY
+  qudt:convertsTo unit:MOL-PER-M2-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M2-SEC .
+
+unit:NanoMOL-PER-MicroMOL
+  qudt:convertsTo unit:MOL-PER-MOL ;
+  qudt:isScalingOf unit:MOL-PER-MOL .
+
+unit:NanoS-PER-CentiM
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:NanoS-PER-M
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:NanoSEC
+  qudt:convertsTo unit:SEC ;
+  qudt:isScalingOf unit:SEC ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoT
+  qudt:convertsTo unit:T ;
+  qudt:isScalingOf unit:T ;
+  qudt:prefix prefix:Nano .
+
+unit:NanoW
+  qudt:convertsTo unit:W ;
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Nano .
+
+unit:PER-CentiM
+  qudt:convertsTo unit:PER-M ;
+  qudt:isScalingOf unit:PER-M .
+
+unit:PER-CentiM3
+  qudt:convertsTo unit:PER-M3 ;
+  qudt:isScalingOf unit:PER-M3 .
+
+unit:PER-MilliM3
+  qudt:convertsTo unit:PER-M3 ;
+  qudt:isScalingOf unit:PER-M3 .
+
+unit:PER-MilliSEC
+  qudt:convertsTo unit:PER-SEC ;
+  qudt:isScalingOf unit:PER-SEC .
+
+unit:PebiBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Pebi .
+
+unit:PetaBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Peta .
+
+unit:PetaC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Peta .
+
+unit:PetaJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Peta .
+
+unit:PicoA
+  qudt:convertsTo unit:A ;
+  qudt:isScalingOf unit:A ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoFARAD
+  qudt:convertsTo unit:FARAD ;
+  qudt:isScalingOf unit:FARAD ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoFARAD-PER-M
+  qudt:convertsTo unit:FARAD-PER-M ;
+  qudt:isScalingOf unit:FARAD-PER-M .
+
+unit:PicoGM
+  qudt:isScalingOf unit:GM ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoGM-PER-GM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
+
+unit:PicoGM-PER-KiloGM
+  qudt:convertsTo unit:GM-PER-GM ;
+  qudt:isScalingOf unit:GM-PER-GM .
+
+unit:PicoGM-PER-L
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:PicoGM-PER-MilliL
+  qudt:convertsTo unit:GM-PER-L ;
+  qudt:isScalingOf unit:GM-PER-L .
+
+unit:PicoH
+  qudt:convertsTo unit:H ;
+  qudt:isScalingOf unit:H ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoM
+  qudt:convertsTo unit:M ;
+  qudt:isScalingOf unit:M ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoMOL-PER-L
+  qudt:isScalingOf unit:MOL-PER-L .
+
+unit:PicoMOL-PER-M2-DAY
+  qudt:convertsTo unit:MOL-PER-M2-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M2-SEC .
+
+unit:PicoMOL-PER-M3
+  qudt:convertsTo unit:MOL-PER-M3 ;
+  qudt:isScalingOf unit:MOL-PER-M3 .
+
+unit:PicoMOL-PER-M3-SEC
+  qudt:convertsTo unit:MOL-PER-M3-SEC ;
+  qudt:isScalingOf unit:MOL-PER-M3-SEC .
+
+unit:PicoPA-PER-KiloM
+  qudt:convertsTo unit:PA-PER-M ;
+  qudt:isScalingOf unit:PA-PER-M .
+
+unit:PicoS-PER-M
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:PicoSEC
+  qudt:convertsTo unit:SEC ;
+  qudt:isScalingOf unit:SEC ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoW
+  qudt:convertsTo unit:W ;
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Pico .
+
+unit:PicoW-PER-M2
+  qudt:convertsTo unit:W-PER-M2 ;
+  qudt:isScalingOf unit:W-PER-M2 .
+
+unit:S-PER-CentiM
+  qudt:convertsTo unit:S-PER-M ;
+  qudt:isScalingOf unit:S-PER-M .
+
+unit:TebiBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Tebi .
+
+unit:TeraBYTE
+  qudt:isScalingOf unit:BYTE ;
+  qudt:prefix prefix:Tera .
+
+unit:TeraC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Tera .
+
+unit:TeraHZ
+  qudt:convertsTo unit:HZ ;
+  qudt:isScalingOf unit:HZ ;
+  qudt:prefix prefix:Tera .
+
+unit:TeraJ
+  qudt:convertsTo unit:J ;
+  qudt:isScalingOf unit:J ;
+  qudt:prefix prefix:Tera .
+
+unit:TeraOHM
+  qudt:convertsTo unit:OHM ;
+  qudt:isScalingOf unit:OHM ;
+  qudt:prefix prefix:Tera .
+
+unit:TeraW
+  qudt:convertsTo unit:W ;
+  qudt:isScalingOf unit:W ;
+  qudt:prefix prefix:Tera .
+
+unit:TeraW-HR
+  qudt:convertsTo unit:W-SEC ;
+  qudt:isScalingOf unit:W-SEC .
+
+unit:V-PER-CentiM
+  qudt:convertsTo unit:V-PER-M ;
+  qudt:isScalingOf unit:V-PER-M .
+
+unit:V-PER-MicroSEC
+  qudt:convertsTo unit:V-PER-SEC ;
+  qudt:isScalingOf unit:V-PER-SEC .
+
+unit:V-PER-MilliM
+  qudt:convertsTo unit:V-PER-M ;
+  qudt:isScalingOf unit:V-PER-M .
+
+unit:W-PER-CentiM2
+  qudt:convertsTo unit:W-PER-M2 ;
+  qudt:isScalingOf unit:W-PER-M2 .
+
+unit:W-PER-M2-NanoM
+  qudt:convertsTo unit:W-PER-M2-M ;
+  qudt:isScalingOf unit:W-PER-M2-M .
+
+unit:W-PER-M2-NanoM-SR
+  qudt:convertsTo unit:W-PER-M2-M-SR ;
+  qudt:isScalingOf unit:W-PER-M2-M-SR .
+
+unit:WB-PER-MilliM
+  qudt:convertsTo unit:WB-PER-M ;
+  qudt:isScalingOf unit:WB-PER-M .
+
+unit:YoctoC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Yocto .
+
+unit:YottaC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Yotta .
+
+unit:ZeptoC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Zepto .
+
+unit:ZettaC
+  qudt:convertsTo unit:C ;
+  qudt:isScalingOf unit:C ;
+  qudt:prefix prefix:Zetta .
+
+

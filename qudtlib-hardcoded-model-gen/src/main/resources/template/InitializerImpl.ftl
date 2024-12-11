@@ -95,6 +95,9 @@ public class InitializerImpl implements Initializer {
             <#if unit.symbol.isPresent()>
             .symbol(${optStr(unit.symbol)})
             </#if>
+            <#list unit.altSymbols as altSymbol>
+            .altSymbol(${q(altSymbol)})
+            </#list>
             <#if unit.description.isPresent()>
             .description(${optStr(unit.description)})
             </#if>

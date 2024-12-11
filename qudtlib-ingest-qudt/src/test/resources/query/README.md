@@ -11,14 +11,14 @@ The queries only serve the purpose of understanding the data. They are not meant
 With the jena commandline tools installed, a query can be executed from this folder as follows:
 
 ```
-sparql --data=../../../../target/generated-resources/qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL-v2.1.ttl --query=allScalingOf.rq
+sparql --data=../../../../target/generated-resources/qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL.ttl --query=allScalingOf.rq
 ```
 
 or, if more data is needed,
 
 ```
-sparql --data=../../../../target/generated-resources/qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL-v2.1.ttl\
-       --data=../../../../target/generated-resources/qudt/vocab/prefixes/VOCAB_QUDT-PREFIXES-v2.1.ttl\
+sparql --data=../../../../target/generated-resources/qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL.ttl\
+       --data=../../../../target/generated-resources/qudt/vocab/prefixes/VOCAB_QUDT-PREFIXES.ttl\
        --query=allScalingOf.rq
 ```
 

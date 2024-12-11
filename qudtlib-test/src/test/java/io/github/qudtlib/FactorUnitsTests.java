@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -473,6 +474,145 @@ public class FactorUnitsTests {
 
     public static Stream<Arguments> testConversionMultiplierOpt() {
         return Qudt.allUnits().stream().map(u -> Arguments.of(u));
+    }
+
+    @Test
+    public void testIssue100() {
+        // 3 km^3 * 5 hr / 87654 N^2. I would like to reduce this to 6.16e+8 m s5 / kg2.
+
+        // that's one way to get the factor units:
+        FactorUnits factorUnits = FactorUnits.ofFactorUnitSpec(KiloM, 3, HR, 1, N, -2);
+        // Note: you could also get there this way
+        // factorUnits =
+        // KiloM.getFactorUnits().pow(3).combineWith(HR.getFactorUnits()).combineWith(N.getFactorUnits().pow(-2));
+
+        System.out.println("factorUnits: " + factorUnits);
+        System.out.println("symbol: " + factorUnits.getSymbol());
+        System.out.println("scaleFactor: " + factorUnits.getScaleFactor());
+        System.out.println("-------------");
+
+        FactorUnits factorUnitsNormalized = factorUnits.normalize();
+        System.out.println("factorUnits normalized: " + factorUnitsNormalized);
+        System.out.println("symbol: " + factorUnitsNormalized.getSymbol());
+        System.out.println("scaleFactor: " + factorUnitsNormalized.getScaleFactor());
+        System.out.println("-------------");
+
+        Unit newUnit =
+                Unit.definition(QudtNamespaces.unit.getBaseIri(), factorUnitsNormalized).build();
+        System.out.println("synthetic unit localname: " + newUnit.getIriLocalname());
+        System.out.println("symbol: " + newUnit.getSymbol());
+        System.out.println("-------------");
+        Unit newUnitWithKiloGM =
+                Unit.definition(
+                                QudtNamespaces.unit.getBaseIri(),
+                                FactorUnits.ofFactorUnitSpec(M, 1, SEC, 5, KiloGM, -2))
+                        .build();
+        System.out.println(
+                "better synthetic unit localname: " + newUnitWithKiloGM.getIriLocalname());
+        System.out.println("symbol: " + newUnitWithKiloGM.getSymbol());
+        System.out.println("-------------");
+        MathContext mc = MathContext.DECIMAL128;
+        QuantityValue q =
+                new QuantityValue(
+                        new BigDecimal("3")
+                                .multiply(new BigDecimal("5"), mc)
+                                .divide(new BigDecimal("87654"), mc),
+                        newUnit);
+        System.out.println("value: " + q);
+        QuantityValue converted = q.convert(newUnitWithKiloGM);
+        System.out.println("converted value: " + converted);
+        System.out.println("-------------");
+        /**
+         * possible future development: QuantityValue q1 = new QuantityValue(new BigDecimal(3),
+         * Unit.definition(QudtNamespaces.unit.getBaseIri(), FactorUnits.ofFactorUnitSpec(KiloM,
+         * 3)).build()); QuantityValue q2 = new QuantityValue(new BigDecimal(5), HR); QuantityValue
+         * q3 = new QuantityValue(new BigDecimal(87654),
+         * Unit.definition(QudtNamespaces.unit.getBaseIri(), FactorUnits.ofFactorUnitSpec(N,
+         * 2)).build()); QuantityValue result = q1.multiply(q2).divide(q3); QuantityValue scaled =
+         * result.convert(Qudt.scaleFactorUnit(result.getUnit(), GM, KiloGM));
+         */
+        q = new QuantityValue(new BigDecimal(1), newUnit);
+        System.out.println("value: " + q);
+        System.out.println("converted " + q.convert(newUnitWithKiloGM));
+
+        q = new QuantityValue(new BigDecimal(1), PER__GM);
+        System.out.println("value: " + q);
+        System.out.println("converted " + q.convert(PER__KiloGM));
+
+        q = new QuantityValue(new BigDecimal(1), KiloGM__PER__SEC);
+        System.out.println("value: " + q);
+        System.out.println("converted " + q.convert(GM__PER__SEC));
+
+        q = new QuantityValue(new BigDecimal(1), GM);
+        System.out.println("value: " + q);
+        System.out.println("converted " + q.convert(KiloGM));
+    }
+
+    @Test
+    public void testIssue100_solved() {
+        // 3 km^3 * 5 hr / 87654 N^2. I would like to reduce this to 6.16e+8 m s5 / kg2.
+
+        // that's one way to get the factor units:
+        FactorUnits factorUnits = FactorUnits.ofFactorUnitSpec(KiloM, 3, HR, 1, N, -2);
+        // Note: you could also get there this way
+        // factorUnits =
+        // KiloM.getFactorUnits().pow(3).combineWith(HR.getFactorUnits()).combineWith(N.getFactorUnits().pow(-2));
+
+        System.out.println("factorUnits: " + factorUnits);
+        System.out.println("symbol: " + factorUnits.getSymbol());
+        System.out.println("scaleFactor: " + factorUnits.getScaleFactor());
+        System.out.println("-------------");
+
+        FactorUnits factorUnitsNormalized = factorUnits.normalize();
+        System.out.println("factorUnits normalized: " + factorUnitsNormalized);
+        System.out.println("symbol: " + factorUnitsNormalized.getSymbol());
+        System.out.println("scaleFactor: " + factorUnitsNormalized.getScaleFactor());
+        System.out.println("-------------");
+
+        Unit newUnit =
+                Unit.definition(
+                                QudtNamespaces.unit.getBaseIri(),
+                                factorUnitsNormalized.withoutScaleFactor())
+                        //                                   ^^^^^^^^^^^^^^^^^^^^^---note this
+                        .build();
+        System.out.println("synthetic unit localname: " + newUnit.getIriLocalname());
+        System.out.println("symbol: " + newUnit.getSymbol());
+        System.out.println("scaleFactor: " + newUnit.getFactorUnits().getScaleFactor());
+        System.out.println("-------------");
+        Unit newUnitWithKiloGM =
+                Unit.definition(
+                                QudtNamespaces.unit.getBaseIri(),
+                                FactorUnits.ofFactorUnitSpec(M, 1, SEC, 5, KiloGM, -2))
+                        .build();
+        System.out.println(
+                "better synthetic unit localname: " + newUnitWithKiloGM.getIriLocalname());
+        System.out.println("symbol: " + newUnitWithKiloGM.getSymbol());
+        System.out.println("scaleFactor: " + newUnitWithKiloGM.getFactorUnits().getScaleFactor());
+        System.out.println("-------------");
+        MathContext mc = MathContext.DECIMAL128;
+        BigDecimal value =
+                new BigDecimal("3")
+                        .multiply(new BigDecimal("5"), mc)
+                        .divide(new BigDecimal("87654"), mc);
+        QuantityValue q =
+                new QuantityValue(
+                        value.multiply(factorUnitsNormalized.getScaleFactor()),
+                        //                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^---note
+                        // this
+                        newUnit);
+        System.out.println("value: " + q);
+        QuantityValue converted = q.convert(newUnitWithKiloGM);
+        System.out.println("converted value: " + converted);
+        System.out.println("-------------");
+        /**
+         * possible future development: QuantityValue q1 = new QuantityValue(new BigDecimal(3),
+         * Unit.definition(QudtNamespaces.unit.getBaseIri(), FactorUnits.ofFactorUnitSpec(KiloM,
+         * 3)).build()); QuantityValue q2 = new QuantityValue(new BigDecimal(5), HR); QuantityValue
+         * q3 = new QuantityValue(new BigDecimal(87654),
+         * Unit.definition(QudtNamespaces.unit.getBaseIri(), FactorUnits.ofFactorUnitSpec(N,
+         * 2)).build()); QuantityValue result = q1.multiply(q2).divide(q3); QuantityValue scaled =
+         * result.convert(Qudt.scaleFactorUnit(result.getUnit(), GM, KiloGM));
+         */
     }
 
     private boolean hasNoFactorUnitsWithoutConversionMultiplier(Unit unit) {

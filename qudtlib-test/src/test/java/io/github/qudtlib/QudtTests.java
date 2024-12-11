@@ -2,6 +2,7 @@ package io.github.qudtlib;
 
 import static io.github.qudtlib.model.QuantityKinds.TemperatureDifference;
 import static io.github.qudtlib.model.Units.*;
+import static java.util.function.Predicate.not;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.qudtlib.algorithm.AssignmentProblem;
@@ -10,11 +11,7 @@ import io.github.qudtlib.model.*;
 import io.github.qudtlib.model.Unit.Definition;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -852,7 +849,6 @@ public class QudtTests {
                 Arguments.of(MIN_Angle, ARCMIN),
                 Arguments.of(MI_N__PER__HR, KN),
                 Arguments.of(MegaGM__PER__HA, TONNE__PER__HA, TON_Metric__PER__HA),
-                Arguments.of(MilliARCSEC, RAD),
                 Arguments.of(HectoPA, MilliBAR));
     }
 
@@ -925,5 +921,191 @@ public class QudtTests {
         Assertions.assertTrue(unit.isConvertible(baseUnit));
 
         Assertions.assertEquals(1000000, Qudt.convert(BigDecimal.ONE, unit, baseUnit).intValue());
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testParseUnit_specificCases(
+            String input, QuantityKind quantityKind, Set<Unit> expected) {
+        testParseUnit(input, quantityKind, expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testParseUnit_allUnitsBySymbol(
+            String input, QuantityKind quantityKind, Set<Unit> expected) {
+        testParseUnit(input, quantityKind, expected);
+    }
+
+    private void testParseUnit(String input, QuantityKind quantityKind, Set<Unit> expected) {
+        Set<Unit> result = Qudt.parseUnit(input, quantityKind);
+        expected.forEach(
+                u ->
+                        assertTrue(
+                                result.contains(u)
+                                        || u.getExactMatches().stream()
+                                                .anyMatch(equiv -> result.contains(equiv)),
+                                String.format(
+                                        "\ninput: '%s' (qk: %s): \nactual result [%s] does not contain expected %s (all expected: [%s])",
+                                        input,
+                                        Optional.ofNullable(quantityKind)
+                                                .map(
+                                                        qk ->
+                                                                Qudt.NAMESPACES.quantityKind
+                                                                        .abbreviate(qk.getIri()))
+                                                .orElse("[null]"),
+                                        result.stream()
+                                                .map(Unit::getIriAbbreviated)
+                                                .collect(Collectors.joining(",")),
+                                        u.getIriAbbreviated(),
+                                        expected.stream()
+                                                .map(Unit::getIriAbbreviated)
+                                                .collect(Collectors.joining(",")))));
+        result.forEach(
+                u ->
+                        assertTrue(
+                                expected.contains(u)
+                                        || u.getExactMatches().stream()
+                                                .anyMatch(equiv -> expected.contains(equiv)),
+                                String.format(
+                                        "\ninput: '%s' (qk: %s): \nexpected result [%s] does not contain actual %s (all actual: [%s])",
+                                        input,
+                                        Optional.ofNullable(quantityKind)
+                                                .map(
+                                                        qk ->
+                                                                Qudt.NAMESPACES.quantityKind
+                                                                        .abbreviate(qk.getIri()))
+                                                .orElse("[null]"),
+                                        expected.stream()
+                                                .map(Unit::getIriAbbreviated)
+                                                .collect(Collectors.joining(",")),
+                                        u.getIriAbbreviated(),
+                                        result.stream()
+                                                .map(Unit::getIriAbbreviated)
+                                                .collect(Collectors.joining(",")))));
+    }
+
+    public static Stream<Arguments> testParseUnit_specificCases() {
+        return Stream.of(
+                Arguments.of("m", QuantityKinds.Length, Set.of(Units.M)),
+                Arguments.of("/h", QuantityKinds.Frequency, Set.of(Units.PER__HR)),
+                Arguments.of("1/h", QuantityKinds.Frequency, Set.of(Units.PER__HR)),
+                Arguments.of("L", QuantityKinds.LiquidVolume, Set.of(Units.L)),
+                Arguments.of("Pascal", QuantityKinds.Pressure, Set.of(Units.PA)),
+                Arguments.of("PASCAL", QuantityKinds.Pressure, Set.of(Units.PA)),
+                Arguments.of("Watt/m2K", QuantityKinds.ThermalAdmittance, Set.of(W__PER__M2__K)),
+                Arguments.of("W/m2K", QuantityKinds.ThermalAdmittance, Set.of(W__PER__M2__K)),
+                Arguments.of("W/m2Kelvin", QuantityKinds.ThermalAdmittance, Set.of(W__PER__M2__K)),
+                Arguments.of("Watt/m^2K", QuantityKinds.ThermalAdmittance, Set.of(W__PER__M2__K)),
+                Arguments.of("Pa", QuantityKinds.Pressure, Set.of(Units.PA)),
+                Arguments.of("km/h", QuantityKinds.LinearVelocity, Set.of(Units.KiloM__PER__HR)),
+                Arguments.of(
+                        "m3/kg",
+                        Units.M3__PER__KiloGM.getQuantityKinds().stream().findFirst().get(),
+                        Set.of(Units.M3__PER__KiloGM)),
+                Arguments.of("kV", QuantityKinds.Voltage, Set.of(Units.KiloV)),
+                Arguments.of("kV*A", QuantityKinds.ComplexPower, Set.of(Units.KiloV__A)),
+                Arguments.of("kV.A", QuantityKinds.ComplexPower, Set.of(Units.KiloV__A)),
+                Arguments.of("kg/m^3", QuantityKinds.Density, Set.of(Units.KiloGM__PER__M3)),
+                Arguments.of("kg per m3", QuantityKinds.Density, Set.of(Units.KiloGM__PER__M3)),
+                Arguments.of("kg.m-3", QuantityKinds.Density, Set.of(Units.KiloGM__PER__M3)),
+                Arguments.of("kgm⁻³", QuantityKinds.Density, Set.of(Units.KiloGM__PER__M3)),
+                Arguments.of(
+                        "m²·Kelvin/Watt",
+                        M2__K__PER__W.getQuantityKinds().stream().findFirst().get(),
+                        Set.of(M2__K__PER__W)),
+                Arguments.of(
+                        "Watt/m2 Kelvin",
+                        QuantityKinds.CoefficientOfHeatTransfer,
+                        Set.of(Units.W__PER__M2__K)),
+                Arguments.of("m4", QuantityKinds.SecondMomentOfArea, Set.of(Units.M4)),
+                Arguments.of("kN*m2", QuantityKinds.WarpingMoment, Set.of(KiloN__M2)),
+                Arguments.of(
+                        "kg / Pa s m",
+                        QuantityKinds.VaporPermeability,
+                        Set.of(KiloGM__PER__PA__SEC__M)),
+                Arguments.of(
+                        "kg.Pa-1.s-1.m-1",
+                        QuantityKinds.VaporPermeability,
+                        Set.of(KiloGM__PER__PA__SEC__M)),
+                Arguments.of(
+                        "kg / s m Pascal",
+                        QuantityKinds.VaporPermeability,
+                        Set.of(KiloGM__PER__PA__SEC__M)),
+                Arguments.of(
+                        "Nm/(m*rad)",
+                        QuantityKinds.ModulusOfRotationalSubgradeReaction,
+                        Set.of(N__M__PER__M__RAD)),
+                Arguments.of("°C", QuantityKinds.Temperature, Set.of(Units.DEG_C)),
+                Arguments.of("°F", QuantityKinds.Temperature, Set.of(Units.DEG_F)),
+                Arguments.of("γ", QuantityKinds.MagneticField, Set.of(Units.Gamma)),
+                Arguments.of("Å", QuantityKinds.Length, Set.of(Units.ANGSTROM)),
+                Arguments.of(
+                        "cycles/s", QuantityKinds.RotationalFrequency, Set.of(Units.CYC__PER__SEC)),
+                Arguments.of("1/s", QuantityKinds.CountRate, Set.of(PER__SEC)),
+                Arguments.of("m3/h", QuantityKinds.MoistureDiffusivity, Set.of(M3__PER__HR)),
+                Arguments.of(
+                        "mol/L",
+                        QuantityKinds.AmountOfSubstanceIonConcentration,
+                        Set.of(MOL__PER__L)),
+                Arguments.of("m2/s", QuantityKinds.KinematicViscosity, Set.of(M2__PER__SEC)),
+                Arguments.of("rad/m", QuantityKinds.Curvature, Set.of(RAD__PER__M)),
+                Arguments.of("m2K/W", QuantityKinds.ThermalInsulance, Set.of(Units.M2__K__PER__W)),
+                Arguments.of(
+                        "W/m K", QuantityKinds.ThermalConductivity, Set.of(Units.W__PER__M__K)),
+                Arguments.of(
+                        "cd/klm",
+                        QuantityKinds.LuminousIntensityDistribution,
+                        Set.of(Units.CD__PER__KiloLM)));
+    }
+
+    public static Stream<Arguments> testParseUnit_allUnitsBySymbol() {
+        return Qudt.allUnits().stream()
+                .filter(not(Unit::isDeprecated))
+                .filter(u -> u.getSymbol().isPresent())
+                .filter(u -> !u.equals(UNKNOWN))
+                .collect(Collectors.groupingBy(u -> u.getSymbol().get()))
+                .entrySet()
+                .stream()
+                .flatMap(
+                        e -> {
+                            List<Set<Unit>> partitioned = new ArrayList<>();
+                            Set<Unit> unpartitioned = new HashSet<>(e.getValue());
+                            for (Unit cur : e.getValue()) {
+                                if (unpartitioned.contains(cur)) {
+                                    Set<Unit> newPartition =
+                                            unpartitioned.stream()
+                                                    .filter(
+                                                            cand ->
+                                                                    cur.getQuantityKinds().stream()
+                                                                            .anyMatch(
+                                                                                    qk ->
+                                                                                            cand
+                                                                                                    .getQuantityKinds()
+                                                                                                    .stream()
+                                                                                                    .anyMatch(
+                                                                                                            qk2 ->
+                                                                                                                    qk
+                                                                                                                            .equals(
+                                                                                                                                    qk2))))
+                                                    .collect(Collectors.toSet());
+                                    unpartitioned.removeAll(newPartition);
+                                    partitioned.add(newPartition);
+                                }
+                            }
+                            return partitioned.stream();
+                        })
+                .map(
+                        units ->
+                                Arguments.of(
+                                        units.stream()
+                                                .findFirst()
+                                                .get()
+                                                .getSymbol()
+                                                .orElse("[no symbol]"),
+                                        units.stream().findFirst().get().getQuantityKinds().stream()
+                                                .findFirst()
+                                                .orElse(null),
+                                        units));
     }
 }

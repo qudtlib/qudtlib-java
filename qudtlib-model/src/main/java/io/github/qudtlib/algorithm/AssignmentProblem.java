@@ -116,6 +116,7 @@ public class AssignmentProblem {
          * *
          */
         private final int[] assignment;
+
         /** sum of the assigned weights * */
         private final Double weight;
 

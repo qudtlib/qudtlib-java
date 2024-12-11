@@ -1,4 +1,5 @@
 package io.github.qudtlib.model;
+
 /** Encapsulates an iri and the prefix that is used to abbreviate it. */
 public class Namespace {
     private final String abbreviationPrefix;

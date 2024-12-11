@@ -1,9 +1,2 @@
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix qudt: <http://qudt.org/schema/qudt/> .
-@prefix unit: <http://qudt.org/vocab/unit/> .
-@prefix qkdv: <http://qudt.org/vocab/dimensionvector/> .
-@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
-@prefix sou: <http://qudt.org/vocab/sou/> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+

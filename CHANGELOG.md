@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `Unit.altSymbols`
+- Add `Qudt.parseUnit()`
+- Add unit index structures in `Qudt` to improve performance of unit searches and factor unit matching
+
+### Changed
+
+- Bump QUDT version to [2.1.46](https://github.com/qudt/qudt-public-repo/releases/tag/v2.1.46)
+
 ## [6.7.0] - 2024-04-04
 
 ### Changed
