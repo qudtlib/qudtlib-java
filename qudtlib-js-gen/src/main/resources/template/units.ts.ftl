@@ -231,6 +231,10 @@ for (const unit of config.units.values()){
   for (const x of config.systemsOfUnits.values()) {
     Object.freeze(x);
   }
+  config.indexUnitsByDimensionVector();
+  for (const x of config.unitsByDimensionVector.values()) {
+    Object.freeze(x);
+  }
   Object.freeze(Units);
   Object.freeze(QuantityKinds);
   Object.freeze(Prefixes);

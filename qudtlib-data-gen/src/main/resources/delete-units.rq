@@ -1,0 +1,17 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX prefix: <http://qudt.org/vocab/prefix/>
+PREFIX kind: <http://qudt.org/vocab/quantitykind/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+DELETE {
+    ?unit ?p ?o.
+}
+where
+{
+    ?unit a qudt:Unit;
+        ?p ?o .
+}
+
+
+
