@@ -30,6 +30,7 @@ public class ConstantsGenerator {
     // input data
     private static final String DATA_UNITS = "qudtlib/qudt-units.ttl";
     private static final String DATA_QUANTITYKINDS = "qudtlib/qudt-quantitykinds.ttl";
+    private static final String DATA_CURRENCY = "qudtlib/qudt-currency.ttl";
     private static final String DATA_PREFIXES = "qudtlib/qudt-prefixes.ttl";
     private static final String DATA_SYSTEMS_OF_UNITS = "qudtlib/qudt-systems-of-units.ttl";
     private static final String DATA_PHYSICAL_CONSTANTS = "qudtlib/qudt-constants.ttl";
@@ -109,12 +110,15 @@ public class ConstantsGenerator {
         generateJavaFile(config, templateVars, "PhysicalConstant", "PhysicalConstants");
     }
 
-    private Map<String, Object> getConstantNamesByQuery(String queryFile, String dataFile) {
+    private Map<String, Object> getConstantNamesByQuery(String queryFile, String... dataFiles) {
         String queryStr = RdfOps.loadQuery(queryFile);
         Repository repo = new SailRepository(new MemoryStore());
         Map<String, Object> templateVars = new HashMap<>();
         try (RepositoryConnection con = repo.getConnection()) {
-            RdfOps.addStatementsFromFile(con, dataFile);
+            for (int i = 0; i < dataFiles.length; i++) {
+                String dataFile = dataFiles[i];
+                RdfOps.addStatementsFromFile(con, dataFile);
+            }
             TupleQuery query;
             try {
                 query = con.prepareTupleQuery(queryStr);

@@ -48,6 +48,7 @@ public class DataGenerator {
     private static final String IS_SCALING_OF_QUERY = "isScalingOf.rq";
     private static final String MISSING_UNITS_QUERY = "missing-units.rq";
     private static final String DELETE_KILOGM_SCALINGS_QUERY = "delete-kiloGM-scalings.rq";
+    private static final String DELETE_UNITS_QUERY = "delete-units.rq";
 
     private static final String DELETE_FROM_UNITS_BY_QUERY_PATTERN =
             "delete-from-units-by-query[N].rq";
@@ -136,6 +137,8 @@ public class DataGenerator {
         Repository outputRepo = new SailRepository(new MemoryStore());
         try (RepositoryConnection outputCon = outputRepo.getConnection()) {
             RdfOps.addStatementsFromFile(outputCon, QUANTITYKINDS_FILE);
+            RdfOps.addStatementsFromFile(outputCon, CURRENCIES_FILE);
+            RdfOps.updateDataUsingQuery(outputCon, DELETE_UNITS_QUERY);
             // remove unwanted individual triples
             RdfOps.updateDataUsingNQueries(
                     outputCon, DELETE_FROM_QUANTITYKINDS_BY_QUERY_PATTERN, 5);
