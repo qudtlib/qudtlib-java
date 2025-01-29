@@ -1,0 +1,24 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+prefix quantitykind: <http://qudt.org/vocab/quantitykind/>
+DELETE { ?u qudt:symbol ?s }
+WHERE {  ?u qudt:symbol ?s
+    VALUES  ?u {
+        unit:DEG_C2
+        unit:GM-PER-M2-HR
+        unit:GM-PER-M2-YR
+        unit:GM-PER-M3-CentiPOISE
+        unit:GM-PER-M3-PA-SEC
+        unit:KiloGM-PER-M2-DAY
+        unit:KiloTONNE-PER-YR
+        unit:MegaGM-PER-HA-YR
+        unit:MegaJ-PER-M2-DAY
+        unit:MicroGM-PER-L-DAY
+        unit:MicroGM-PER-GM-HR
+        unit:MicroMOL-PER-M2-SEC2
+        unit:MilliM-PER-M2
+        unit:MilliMOL-PER-M2-HR
+        unit:NanoMOL-PER-GM-HR
+        unit:NanoMOL-PER-M2-SEC
+    }
+}
