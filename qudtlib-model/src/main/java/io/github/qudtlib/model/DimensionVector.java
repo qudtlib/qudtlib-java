@@ -78,7 +78,7 @@ public class DimensionVector {
         String[] indicators = localName.split("[^[AELIMHTD]]+");
         if (indicators.length != 8) {
             Logger.getLogger(DimensionVector.class.getName())
-                    .warning(
+                    .fine(
                             String.format(
                                     "Cannot process dimension vector iri %s: unexpected number of dimensions: %d",
                                     dimensionVectorIri, numbers.length));

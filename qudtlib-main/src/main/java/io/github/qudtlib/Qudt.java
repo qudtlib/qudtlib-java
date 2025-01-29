@@ -131,7 +131,6 @@ public class Qudt {
             try {
                 Optional<DimensionVector> dvOpt = u.getDimensionVector();
                 if (dvOpt.isEmpty()) {
-                    System.err.println("no dimension vector for: " + u.getIriAbbreviated());
                     continue;
                 }
                 DimensionVector dv = dvOpt.get();
