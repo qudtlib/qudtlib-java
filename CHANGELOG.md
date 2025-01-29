@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.8.1] - 2025-01-29
+
 ### Fixed
 
 - Add quantitykind constants for those quantitykinds that are defined in the currency file in QUDT.
@@ -295,7 +297,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.1...HEAD
+[6.8.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.0...v6.8.1
 [6.8.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.7.0...v6.8.0
 [6.7.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.5.0...v6.7.0
 [6.5.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.4.3...v6.5.0
