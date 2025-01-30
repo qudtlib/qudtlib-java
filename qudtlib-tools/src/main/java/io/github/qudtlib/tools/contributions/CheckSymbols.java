@@ -43,19 +43,21 @@ public class CheckSymbols {
                         unitsToCheck.stream()
                                 .filter(u -> !globalData.correctUnits.contains(u))
                                 .forEach(unit -> checkUnit(unit, globalData, ttlPrintStream));
-                        System.out.println(
-                                String.format(
-                                        "was incorrect: \n%s\n",
-                                        globalData.wasIncorrect.stream()
-                                                .map(Unit::getIriAbbreviated)
-                                                .collect(Collectors.joining("\n"))));
-                        System.out.println(
-                                String.format(
-                                        "was missing: \n%s\n",
-                                        globalData.wasMissing.stream()
-                                                .map(Unit::getIriAbbreviated)
-                                                .collect(Collectors.joining("\n"))));
                     }
+                    System.out.println(
+                            String.format(
+                                    "# %d Units with incorrect symbol: \n%s\n", globalData.wasIncorrect.size(),
+                                    globalData.wasIncorrect.stream()
+                                            .sorted(Comparator.comparing(Unit::getIriLocalname))
+                                            .map(Unit::getIriAbbreviated)
+                                            .collect(Collectors.joining("\n# ", "\n# ", "\n"))));
+                    System.out.println(
+                            String.format(
+                                    "# %d Units without symbol: \n%s\n", globalData.wasMissing.size(),
+                                    globalData.wasMissing.stream()
+                                            .sorted(Comparator.comparing(Unit::getIriLocalname))
+                                            .map(Unit::getIriAbbreviated)
+                                            .collect(Collectors.joining("\n# ", "\n#", "\n"))));
                 });
         globalData.missingData.entrySet().stream()
                 .sorted(
@@ -84,7 +86,7 @@ public class CheckSymbols {
     }
 
     private static void printStatements(ByteArrayOutputStream ttlOut) {
-        System.out.println("STATEMENTS TO ADD:\n\n");
+        System.out.println("# STATEMENTS TO ADD:\n\n");
         System.out.println(ttlOut.toString());
     }
 
@@ -107,24 +109,24 @@ public class CheckSymbols {
         if (!globalData.trustCalculationForUnit(unit)) {
             return;
         }
-        Optional<String> calculatedSymbol =
-                unit.getSymbol().or(() -> unit.getFactorUnits().getSymbol());
+        Optional<String> calculatedSymbol = unit.getFactorUnits().getSymbol();
         if (calculatedSymbol.isEmpty()) {
             return;
         } else {
             if (unit.getSymbol().isPresent()) {
                 String actualSymbol = unit.getSymbol().get();
-                globalData.correctUnits.add(unit);
                 boolean isRelevantDifference = !actualSymbol.equals(calculatedSymbol.get());
                 if (isRelevantDifference) {
                     commentsForTTl.println(
                             format(
-                                    "WRONG SYMBOL?  : %s - calculated from factors: %s, actual: %s\n",
+                                    "WRONG SYMBOL  : %s - calculated from factors: %s, actual: %s\n",
                                     unit.getIriAbbreviated(),
                                     calculatedSymbol.get().toString(),
                                     actualSymbol.toString()));
-                    commentsForTTl.println("Here is the triple you might want to use instead:");
-                    printSymbolTriple(commentsForTTl, commentsForTTl, unit, calculatedSymbol.get());
+                    printSymbolTriple(ttlPrintStream, commentsForTTl, unit, calculatedSymbol.get());
+                    globalData.wasIncorrect.add(unit);
+                } else {
+                    globalData.correctUnits.add(unit);
                 }
             } else {
                 commentsForTTl.println(
