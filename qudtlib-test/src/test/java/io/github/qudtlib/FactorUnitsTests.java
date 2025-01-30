@@ -434,19 +434,22 @@ public class FactorUnitsTests {
     @ParameterizedTest
     @MethodSource
     public void getSymbol(String expectedSymbol, FactorUnits factorUnits) {
-        Assertions.assertEquals(expectedSymbol, factorUnits.getSymbol().orElse("[no symbol]"), String.format("Factor units %s should return %s for getSymbol()", factorUnits, expectedSymbol));
+        Assertions.assertEquals(
+                expectedSymbol,
+                factorUnits.getSymbol().orElse("[no symbol]"),
+                String.format(
+                        "Factor units %s should return %s for getSymbol()",
+                        factorUnits, expectedSymbol));
     }
 
-    public static Stream<Arguments> getSymbol(){
+    public static Stream<Arguments> getSymbol() {
         return Stream.of(
                 Arguments.of("m", FactorUnits.ofFactorUnitSpec(M, 1)),
-                Arguments.of( "/m", FactorUnits.ofFactorUnitSpec(M, -1)),
-                Arguments.of( "m⁸", FactorUnits.ofFactorUnitSpec(M, 8)),
-                Arguments.of( "ms¹²", FactorUnits.ofFactorUnitSpec(MilliSEC, 12)),
-                Arguments.of( "/ms⁹", FactorUnits.ofFactorUnitSpec(MilliSEC, -9)),
-                Arguments.of( "ft·h/gal{UK}", FT__HR__PER__GAL_UK.getFactorUnits())
-                );
-
+                Arguments.of("/m", FactorUnits.ofFactorUnitSpec(M, -1)),
+                Arguments.of("m⁸", FactorUnits.ofFactorUnitSpec(M, 8)),
+                Arguments.of("ms¹²", FactorUnits.ofFactorUnitSpec(MilliSEC, 12)),
+                Arguments.of("/ms⁹", FactorUnits.ofFactorUnitSpec(MilliSEC, -9)),
+                Arguments.of("ft·h/gal{UK}", FT__HR__PER__GAL_UK.getFactorUnits()));
     }
 
     @ParameterizedTest

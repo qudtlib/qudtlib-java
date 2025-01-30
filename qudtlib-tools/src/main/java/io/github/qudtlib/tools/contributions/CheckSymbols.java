@@ -46,14 +46,16 @@ public class CheckSymbols {
                     }
                     System.out.println(
                             String.format(
-                                    "# %d Units with incorrect symbol: \n%s\n", globalData.wasIncorrect.size(),
+                                    "# %d Units with incorrect symbol: \n%s\n",
+                                    globalData.wasIncorrect.size(),
                                     globalData.wasIncorrect.stream()
                                             .sorted(Comparator.comparing(Unit::getIriLocalname))
                                             .map(Unit::getIriAbbreviated)
                                             .collect(Collectors.joining("\n# ", "\n# ", "\n"))));
                     System.out.println(
                             String.format(
-                                    "# %d Units without symbol: \n%s\n", globalData.wasMissing.size(),
+                                    "# %d Units without symbol: \n%s\n",
+                                    globalData.wasMissing.size(),
                                     globalData.wasMissing.stream()
                                             .sorted(Comparator.comparing(Unit::getIriLocalname))
                                             .map(Unit::getIriAbbreviated)
