@@ -11,9 +11,7 @@ public class GlobalData {
 
     final Map<Unit, Set<Unit>> unitDependencies;
     final String relativeDifferenceThreshold = "0.001";
-    final Set<Unit> undecidedUnits = new HashSet<>();
     final Set<Unit> correctUnits = new HashSet<>();
-    final Set<Unit> incorrectUnits = new HashSet<>();
 
     final Set<Unit> wasIncorrect = new HashSet<>();
     final Set<Unit> wasMissing = new HashSet<>();
