@@ -431,22 +431,25 @@ public class FactorUnitsTests {
                                 .getFactorUnits()));
     }
 
-    @Test
-    public void getSymbol() {
-        FactorUnits m1 = FactorUnits.ofFactorUnitSpec(M, 1);
-        Assertions.assertEquals("m", m1.getSymbol().get());
+    @ParameterizedTest
+    @MethodSource
+    public void getSymbol(String expectedSymbol, FactorUnits factorUnits) {
+        Assertions.assertEquals(
+                expectedSymbol,
+                factorUnits.getSymbol().orElse("[no symbol]"),
+                String.format(
+                        "Factor units %s should return %s for getSymbol()",
+                        factorUnits, expectedSymbol));
+    }
 
-        FactorUnits m_1 = FactorUnits.ofFactorUnitSpec(M, -1);
-        Assertions.assertEquals("/m", m_1.getSymbol().get());
-
-        FactorUnits m8 = FactorUnits.ofFactorUnitSpec(M, 8);
-        Assertions.assertEquals("m⁸", m8.getSymbol().get());
-
-        FactorUnits ms12 = FactorUnits.ofFactorUnitSpec(MilliSEC, 12);
-        Assertions.assertEquals("ms¹²", ms12.getSymbol().get());
-
-        FactorUnits ms_9 = FactorUnits.ofFactorUnitSpec(MilliSEC, -9);
-        Assertions.assertEquals("/ms⁹", ms_9.getSymbol().get());
+    public static Stream<Arguments> getSymbol() {
+        return Stream.of(
+                Arguments.of("m", FactorUnits.ofFactorUnitSpec(M, 1)),
+                Arguments.of("/m", FactorUnits.ofFactorUnitSpec(M, -1)),
+                Arguments.of("m⁸", FactorUnits.ofFactorUnitSpec(M, 8)),
+                Arguments.of("ms¹²", FactorUnits.ofFactorUnitSpec(MilliSEC, 12)),
+                Arguments.of("/ms⁹", FactorUnits.ofFactorUnitSpec(MilliSEC, -9)),
+                Arguments.of("ft·h/gal{UK}", FT__HR__PER__GAL_UK.getFactorUnits()));
     }
 
     @ParameterizedTest
