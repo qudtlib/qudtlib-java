@@ -4,76 +4,76 @@
 
 unit:A-PER-CentiM
   qudt:convertsTo unit:A-PER-M ;
-  qudt:isScalingOf unit:A-PER-M .
+  qudt:scalingOf unit:A-PER-M .
 
 unit:A-PER-CentiM2
   qudt:convertsTo unit:A-PER-M2 ;
-  qudt:isScalingOf unit:A-PER-M2 .
+  qudt:scalingOf unit:A-PER-M2 .
 
 unit:A-PER-MilliM
   qudt:convertsTo unit:A-PER-M ;
-  qudt:isScalingOf unit:A-PER-M .
+  qudt:scalingOf unit:A-PER-M .
 
 unit:A-PER-MilliM2
   qudt:convertsTo unit:A-PER-M2 ;
-  qudt:isScalingOf unit:A-PER-M2 .
+  qudt:scalingOf unit:A-PER-M2 .
 
 unit:AttoC
   qudt:convertsTo unit:C ;
-  qudt:isScalingOf unit:C ;
-  qudt:prefix prefix:Atto .
+  qudt:prefix prefix:Atto ;
+  qudt:scalingOf unit:C .
 
 unit:AttoFARAD
   qudt:convertsTo unit:FARAD ;
-  qudt:isScalingOf unit:FARAD ;
-  qudt:prefix prefix:Atto .
+  qudt:prefix prefix:Atto ;
+  qudt:scalingOf unit:FARAD .
 
 unit:AttoJ
   qudt:convertsTo unit:J ;
-  qudt:isScalingOf unit:J ;
-  qudt:prefix prefix:Atto .
+  qudt:prefix prefix:Atto ;
+  qudt:scalingOf unit:J .
 
 unit:AttoJ-SEC
   qudt:convertsTo unit:J-SEC ;
-  qudt:isScalingOf unit:J-SEC .
+  qudt:scalingOf unit:J-SEC .
 
 unit:C-PER-CentiM2
   qudt:convertsTo unit:C-PER-M2 ;
-  qudt:isScalingOf unit:C-PER-M2 .
+  qudt:scalingOf unit:C-PER-M2 .
 
 unit:C-PER-CentiM3
   qudt:convertsTo unit:C-PER-M3 ;
-  qudt:isScalingOf unit:C-PER-M3 .
+  qudt:scalingOf unit:C-PER-M3 .
 
 unit:C-PER-MilliM2
   qudt:convertsTo unit:C-PER-M2 ;
-  qudt:isScalingOf unit:C-PER-M2 .
+  qudt:scalingOf unit:C-PER-M2 .
 
 unit:C-PER-MilliM3
   qudt:convertsTo unit:C-PER-M3 ;
-  qudt:isScalingOf unit:C-PER-M3 .
+  qudt:scalingOf unit:C-PER-M3 .
 
 unit:CentiBAR
-  qudt:isScalingOf unit:BAR ;
-  qudt:prefix prefix:Centi .
+  qudt:prefix prefix:Centi ;
+  qudt:scalingOf unit:BAR .
 
 unit:CentiC
   qudt:convertsTo unit:C ;
-  qudt:isScalingOf unit:C ;
-  qudt:prefix prefix:Centi .
+  qudt:prefix prefix:Centi ;
+  qudt:scalingOf unit:C .
 
 unit:CentiGM
-  qudt:isScalingOf unit:GM ;
-  qudt:prefix prefix:Centi .
+  qudt:prefix prefix:Centi ;
+  qudt:scalingOf unit:GM .
 
 unit:CentiL
-  qudt:isScalingOf unit:L ;
-  qudt:prefix prefix:Centi .
+  qudt:prefix prefix:Centi ;
+  qudt:scalingOf unit:L .
 
 unit:CentiM
   qudt:convertsTo unit:M ;
-  qudt:isScalingOf unit:M ;
-  qudt:prefix prefix:Centi .
+  qudt:prefix prefix:Centi ;
+  qudt:scalingOf unit:M .
 
 unit:CentiM-PER-HR
   qudt:convertsTo unit:M-PER-SEC ;

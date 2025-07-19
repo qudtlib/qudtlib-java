@@ -40,7 +40,7 @@ public class FractionalUnits {
                 } catch (NotFoundException e2) {
                     throw new RuntimeException(
                             String.format(
-                                    "Name particle %s of unit %s is not a QUDT unit or currency",
+                                    "Name particle %s of unit %s is not a QUDT unit",
                                     currentUnitNameConstituent, unit.getIri()),
                             e2);
                 }

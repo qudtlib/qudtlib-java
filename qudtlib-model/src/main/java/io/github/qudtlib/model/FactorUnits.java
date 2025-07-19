@@ -120,6 +120,22 @@ public class FactorUnits {
         return true;
     }
 
+    public boolean hasOneFactorUnit() {
+        if (this.factorUnits == null) {
+            return false;
+        }
+        if (this.factorUnits.size() != 1) {
+            return false;
+        }
+        FactorUnit factorUnit = this.factorUnits.get(0);
+        if (this.equals(factorUnit.getUnit().getFactorUnits())) {
+            return false;
+        }
+        return true;
+    }
+
+
+
     public static class Builder {
         private List<FactorUnit.Builder> factorUnitBuilders = new ArrayList<>();
         private BigDecimal scale = BigDecimal.ONE;
@@ -241,6 +257,47 @@ public class FactorUnits {
         return (!isRelativeDifferenceGreaterThan(
                         scaleFactor, that.scaleFactor, BigDec.ONE_MILLIONTH))
                 && new HashSet<>(factorUnits).equals(new HashSet<>(that.factorUnits));
+    }
+
+    public boolean relaxedEquals(FactorUnits o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FactorUnits that = (FactorUnits) o;
+
+        if (isRelativeDifferenceGreaterThan(
+                scaleFactor, that.scaleFactor, BigDec.ONE_MILLIONTH)){
+            return false;
+        }
+        if (this.hasOneFactorUnit() && that.hasOneFactorUnit()){
+            // e.g. this == M^-3, that == M3^-1
+            FactorUnit leftFu = this.getFactorUnits().get(0);
+            FactorUnit rightFu = that.getFactorUnits().get(0);
+            if (leftFu.getUnit().getFactorUnits().hasOneFactorUnit()){
+                if (!rightFu.getUnit().hasFactorUnits()){
+                    FactorUnit leftFuFactor = leftFu.getUnit().getFactorUnits().getFactorUnits().get(0);
+                    if (leftFuFactor.getUnit().equals(rightFu.getUnit())) {
+                        return leftFuFactor.getExponent() * leftFu.getExponent() == rightFu.getExponent();
+                    }
+                }
+            } else if (rightFu.getUnit().getFactorUnits().hasOneFactorUnit()) {
+                if (!leftFu.getUnit().hasFactorUnits()){
+                    FactorUnit rightFuFactor = rightFu.getUnit().getFactorUnits().getFactorUnits().get(0);
+                    if (rightFuFactor.getUnit().equals(leftFu.getUnit())) {
+                        return rightFuFactor.getExponent() * rightFu.getExponent() == leftFu.getExponent();
+                    }
+                }
+            }
+        } else {
+            List<FactorUnit> otherFus = that.factorUnits;
+            for (FactorUnit leftFu: this.factorUnits) {
+                int i = 0;
+                for (FactorUnit otherFu: otherFus){
+
+                }
+            }
+        }
+        return new HashSet<>(factorUnits).equals(new HashSet<>(that.factorUnits));
+                
     }
 
     @Override
@@ -441,9 +498,12 @@ public class FactorUnits {
     private BigDecimal conversionFactorInternal(FactorUnits otherFactorUnits) {
         FactorUnits myFactors = this.normalize();
         FactorUnits otherFactors = otherFactorUnits.normalize();
-        List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.getFactorUnits());
-        List<FactorUnit> otherFactorUnitList = new ArrayList<>(otherFactors.getFactorUnits());
+        List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.normalize().getFactorUnits());
+        List<FactorUnit> otherFactorUnitList = new ArrayList<>(otherFactors.normalize().getFactorUnits());
         FactorUnit processed = null;
+        if (myFactors.scaleFactor.signum() == 0 || otherFactors.scaleFactor.signum() == 0){
+            return BigDecimal.ZERO;
+        }
         BigDecimal factor =
                 myFactors.scaleFactor.divide(otherFactors.scaleFactor, MathContext.DECIMAL128);
         for (FactorUnit myFactor : myFactorUnitList) {

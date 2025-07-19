@@ -1,0 +1,23 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+prefix quantitykind: <http://qudt.org/vocab/quantitykind/>
+INSERT {
+        ?unit qudt:dependents ?dependents
+} WHERE {
+    {
+        SELECT ?unit (count(?other) as ?dependents)
+        WHERE
+        {
+            {
+                ?other
+                    qudt:hasFactorUnit [
+                        qudt:hasUnit ?unit ;
+                    ] ;
+            } UNION {
+                 ?other
+                        qudt:scalingOf ?unit
+
+            }
+        } group by ?unit
+    }
+}

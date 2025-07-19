@@ -35,8 +35,6 @@ public class DataGenerator {
 
     // QUDT files
     private static final String UNITS_FILE = "qudt/vocab/unit/VOCAB_QUDT-UNITS-ALL.ttl";
-    private static final String CURRENCIES_FILE =
-            "qudt/vocab/currency/VOCAB_QUDT-UNITS-CURRENCY.ttl";
     private static final String PREFIXES_FILE = "qudt/vocab/prefixes/VOCAB_QUDT-PREFIXES.ttl";
     private static final String QUANTITYKINDS_FILE =
             "qudt/vocab/quantitykinds/VOCAB_QUDT-QUANTITY-KINDS-ALL.ttl";
@@ -44,18 +42,13 @@ public class DataGenerator {
     private static final String CONSTANTS_FILE = "qudt/vocab/constants/VOCAB_QUDT-CONSTANTS.ttl";
 
     // queries
-    private static final String FACTOR_UNITS_QUERY = "factorUnit.rq";
-    private static final String IS_SCALING_OF_QUERY = "isScalingOf.rq";
     private static final String MISSING_UNITS_QUERY = "missing-units.rq";
-    private static final String DELETE_KILOGM_SCALINGS_QUERY = "delete-kiloGM-scalings.rq";
     private static final String DELETE_UNITS_QUERY = "delete-units.rq";
 
-    private static final String DELETE_FROM_UNITS_BY_QUERY_PATTERN =
-            "delete-from-units-by-query[N].rq";
-    private static final String DELETE_FROM_QUANTITYKINDS_BY_QUERY_PATTERN =
-            "delete-from-quantitykinds-by-query[N].rq";
+    private static final String UPDATE_UNITS_BY_QUERY_PATTERN = "update-units-by-query[N].rq";
+    private static final String UPDATE_QUANTITYKINDS_BY_QUERY_PATTERN =
+            "update-quantitykinds-by-query[N].rq";
     // additional data
-    private static final String SI_BASE_UNITS_DATA = "si-base-units.ttl";
     private static final String ADD_TO_UNITS = "add-to-units.ttl";
     private static final String ADD_TO_QUANTITYKINDS = "add-to-quantitykinds.ttl";
     private static final String DELETE_FROM_UNITS = "delete-from-units.ttl";
@@ -137,11 +130,9 @@ public class DataGenerator {
         Repository outputRepo = new SailRepository(new MemoryStore());
         try (RepositoryConnection outputCon = outputRepo.getConnection()) {
             RdfOps.addStatementsFromFile(outputCon, QUANTITYKINDS_FILE);
-            RdfOps.addStatementsFromFile(outputCon, CURRENCIES_FILE);
             RdfOps.updateDataUsingQuery(outputCon, DELETE_UNITS_QUERY);
             // remove unwanted individual triples
-            RdfOps.updateDataUsingNQueries(
-                    outputCon, DELETE_FROM_QUANTITYKINDS_BY_QUERY_PATTERN, 5);
+            RdfOps.updateDataUsingNQueries(outputCon, UPDATE_QUANTITYKINDS_BY_QUERY_PATTERN, 5);
             RdfOps.removeStatementsFromFile(outputCon, DELETE_FROM_QUANTITYKINDS);
             // add missing triples
             RdfOps.addStatementsFromFile(outputCon, ADD_TO_QUANTITYKINDS);
@@ -157,30 +148,20 @@ public class DataGenerator {
             try (RepositoryConnection outputCon = outputRepo.getConnection()) {
                 // start with the original units data in the INPUT repo
                 RdfOps.addStatementsFromFile(inputCon, UNITS_FILE);
-                RdfOps.addStatementsFromFile(inputCon, CURRENCIES_FILE);
-                // deal with kg
-                RdfOps.updateDataUsingQuery(inputCon, DELETE_KILOGM_SCALINGS_QUERY);
                 // if we have identified wrong data in this query, remove it
-                RdfOps.updateDataUsingNQueries(inputCon, DELETE_FROM_UNITS_BY_QUERY_PATTERN, 5);
+                RdfOps.updateDataUsingNQueries(inputCon, UPDATE_UNITS_BY_QUERY_PATTERN, 5);
                 // remove unwanted individual triples
                 RdfOps.removeStatementsFromFile(inputCon, DELETE_FROM_UNITS);
                 // add missing triples
                 RdfOps.addStatementsFromFile(inputCon, ADD_TO_UNITS);
-                // add SI base units
-                RdfOps.addStatementsFromFile(outputCon, SI_BASE_UNITS_DATA);
                 // put result in OUTPUT repo
                 RdfOps.copyData(inputCon, outputCon);
                 // add prefixes to INPUT repo (cannot be in output, but is required for queries!)
                 RdfOps.addStatementsFromFile(inputCon, PREFIXES_FILE);
-                // find isScalingOf where missing, write result in INPUT and OUTPUT repos
+                // find scalingOf where missing, write result in INPUT and OUTPUT repos
                 if (DEBUG) {
                     RdfOps.writeTurtleFile(inputCon, new File("/tmp/scaling-data.ttl").toPath());
                 }
-                RdfOps.addDataUsingQuery(inputCon, IS_SCALING_OF_QUERY, inputCon, outputCon);
-                // find factor units, write result in INPUT and OUTPUT repos
-                RdfOps.addDataUsingQuery(inputCon, FACTOR_UNITS_QUERY, inputCon, outputCon);
-                // we generate some units in the above, add basic unit info for those, write to
-                // INPUT and OUTPUT repos
                 RdfOps.addDataUsingQuery(inputCon, MISSING_UNITS_QUERY, inputCon, outputCon);
                 copyNamespaces(inputCon, outputCon);
                 // write units file from OUTPUT repo
@@ -215,7 +196,7 @@ public class DataGenerator {
                                 .collect(Collectors.toList()));
         RdfOps.message(
                 "\n\nExpected data subset of generated: " + Models.isomorphic(actual, expected));
-        compareForProperty(expected, actual, QUDT.isScalingOf);
+        compareForProperty(expected, actual, QUDT.scalingOf);
         compareForProperty(expected, actual, QUDTX.factorUnit);
     }
 

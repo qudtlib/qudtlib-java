@@ -50,9 +50,9 @@ public class QudtTests {
     @Test
     public void testUnit() {
         Unit metre = Qudt.Units.M;
-        Assertions.assertTrue(metre.hasLabel("metre"));
+        Assertions.assertTrue(metre.hasLabel("Metre"));
         Assertions.assertTrue(metre.hasLabel("Meter"));
-        Assertions.assertEquals("metre", metre.getLabelForLanguageTag("en").get().getString());
+        Assertions.assertEquals("Metre", metre.getLabelForLanguageTag("en").get().getString());
         Assertions.assertEquals(Qudt.unitRequired(metre.getIri()), metre);
         Assertions.assertEquals(Qudt.unitRequired(metre.getIri()), metre);
     }
@@ -386,6 +386,8 @@ public class QudtTests {
         Assertions.assertEquals(Qudt.Units.KiloGM, unit);
         unit = Qudt.scale(Qudt.Prefixes.Nano, Qudt.Units.M);
         Assertions.assertEquals(Qudt.Units.NanoM, unit);
+        unit = Qudt.scale(Qudt.Prefixes.Kilo, Units.GM);
+        Assertions.assertEquals(Qudt.Units.KiloGM, unit);
     }
 
     @Test
@@ -395,7 +397,7 @@ public class QudtTests {
         Assertions.assertTrue(
                 unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("meter"), 2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("gram"), 1)));
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("kilogram"), 1)));
         Assertions.assertTrue(
                 unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("second"), -2)));
         unit = Qudt.unitFromLabelRequired("newton meter per square meter");
@@ -405,7 +407,7 @@ public class QudtTests {
         Assertions.assertTrue(
                 unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("meter"), -2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("gram"), 1)));
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("kilogram"), 1)));
         Assertions.assertTrue(
                 unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("second"), -2)));
         unit = Qudt.Units.KiloN__M;
@@ -413,7 +415,7 @@ public class QudtTests {
         Assertions.assertTrue(
                 unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("meter"), 2)));
         Assertions.assertTrue(
-                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("gram"), 1)));
+                unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("kilogram"), 1)));
         Assertions.assertTrue(
                 unitFactors.contains(new FactorUnit(Qudt.unitFromLabelRequired("second"), -2)));
     }
@@ -425,7 +427,15 @@ public class QudtTests {
                         FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, 2, SEC, -2).getFactorUnits(),
                         false,
                         false);
-        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.GM, 1)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloGM, 1)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 2)));
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.SEC, -2)));
+        unitFactors =
+                Qudt.unscale(
+                        FactorUnits.ofFactorUnitSpec(GM, 1, M, 2, SEC, -2).getFactorUnits(),
+                        false,
+                        false);
+        Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.KiloGM, 1)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.M, 2)));
         Assertions.assertTrue(unitFactors.contains(new FactorUnit(Qudt.Units.SEC, -2)));
     }
@@ -482,7 +492,7 @@ public class QudtTests {
         BigDecimal converted = Qudt.convert(BigDecimal.ONE, Qudt.Units.L, Qudt.Units.GAL_US);
         MatcherAssert.assertThat(
                 converted,
-                Matchers.comparesEqualTo(new BigDecimal("0.2641720372841846541406853467997671")));
+                Matchers.comparesEqualTo(new BigDecimal("0.2641720523581484153798999216091625")));
     }
 
     @Test
@@ -493,7 +503,7 @@ public class QudtTests {
         Assertions.assertNotNull(fahrenheit);
         MatcherAssert.assertThat(
                 fahrenheit.getValue(),
-                Matchers.comparesEqualTo(new BigDecimal("211.9999999999999462664000000000043")));
+                Matchers.comparesEqualTo(new BigDecimal("211.9999999999999999999999999999999")));
         Assertions.assertEquals(Qudt.unitIriFromLocalname("DEG_F"), fahrenheit.getUnit().getIri());
     }
 
@@ -504,8 +514,7 @@ public class QudtTests {
         QuantityValue fahrenheit = Qudt.convert(celsius100, DEG_F, TemperatureDifference);
         Assertions.assertNotNull(fahrenheit);
         MatcherAssert.assertThat(
-                fahrenheit.getValue(),
-                Matchers.comparesEqualTo(new BigDecimal("179.9999999999999856000000000000012")));
+                fahrenheit.getValue(), Matchers.comparesEqualTo(new BigDecimal("180.0")));
         Assertions.assertEquals(Qudt.unitIriFromLocalname("DEG_F"), fahrenheit.getUnit().getIri());
     }
 
@@ -524,28 +533,46 @@ public class QudtTests {
     public void testConvert_Celsius_to_Fahrenheit_2() {
         MatcherAssert.assertThat(
                 Qudt.convert(new BigDecimal("100"), Units.DEG_C, Units.DEG_F),
-                Matchers.comparesEqualTo(new BigDecimal("211.9999999999999462664000000000043")));
+                Matchers.comparesEqualTo(new BigDecimal("211.9999999999999999999999999999999")));
     }
 
     @Test
     public void testConvert_Fahrenheit_to_Celsius() {
         MatcherAssert.assertThat(
                 Qudt.convert(new BigDecimal("100"), Units.DEG_F, Units.DEG_C),
-                Matchers.comparesEqualTo(new BigDecimal("37.777777777777802652")));
+                Matchers.comparesEqualTo(new BigDecimal("37.7777777777777777777777777777778")));
     }
 
     @Test
     public void testConvert_byte_to_megabyte() {
         MatcherAssert.assertThat(
                 Qudt.convert(new BigDecimal("1000000"), Units.BYTE, Units.MegaBYTE),
-                Matchers.comparesEqualTo(new BigDecimal("1.000000000000000446394706347217183")));
+                Matchers.comparesEqualTo(BigDecimal.ONE));
     }
 
     @Test
     public void testConvert_megabyte_to_byte() {
         MatcherAssert.assertThat(
                 Qudt.convert(new BigDecimal("1"), Units.MegaBYTE, Units.BYTE),
-                Matchers.comparesEqualTo(new BigDecimal("999999.9999999995536052936527830164")));
+                Matchers.comparesEqualTo(new BigDecimal("1000000")));
+    }
+
+    @Test
+    public void testMilliSV__PER__HR_to_MicroSV__PER__HR() {
+        /*
+        Stream.of(Units.HR, PER__HR, SV, MilliSV, MicroSV, MilliSV__PER__HR, MicroSV__PER__HR)
+                .forEach(
+                        u ->
+                                System.out.println(
+                                        String.format(
+                                                "%30s: %s",
+                                                u.getIriLocalname(),
+                                                u.getConversionMultiplier().get().toString())));
+         */
+        MatcherAssert.assertThat(
+                Qudt.convert(
+                        new BigDecimal("15.12"), Units.MilliSV__PER__HR, Units.MicroSV__PER__HR),
+                Matchers.comparesEqualTo(new BigDecimal(15120)));
     }
 
     @Test
@@ -764,7 +791,6 @@ public class QudtTests {
                         Units.N__M,
                         new Object[][] {
                             {Units.N__M, 1},
-                            {Units.GM, 1, Units.M, 2, Units.SEC, -2},
                             {Units.KiloGM, 1, Units.M, 2, Units.SEC, -2},
                             {Units.N, 1, Units.M, 1}
                         }),
@@ -774,7 +800,6 @@ public class QudtTests {
                         new Object[][] {
                             {Units.N, 1},
                             {Units.KiloGM, 1, Units.M, 1, Units.SEC, -2},
-                            {Units.GM, 1, Units.M, 1, Units.SEC, -2}
                         }),
                 Arguments.of(
                         3,
@@ -786,10 +811,6 @@ public class QudtTests {
                                 Qudt.Units.M, -1
                             },
                             {
-                                Qudt.Units.GM, 1,
-                                Qudt.Units.SEC, -2
-                            },
-                            {
                                 Qudt.Units.KiloGM, 1,
                                 Qudt.Units.SEC, -2
                             },
@@ -797,12 +818,6 @@ public class QudtTests {
                                 Qudt.Units.N, 1,
                                 Qudt.Units.M, 1,
                                 Qudt.Units.M, -2
-                            },
-                            {
-                                Qudt.Units.M, -2,
-                                Qudt.Units.M, 2,
-                                Qudt.Units.GM, 1,
-                                Qudt.Units.SEC, -2
                             },
                             {
                                 Qudt.Units.M, -2,
@@ -1038,7 +1053,7 @@ public class QudtTests {
                         Set.of(N__M__PER__M__RAD)),
                 Arguments.of("°C", QuantityKinds.Temperature, Set.of(Units.DEG_C)),
                 Arguments.of("°F", QuantityKinds.Temperature, Set.of(Units.DEG_F)),
-                Arguments.of("γ", QuantityKinds.MagneticField, Set.of(Units.Gamma)),
+                Arguments.of("γ", QuantityKinds.MagneticField, Set.of(Units.GAMMA)),
                 Arguments.of("Å", QuantityKinds.Length, Set.of(Units.ANGSTROM)),
                 Arguments.of(
                         "cycles/s", QuantityKinds.RotationalFrequency, Set.of(Units.CYC__PER__SEC)),
@@ -1060,52 +1075,152 @@ public class QudtTests {
     }
 
     public static Stream<Arguments> testParseUnit_allUnitsBySymbol() {
-        return Qudt.allUnits().stream()
-                .filter(not(Unit::isDeprecated))
-                .filter(u -> u.getSymbol().isPresent())
-                .filter(u -> !u.equals(UNKNOWN))
-                .collect(Collectors.groupingBy(u -> u.getSymbol().get()))
-                .entrySet()
-                .stream()
-                .flatMap(
-                        e -> {
-                            List<Set<Unit>> partitioned = new ArrayList<>();
-                            Set<Unit> unpartitioned = new HashSet<>(e.getValue());
-                            for (Unit cur : e.getValue()) {
-                                if (unpartitioned.contains(cur)) {
-                                    Set<Unit> newPartition =
-                                            unpartitioned.stream()
-                                                    .filter(
-                                                            cand ->
-                                                                    cur.getQuantityKinds().stream()
-                                                                            .anyMatch(
-                                                                                    qk ->
-                                                                                            cand
-                                                                                                    .getQuantityKinds()
-                                                                                                    .stream()
-                                                                                                    .anyMatch(
-                                                                                                            qk2 ->
-                                                                                                                    qk
-                                                                                                                            .equals(
-                                                                                                                                    qk2))))
+        List<Map<QuantityKind, Set<Unit>>> all =
+                Qudt.allUnits().stream()
+                        .filter(not(Unit::isDeprecated))
+                        .filter(u -> u.getSymbol().isPresent())
+                        .filter(u -> !u.equals(UNKNOWN))
+                        .collect(Collectors.groupingBy(u -> u.getSymbol().get()))
+                        .entrySet()
+                        .stream()
+                        .map(
+                                e -> {
+                                    List<Unit> unitsWithSameSymbol = e.getValue();
+                                    Set<QuantityKind> quantityKinds =
+                                            unitsWithSameSymbol.stream()
+                                                    .flatMap(u -> u.getQuantityKinds().stream())
                                                     .collect(Collectors.toSet());
-                                    unpartitioned.removeAll(newPartition);
-                                    partitioned.add(newPartition);
-                                }
-                            }
-                            return partitioned.stream();
-                        })
+                                    Map<QuantityKind, Set<Unit>> expectedUnitsForQuantityKind =
+                                            new HashMap<>();
+                                    for (QuantityKind selectedQuantityKind : quantityKinds) {
+                                        expectedUnitsForQuantityKind.put(
+                                                selectedQuantityKind,
+                                                unitsWithSameSymbol.stream()
+                                                        .filter(
+                                                                u ->
+                                                                        u.getQuantityKinds()
+                                                                                .contains(
+                                                                                        selectedQuantityKind))
+                                                        .collect(Collectors.toSet()));
+                                    }
+                                    return expectedUnitsForQuantityKind;
+                                })
+                        .toList();
+        return all.stream()
+                .map(Map::entrySet)
+                .flatMap(Collection::stream)
                 .map(
-                        units ->
-                                Arguments.of(
-                                        units.stream()
-                                                .findFirst()
-                                                .get()
-                                                .getSymbol()
-                                                .orElse("[no symbol]"),
-                                        units.stream().findFirst().get().getQuantityKinds().stream()
-                                                .findFirst()
-                                                .orElse(null),
-                                        units));
+                        entry -> {
+                            Set<Unit> expectedUnits = entry.getValue();
+                            QuantityKind selectedQuantityKind = entry.getKey();
+                            return Arguments.of(
+                                    expectedUnits.stream()
+                                            .findFirst()
+                                            .get()
+                                            .getSymbol()
+                                            .orElse("[no symbol]"),
+                                    selectedQuantityKind,
+                                    expectedUnits);
+                        });
+    }
+
+    private static boolean unitsHaveSameQuantityKinds(Unit left, Unit right) {
+        Set<QuantityKind> leftQK = left.getQuantityKinds();
+        Set<QuantityKind> rightQK = right.getQuantityKinds();
+        return leftQK.equals(rightQK);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testBestMatchForFactorUnitsComparator(FactorUnits factorUnits, Unit left, Unit right, int expectedResultSign){
+        Comparator<Unit> cmp = Qudt.bestMatchForFactorUnitsComparator(factorUnits);
+        int result = cmp.compare(left, right);
+        float expectedResultSignF = Math.signum(expectedResultSign); //make sure
+        float resultSignF = Math.signum(result);
+        if (expectedResultSignF == 0.0f){
+            Assertions.assertEquals(expectedResultSignF, resultSignF, "factor units %s\n%s should equally good matches for %s, but %s is wrongly chosen to be better".formatted(factorUnits.toString(), left, right, resultSignF < 0 ? left : right));
+        } else {
+            Unit expectedBetter = null;
+            Unit expectedWorse = null;
+            if (expectedResultSignF == 1.0f) {
+                expectedBetter = right;
+                expectedWorse = left;
+            } else if (expectedResultSignF == -1.0f) {
+                expectedBetter = left;
+                expectedWorse = right;
+            } else {
+                fail("Illegal value provided for expectedResultSign: " + expectedResultSign);
+            }
+            if (resultSignF == 0.0) {
+                Assertions.assertEquals(Math.signum(expectedResultSign), Math.signum(result), "factor units %s\n%s should be a better match than %s, but they are wrongly assessed as equally good matches".formatted(factorUnits.toString(), expectedBetter, expectedWorse));
+            } else {
+                Assertions.assertEquals(Math.signum(expectedResultSign), Math.signum(result), "factor units %s\n%s should be a better match than %s, but the inverse is the case".formatted(factorUnits.toString(), expectedBetter, expectedWorse));
+            }
+        }
+    }
+
+    public static Stream<Arguments> testBestMatchForFactorUnitsComparator(){
+        return Stream.of(
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(M, -3),
+                        PER__M3,
+                        PER__L,
+                        -1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(M3, -1),
+                        PER__M3,
+                        PER__L,
+                        -1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(L, -1),
+                        PER__M3,
+                        PER__L,
+                        1
+                ),
+                Arguments.of(
+                  FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, 1, SEC, -2, M, -1),
+                             N__PER__M,
+                             J__PER__M2,
+                             -1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, -3),
+                        KiloGM__PER__M3,
+                        GM__PER__DeciM3,
+                        -1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, -3),
+                        KiloGM__PER__M3,
+                        GM__PER__L,
+                        -1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, -3),
+                        GM__PER__DeciM3,
+                        GM__PER__L,
+                        1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(KiloGM, 1, M3, -1),
+                        KiloGM__PER__M3,
+                        GM__PER__DeciM3,
+                        -1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(KiloGM, 1, M3, -1),
+                        KiloGM__PER__M3,
+                        GM__PER__L,
+                        -1
+                ),
+                Arguments.of(
+                        FactorUnits.ofFactorUnitSpec(KiloGM, 1, M3, -1),
+                        GM__PER__DeciM3,
+                        GM__PER__L,
+                        1
+                )
+        );
     }
 }

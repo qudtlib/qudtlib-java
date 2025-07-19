@@ -102,7 +102,11 @@ public class DerivedUnitTests {
     @Test
     public void testMatchingModeExact() {
         assertTrue(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3));
+        assertFalse(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.DeciM, -3));
+        assertTrue(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.GM, 1, Qudt.Units.DeciM, -3));
         assertFalse(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.GM, 1, Qudt.Units.M, -3));
+        assertFalse(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.DeciM, -3));
+        assertTrue(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3));
     }
 
     @Test
@@ -340,6 +344,13 @@ public class DerivedUnitTests {
                 };
         assertTrue(Qudt.Units.N__PER__M2.matches(FactorUnits.ofFactorUnitSpec(factors)));
         assertTrue(Qudt.Units.N__PER__M2.matches(FactorUnits.ofFactorUnitSpec(factors)));
+    }
+
+    @Test
+    public void testGM() {
+        assertEquals(
+                FactorUnits.ofFactorUnitSpec(new BigDecimal(0.001), Units.KiloGM, 1),
+                Units.GM.normalize());
     }
 
     @Test

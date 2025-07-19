@@ -4,8 +4,14 @@ public class QudtNamespaces {
     public static final Namespace quantityKind =
             new Namespace("http://qudt.org/vocab/quantitykind/", "qk");
     public static final Namespace unit = new Namespace("http://qudt.org/vocab/unit/", "unit");
+
+    /**
+     * @deprecated no special handling for currencies any more, use unit namespace instead.
+     */
+    @Deprecated
     public static final Namespace currency =
             new Namespace("http://qudt.org/vocab/currency/", "cur");
+
     public static final Namespace prefix = new Namespace("http://qudt.org/vocab/prefix/", "prefix");
     public static final Namespace systemOfUnits =
             new Namespace("http://qudt.org/vocab/sou/", "sou");

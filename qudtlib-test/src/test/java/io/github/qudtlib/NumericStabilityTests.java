@@ -8,7 +8,7 @@ public class NumericStabilityTests {
     @Test
     public void testStabilitiyOfSimpleFractions() {
         Assertions.assertEquals(
-                "0.0010",
+                "0.001",
                 Qudt.Prefixes.Milli.getMultiplier().toString(),
                 "Numerically instable multiplier detected");
         /*

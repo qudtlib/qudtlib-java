@@ -584,7 +584,7 @@ public class QUDT {
     public static final IRI isQuantityKindOf = create("isQuantityKindOf");
 
     /** <code>is scaling of</code> * */
-    public static final IRI isScalingOf = create("isScalingOf");
+    public static final IRI scalingOf = create("scalingOf");
 
     /** <code>normative reference (ISO)</code> * */
     public static final IRI isoNormativeReference = create("isoNormativeReference");

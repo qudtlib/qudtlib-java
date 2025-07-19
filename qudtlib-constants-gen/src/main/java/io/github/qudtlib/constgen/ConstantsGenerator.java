@@ -30,7 +30,6 @@ public class ConstantsGenerator {
     // input data
     private static final String DATA_UNITS = "qudtlib/qudt-units.ttl";
     private static final String DATA_QUANTITYKINDS = "qudtlib/qudt-quantitykinds.ttl";
-    private static final String DATA_CURRENCY = "qudtlib/qudt-currency.ttl";
     private static final String DATA_PREFIXES = "qudtlib/qudt-prefixes.ttl";
     private static final String DATA_SYSTEMS_OF_UNITS = "qudtlib/qudt-systems-of-units.ttl";
     private static final String DATA_PHYSICAL_CONSTANTS = "qudtlib/qudt-constants.ttl";
@@ -148,9 +147,6 @@ public class ConstantsGenerator {
                             typeName.substring(0, 1).toLowerCase()
                                     + typeName.substring(1)
                                     + "FromLocalnameRequired";
-                    if (typeName.equals("Unit") && constName.endsWith("_Currency")) {
-                        valueFactory = "currencyFromLocalnameRequired";
-                    }
                     Constant constant =
                             new Constant(
                                     constName,

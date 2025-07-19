@@ -204,18 +204,18 @@ public class CheckConversionMultipliers {
                         missingScalingOfAdded.add(nonBaseUnit);
                         if (bases.isEmpty()) {
                             output.println(
-                                    "Found unit without isScalingOf or factorUnit, but no base to link it to: "
+                                    "Found unit without scalingOf or factorUnit, but no base to link it to: "
                                             + nonBaseUnit.getIriAbbreviated());
                         } else {
                             if (bestBaseOpt.isPresent()) {
                                 ttlPrintStream.format(
                                         "%s %s %s .\n",
                                         nonBaseUnit.getIriAbbreviated(),
-                                        QudtNamespaces.qudt.abbreviate(QUDT.isScalingOf.toString()),
+                                        QudtNamespaces.qudt.abbreviate(QUDT.scalingOf.toString()),
                                         bestBaseOpt.get().getIriAbbreviated());
                             } else {
                                 output.println(
-                                        "Found unit without isScalingOf or factorUnit, but no base to link it to after filtering. Candidates were: "
+                                        "Found unit without scalingOf or factorUnit, but no base to link it to after filtering. Candidates were: "
                                                 + unitCollectionToString(bases));
                             }
                         }
