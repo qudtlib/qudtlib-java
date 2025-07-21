@@ -15,7 +15,6 @@ import io.github.qudtlib.support.index.SearchIndex;
 import io.github.qudtlib.support.parse.UnitParser;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -652,8 +651,7 @@ public class Qudt {
                 .collect(Collectors.toList());
     }
 
-    static Comparator<Unit> bestMatchForFactorUnitsComparator(
-            FactorUnits requestedFactorUnits) {
+    static Comparator<Unit> bestMatchForFactorUnitsComparator(FactorUnits requestedFactorUnits) {
 
         FactorUnits reqNorm = requestedFactorUnits.normalize();
         FactorUnits reqNum = requestedFactorUnits.numerator();
@@ -674,42 +672,36 @@ public class Qudt {
                         return 1;
                     }
                 }
-                if (right.isDefinedAsOtherUnit() && left.getFactorUnits().getFactorUnits().size() == 1 && left.getFactorUnits().getFactorUnits().get(0).getUnit().equals(left)
-                    && right.getFactorUnits().getFactorUnits().get(0).getExponent() == left.getFactorUnits().getFactorUnits().get(0).getExponent()) {
-                    return -1 ; // if a unit is just another name of another unit with same exponent, prefer the other (thus DeciM would not be preferred over L)
-                }
-                if (left.isDefinedAsOtherUnit() && left.getFactorUnits().getFactorUnits().size() == 1 && right.getFactorUnits().getFactorUnits().get(0).getUnit().equals(left)
-                        && right.getFactorUnits().getFactorUnits().get(0).getExponent() == left.getFactorUnits().getFactorUnits().get(0).getExponent()) {
-                    return 1 ;
-                }
-
-                BigDecimal leftConversionFactor = requestedFactorUnits.conversionFactor(left).abs();
-                BigDecimal rightConversionFactor = requestedFactorUnits.conversionFactor(right).abs();
-                if (leftConversionFactor.compareTo(BigDecimal.ONE) == 0){
-                    if (rightConversionFactor.compareTo(BigDecimal.ONE) != 0) {
-                        return -1; // prefer a unit that does not need a conversion Factor to get to the requested factors
-                    }
-                } else {
-                    if (rightConversionFactor.compareTo(BigDecimal.ONE) == 0) {
-                        return 1;
-                    }
-                }
                 if (right.isDeprecated()) {
                     if (!left.isDeprecated()) {
                         return -1; // prefer a non-deprecated unit
                     }
-                } else {
-                    if (left.isDeprecated()) {
-                        return 1; // prefer a non-deprecated unit
+                } else if (left.isDeprecated()) {
+                    return 1; // prefer a non-deprecated unit
+                }
+                if (right.isGenerated()) {
+                    if (!left.isGenerated()) {
+                        return -1; // prefer a unit that was not generated as a missing factor unit
                     }
+                } else if (left.isGenerated()) {
+                    return 1;
                 }
-                int leftFactorsAndExponents = left.getFactorUnits().getFactorUnits().stream().mapToInt(f -> Math.abs(f.getExponent())).sum();
-                int rightFactorsAndExponents = right.getFactorUnits().getFactorUnits().stream().mapToInt(f -> Math.abs(f.getExponent())).sum();
-                if (leftFactorsAndExponents < rightFactorsAndExponents) {
-                    return -1; // prefer a unit that has lower sum of absolute exponents
-                } else if (leftFactorsAndExponents > rightFactorsAndExponents) {
-                        return 1;
+                if (right.isDefinedAsOtherUnit()
+                        && left.getFactorUnits().getFactorUnits().size() == 1
+                        && left.getFactorUnits().getFactorUnits().get(0).getUnit().equals(left)
+                        && right.getFactorUnits().getFactorUnits().get(0).getExponent()
+                                == left.getFactorUnits().getFactorUnits().get(0).getExponent()) {
+                    return -1; // if a unit is just another name of another unit with same exponent,
+                    // prefer the other (thus L would be preferred over DeciM)
                 }
+                if (left.isDefinedAsOtherUnit()
+                        && left.getFactorUnits().getFactorUnits().size() == 1
+                        && right.getFactorUnits().getFactorUnits().get(0).getUnit().equals(left)
+                        && right.getFactorUnits().getFactorUnits().get(0).getExponent()
+                                == left.getFactorUnits().getFactorUnits().get(0).getExponent()) {
+                    return 1;
+                }
+
                 if (!left.getIriLocalname().contains("-")) {
                     if (right.getIriLocalname().contains("-")) {
                         return -1; // prefer a derived unit with a new name (such as W, J, N etc.)
@@ -717,46 +709,38 @@ public class Qudt {
                 } else if (!right.getIriLocalname().contains("-")) {
                     return 1;
                 }
-                if (left.getDependents() > right.getDependents()) {
-                    return -1; // prefer a unit that has more dependents (other units that refer to
-                    // it as their factor unit or base unit)
-                } else if (left.getDependents() < right.getDependents()) {
-                    return 1;
-                }
-                FactorUnits leftDen = left.getFactorUnits().denominator();
-                FactorUnits rightDen = right.getFactorUnits().denominator();
-                int leftFactorsDenCnt = leftDen.expand().size();
-                int rightFactorsDenCnt = rightDen.expand().size();
-                int reqFactorsDenCnt = reqDen.expand().size();
-                int diffFactorsCountDen =
-                        Math.abs(reqFactorsDenCnt - leftFactorsDenCnt)
-                                - Math.abs(reqFactorsDenCnt - rightFactorsDenCnt);
+
+                final int diffFactorsCountDen =
+                        expandedFactorsCountDiff(
+                                left.getFactorUnits().denominator(),
+                                right.getFactorUnits().denominator(),
+                                reqDen);
                 if (diffFactorsCountDen != 0) {
                     return diffFactorsCountDen;
                 }
-
-                FactorUnits leftNum = left.getFactorUnits().numerator();
-                FactorUnits rightNum = right.getFactorUnits().denominator();
-                int leftFactorsNumCnt = leftNum.expand().size();
-                int rightFactorsNumCnt = rightNum.expand().size();
-                int reqFactorsNumCnt = reqNum.expand().size();
-                int diffFactorsCountNum =
-                        Math.abs(reqFactorsNumCnt - leftFactorsNumCnt)
-                                - Math.abs(reqFactorsNumCnt - rightFactorsNumCnt);
+                final int diffFactorsCountNum =
+                        expandedFactorsCountDiff(
+                                left.getFactorUnits().numerator(),
+                                right.getFactorUnits().numerator(),
+                                reqNum);
                 if (diffFactorsCountNum != 0) {
                     return diffFactorsCountNum;
                 }
-                int leftCnt = left.getFactorUnits().expand().size();
-                int rightCnt = right.getFactorUnits().expand().size();
-                int reqCnt = requestedFactorUnits.expand().size();
-                if (leftCnt == reqCnt) {
-                    if (rightCnt != reqCnt) {
-                        return -1;
-                    }
-                } else {
-                    if (rightCnt == reqCnt) {
-                        return 1;
-                    }
+                final int factorCountDiff =
+                        expandedFactorsCountDiff(
+                                left.getFactorUnits(),
+                                right.getFactorUnits(),
+                                requestedFactorUnits);
+                if (factorCountDiff != 0) {
+                    return factorCountDiff;
+                }
+                if (left.getDependents() >= 10
+                        && left.getDependents() > 2 * right.getDependents()) {
+                    return -1; // prefer a unit that has more dependents (other units that refer to
+                    // it as their factor unit or base unit)
+                } else if (right.getDependents() >= 10
+                        && right.getDependents() > 2 * left.getDependents()) {
+                    return 1;
                 }
                 String leftLocalname = left.getIriLocalname();
                 String rightLocalname = right.getIriLocalname();
@@ -776,7 +760,7 @@ public class Qudt {
                 }
                 if (left.getFactorUnits().equals(reqNorm)) {
                     if (!right.getFactorUnits().equals(reqNorm)) {
-                        return -1; //prefer a unit that matches the normalized factors exactly
+                        return -1; // prefer a unit that matches the normalized factors exactly
                     }
                 } else {
                     if (right.getFactorUnits().equals(reqNorm)) {
@@ -785,11 +769,18 @@ public class Qudt {
                 }
                 return left.getIriLocalname().compareTo(right.getIriLocalname());
             }
-        };
-    }
 
-    private static String getIriLocalName(String iri) {
-        return iri.replaceAll("^.+[/|#]", "");
+            private int expandedFactorsCountDiff(
+                    FactorUnits leftDen, FactorUnits rightDen, FactorUnits target) {
+                int leftFactorsDenCnt = leftDen.expand().size();
+                int rightFactorsDenCnt = rightDen.expand().size();
+                int reqFactorsDenCnt = target.expand().size();
+                int diffFactorsCountDen =
+                        Math.abs(reqFactorsDenCnt - leftFactorsDenCnt)
+                                - Math.abs(reqFactorsDenCnt - rightFactorsDenCnt);
+                return diffFactorsCountDen;
+            }
+        };
     }
 
     /**
