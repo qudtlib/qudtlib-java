@@ -159,8 +159,6 @@ public class FactorUnits {
         return true;
     }
 
-
-
     public static class Builder {
         private List<FactorUnit.Builder> factorUnitBuilders = new ArrayList<>();
         private BigDecimal scale = BigDecimal.ONE;
