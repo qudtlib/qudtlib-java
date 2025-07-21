@@ -1132,13 +1132,22 @@ public class QudtTests {
 
     @ParameterizedTest
     @MethodSource
-    public void testBestMatchForFactorUnitsComparator(FactorUnits factorUnits, Unit left, Unit right, int expectedResultSign){
+    public void testBestMatchForFactorUnitsComparator(
+            FactorUnits factorUnits, Unit left, Unit right, int expectedResultSign) {
         Comparator<Unit> cmp = Qudt.bestMatchForFactorUnitsComparator(factorUnits);
         int result = cmp.compare(left, right);
-        float expectedResultSignF = Math.signum(expectedResultSign); //make sure
+        float expectedResultSignF = Math.signum(expectedResultSign); // make sure
         float resultSignF = Math.signum(result);
-        if (expectedResultSignF == 0.0f){
-            Assertions.assertEquals(expectedResultSignF, resultSignF, "factor units %s\n%s should equally good matches for %s, but %s is wrongly chosen to be better".formatted(factorUnits.toString(), left, right, resultSignF < 0 ? left : right));
+        if (expectedResultSignF == 0.0f) {
+            Assertions.assertEquals(
+                    expectedResultSignF,
+                    resultSignF,
+                    "factor units %s\n%s should equally good matches for %s, but %s is wrongly chosen to be better"
+                            .formatted(
+                                    factorUnits.toString(),
+                                    left,
+                                    right,
+                                    resultSignF < 0 ? left : right));
         } else {
             Unit expectedBetter = null;
             Unit expectedWorse = null;
@@ -1152,75 +1161,60 @@ public class QudtTests {
                 fail("Illegal value provided for expectedResultSign: " + expectedResultSign);
             }
             if (resultSignF == 0.0) {
-                Assertions.assertEquals(Math.signum(expectedResultSign), Math.signum(result), "factor units %s\n%s should be a better match than %s, but they are wrongly assessed as equally good matches".formatted(factorUnits.toString(), expectedBetter, expectedWorse));
+                Assertions.assertEquals(
+                        Math.signum(expectedResultSign),
+                        Math.signum(result),
+                        "factor units %s\n%s should be a better match than %s, but they are wrongly assessed as equally good matches"
+                                .formatted(factorUnits.toString(), expectedBetter, expectedWorse));
             } else {
-                Assertions.assertEquals(Math.signum(expectedResultSign), Math.signum(result), "factor units %s\n%s should be a better match than %s, but the inverse is the case".formatted(factorUnits.toString(), expectedBetter, expectedWorse));
+                Assertions.assertEquals(
+                        Math.signum(expectedResultSign),
+                        Math.signum(result),
+                        "factor units %s\n%s should be a better match than %s, but the inverse is the case"
+                                .formatted(factorUnits.toString(), expectedBetter, expectedWorse));
             }
         }
     }
 
-    public static Stream<Arguments> testBestMatchForFactorUnitsComparator(){
+    public static Stream<Arguments> testBestMatchForFactorUnitsComparator() {
         return Stream.of(
+                Arguments.of(FactorUnits.ofFactorUnitSpec(M, -3), PER__M3, PER__L, -1),
+                Arguments.of(FactorUnits.ofFactorUnitSpec(M3, -1), PER__M3, PER__L, -1),
+                Arguments.of(FactorUnits.ofFactorUnitSpec(L, -1), PER__M3, PER__L, 1),
                 Arguments.of(
-                        FactorUnits.ofFactorUnitSpec(M, -3),
-                        PER__M3,
-                        PER__L,
-                        -1
-                ),
-                Arguments.of(
-                        FactorUnits.ofFactorUnitSpec(M3, -1),
-                        PER__M3,
-                        PER__L,
-                        -1
-                ),
-                Arguments.of(
-                        FactorUnits.ofFactorUnitSpec(L, -1),
-                        PER__M3,
-                        PER__L,
-                        1
-                ),
-                Arguments.of(
-                  FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, 1, SEC, -2, M, -1),
-                             N__PER__M,
-                             J__PER__M2,
-                             -1
-                ),
+                        FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, 1, SEC, -2, M, -1),
+                        N__PER__M,
+                        J__PER__M2,
+                        -1),
                 Arguments.of(
                         FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, -3),
                         KiloGM__PER__M3,
                         GM__PER__DeciM3,
-                        -1
-                ),
+                        -1),
                 Arguments.of(
                         FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, -3),
                         KiloGM__PER__M3,
                         GM__PER__L,
-                        -1
-                ),
+                        -1),
                 Arguments.of(
                         FactorUnits.ofFactorUnitSpec(KiloGM, 1, M, -3),
                         GM__PER__DeciM3,
                         GM__PER__L,
-                        1
-                ),
+                        -1),
                 Arguments.of(
                         FactorUnits.ofFactorUnitSpec(KiloGM, 1, M3, -1),
                         KiloGM__PER__M3,
                         GM__PER__DeciM3,
-                        -1
-                ),
+                        -1),
                 Arguments.of(
                         FactorUnits.ofFactorUnitSpec(KiloGM, 1, M3, -1),
                         KiloGM__PER__M3,
                         GM__PER__L,
-                        -1
-                ),
+                        -1),
                 Arguments.of(
                         FactorUnits.ofFactorUnitSpec(KiloGM, 1, M3, -1),
                         GM__PER__DeciM3,
                         GM__PER__L,
-                        1
-                )
-        );
+                        -1));
     }
 }

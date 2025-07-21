@@ -462,11 +462,25 @@ public class DerivedUnitTests {
                 FactorUnits.ofFactorUnitSpec(Qudt.Units.J, 1, Qudt.Units.SEC, -1).getFactorUnits();
         List<Unit> units = Qudt.unitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, wattFactors);
         assertEquals(1, units.size());
-        assertEquals(Qudt.Units.W, units.stream().findFirst().get());
+        Unit bestMatch = units.stream().findFirst().get();
+        assertEquals(
+                Qudt.Units.W,
+                bestMatch,
+                "Expected %s but was %s"
+                        .formatted(formatUnit(Qudt.Units.W), formatUnit(bestMatch)));
         wattFactors = FactorUnits.ofUnit(W).getFactorUnits();
         units = Qudt.unitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, wattFactors);
         assertEquals(1, units.size());
         assertEquals(W, units.stream().findFirst().get());
+    }
+
+    private String formatUnit(Unit unit) {
+        return """
+                %s:
+                dependents: %d
+                %s
+                """
+                .formatted(unit.getIriLocalname(), unit.getDependents(), unit.getFactorUnits());
     }
 
     @ParameterizedTest
