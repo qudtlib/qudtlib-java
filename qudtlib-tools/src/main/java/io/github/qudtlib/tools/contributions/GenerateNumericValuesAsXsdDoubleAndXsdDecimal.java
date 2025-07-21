@@ -122,10 +122,6 @@ public class GenerateNumericValuesAsXsdDoubleAndXsdDecimal {
                     "PREFIX %s: <%s>\n",
                     Qudt.NAMESPACES.constant.getAbbreviationPrefix(),
                     Qudt.NAMESPACES.constant.getBaseIri());
-            System.out.format(
-                    "PREFIX %s: <%s>\n",
-                    Qudt.NAMESPACES.currency.getAbbreviationPrefix(),
-                    Qudt.NAMESPACES.currency.getBaseIri());
             System.out.format("DELETE { ?u %s ?m } \n", predicate);
             System.out.format("WHERE { ?u %s ?m .\n", predicate);
             System.out.println("\tVALUES  ?u {");
@@ -144,10 +140,6 @@ public class GenerateNumericValuesAsXsdDoubleAndXsdDecimal {
             return abbrev;
         }
         abbrev = abbreviateIfPossible(iri, Qudt.NAMESPACES.constant);
-        if (abbrev != null) {
-            return abbrev;
-        }
-        abbrev = abbreviateIfPossible(iri, Qudt.NAMESPACES.currency);
         if (abbrev != null) {
             return abbrev;
         }

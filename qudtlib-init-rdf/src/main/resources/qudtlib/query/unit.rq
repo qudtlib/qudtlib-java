@@ -46,7 +46,10 @@ SELECT * where
         ?unit qudt:prefix ?prefix
     }
     optional {
-        ?unit qudt:isScalingOf ?scalingOf
+        ?unit qudt:scalingOf ?scalingOf
+    }
+    optional {
+        ?unit qudt:dependents ?dependents
     }
     optional {
         ?unit qudt:hasDimensionVector ?dimensionVector

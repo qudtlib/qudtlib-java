@@ -75,6 +75,8 @@ public class Unit extends SelfSmuggler {
 
         private Boolean deprecated;
 
+        private Integer dependents;
+
         private Set<Builder<Unit>> exactMatches = new HashSet<>();
         private Set<Builder<SystemOfUnits>> systemsOfUnits = new HashSet<>();
 
@@ -100,6 +102,11 @@ public class Unit extends SelfSmuggler {
 
         public <T extends Definition> T symbol(String symbol) {
             this.symbol = symbol;
+            return (T) this;
+        }
+
+        public <T extends Definition> T dependents(Integer dependents) {
+            this.dependents = dependents;
             return (T) this;
         }
 
@@ -271,6 +278,7 @@ public class Unit extends SelfSmuggler {
     private final String ucumCode;
     private final LangStrings labels;
     private final Unit scalingOf;
+    private final int dependents;
     private final Set<Unit> exactMatches;
     private final FactorUnits factorUnits;
     private final String currencyCode;
@@ -303,6 +311,7 @@ public class Unit extends SelfSmuggler {
         this.description = definition.description;
         this.prefix = definition.prefix == null ? null : definition.prefix.build();
         this.scalingOf = definition.scalingOf == null ? null : definition.scalingOf.build();
+        this.dependents = definition.dependents == null ? 0 : definition.dependents;
         this.exactMatches = buildSet(definition.exactMatches);
         this.quantityKinds = buildSet(definition.quantityKinds);
         this.unitOfSystems = buildSet(definition.systemsOfUnits);
@@ -665,6 +674,10 @@ public class Unit extends SelfSmuggler {
         return Optional.ofNullable(scalingOf);
     }
 
+    public int getDependents() {
+        return dependents;
+    }
+
     public Set<QuantityKind> getQuantityKinds() {
         return Collections.unmodifiableSet(quantityKinds);
     }
@@ -736,19 +749,15 @@ public class Unit extends SelfSmuggler {
     }
 
     public boolean isCurrencyUnit() {
-        return QudtNamespaces.currency.isFullNamespaceIri(this.iri);
+        return getIriLocalname().startsWith("CCY_");
     }
 
     public String getIriLocalname() {
-        return this.isCurrencyUnit()
-                ? QudtNamespaces.currency.getLocalName(this.iri)
-                : QudtNamespaces.unit.getLocalName(this.iri);
+        return QudtNamespaces.unit.getLocalName(this.iri);
     }
 
     public String getIriAbbreviated() {
-        return this.isCurrencyUnit()
-                ? QudtNamespaces.currency.abbreviate(this.iri)
-                : QudtNamespaces.unit.abbreviate(this.iri);
+        return QudtNamespaces.unit.abbreviate(this.iri);
     }
 
     private boolean findInBasesRecursively(Unit toFind) {

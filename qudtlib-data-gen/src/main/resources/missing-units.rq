@@ -17,16 +17,16 @@ CONSTRUCT {
 {
 
     {
-        ?x qudt:factorUnit/qudt:unit ?unit .
+        ?x qudt:hasFactorUnit/qudt:hasUnit ?unit .
         BIND("factor unit" as ?reason)
     } UNION {
-        ?unit qudt:factorUnit/qudt:unit ?x .
+        ?unit qudt:hasFactorUnit/qudt:hasUnit ?x .
         BIND("derived unit" as ?reason)
     } UNION {
-        ?x qudt:isScalingOf ?unit .
+        ?x qudt:scalingOf ?unit .
         BIND("base unit" as ?reason)
     } UNION {
-        ?unit qudt:isScalingOf ?x .
+        ?unit qudt:scalingOf ?x .
         BIND("scaled unit" as ?reason)
     }
     FILTER NOT EXISTS {
@@ -36,9 +36,9 @@ CONSTRUCT {
         ?unit a qudt:CurrencyUnit
     }
     OPTIONAL {
-        ?unit qudt:isScalingOf/qudt:hasDimensionVector ?dimensionVector .
+        ?unit qudt:scalingOf/qudt:hasDimensionVector ?dimensionVector .
     }
     BIND(REPLACE(STR(?unit), "^.+/", "") as ?unitLocalName)
-    BIND(STRLANG(CONCAT("This unit was added while generating qudt:factorUnit. This unit is a ", ?reason, " of ", (REPLACE(STR(?x), "http://qudt.org/vocab/unit/", "unit:")), ", missing from the original QUDT data."), "en") as ?comment)
+    BIND(STRLANG(CONCAT("This unit was added while generating qudt:hasFactorUnit. This unit is a ", ?reason, " of ", (REPLACE(STR(?x), "http://qudt.org/vocab/unit/", "unit:")), ", missing from the original QUDT data."), "en") as ?comment)
 }
 order by ?unit

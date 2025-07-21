@@ -11,9 +11,9 @@ SELECT DISTINCT
       ?scaleFactor
 WHERE
 {
-    ?derivedUnit qudt:factorUnit ?endFactor .
+    ?derivedUnit qudt:hasFactorUnit ?endFactor .
     ?endFactor
-        qudt:unit ?factorUnit ;
+        qudt:hasUnit ?factorUnit ;
         qudt:exponent ?exponent .
     OPTIONAL {
         ?derivedUnit qudt:factorUnitScalar ?scaleFactor

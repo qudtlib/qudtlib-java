@@ -5,7 +5,7 @@ SELECT * where
 {
     ?unit a qudt:Unit.
     optional {
-        ?unit qudt:isScalingOf ?base .
+        ?unit qudt:scalingOf ?base .
     }
     optional {
         ?unit qudt:prefix ?prefix .

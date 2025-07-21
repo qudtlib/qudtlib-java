@@ -71,6 +71,7 @@ public class InitializerImpl implements Initializer {
     private static void addUnit${iri?index?c}(Definitions definitions) {
         Unit.Definition def = Unit
             .definition(${q(iri)})
+            .dependents(${unit.dependents})
             <#if unit.isDeprecated()>
             .deprecated(true)
             </#if>

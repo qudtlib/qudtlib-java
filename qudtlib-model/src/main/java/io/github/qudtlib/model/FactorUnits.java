@@ -25,8 +25,33 @@ public class FactorUnits {
         if (iriForSortingFactors != null) {
             factorUnits = sortAccordingToUnitLocalname(iriForSortingFactors, factorUnits);
         }
-        this.factorUnits = factorUnits.stream().collect(Collectors.toUnmodifiableList());
+        this.factorUnits = normalizeSingleUnitFactors(factorUnits);
         this.scaleFactor = Optional.ofNullable(scaleFactor).orElse(BigDecimal.ONE);
+    }
+
+    private static List<FactorUnit> normalizeSingleUnitFactors(List<FactorUnit> factorUnits) {
+        if (factorUnits == null) return List.of();
+        return factorUnits.stream()
+                .map(
+                        fu -> {
+                            Unit u = fu.getUnit();
+                            int exponent = fu.getExponent();
+                            // if both the factor unit (fu) and its only factor have exponent != 1,
+                            // pull them together
+                            // into one factor unit, thus making e.g. (M3=M^3)^-1 -> M^-3
+                            if (exponent != 1
+                                    && u.hasFactorUnits()
+                                    && u.getFactorUnits().getFactorUnits().size() == 1) {
+                                FactorUnit onlyFactor = u.getFactorUnits().getFactorUnits().get(0);
+                                int factorExponent = onlyFactor.getExponent();
+                                if (Math.abs(factorExponent) != 1f) {
+                                    return new FactorUnit(
+                                            onlyFactor.getUnit(), exponent * factorExponent);
+                                }
+                            }
+                            return fu;
+                        })
+                .toList();
     }
 
     public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
@@ -115,6 +140,20 @@ public class FactorUnits {
             return true;
         }
         if (factorUnits.size() == 1 && factorUnits.get(0).getExponent() == 1) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean hasOneFactorUnit() {
+        if (this.factorUnits == null) {
+            return false;
+        }
+        if (this.factorUnits.size() != 1) {
+            return false;
+        }
+        FactorUnit factorUnit = this.factorUnits.get(0);
+        if (this.equals(factorUnit.getUnit().getFactorUnits())) {
             return false;
         }
         return true;
@@ -441,9 +480,13 @@ public class FactorUnits {
     private BigDecimal conversionFactorInternal(FactorUnits otherFactorUnits) {
         FactorUnits myFactors = this.normalize();
         FactorUnits otherFactors = otherFactorUnits.normalize();
-        List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.getFactorUnits());
-        List<FactorUnit> otherFactorUnitList = new ArrayList<>(otherFactors.getFactorUnits());
+        List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.normalize().getFactorUnits());
+        List<FactorUnit> otherFactorUnitList =
+                new ArrayList<>(otherFactors.normalize().getFactorUnits());
         FactorUnit processed = null;
+        if (myFactors.scaleFactor.signum() == 0 || otherFactors.scaleFactor.signum() == 0) {
+            return BigDecimal.ZERO;
+        }
         BigDecimal factor =
                 myFactors.scaleFactor.divide(otherFactors.scaleFactor, MathContext.DECIMAL128);
         for (FactorUnit myFactor : myFactorUnitList) {
@@ -650,7 +693,8 @@ public class FactorUnits {
                                         fu -> fu,
                                         fu ->
                                                 localName.indexOf(
-                                                        FactorUnits.getLocalname(List.of(fu)))));
+                                                        FactorUnits.getLocalname(List.of(fu))),
+                                        (l, r) -> l));
         return factorUnits.getFactorUnits().stream()
                 .sorted(Comparator.comparing(factorUnit -> orderMap.get(factorUnit)))
                 .collect(Collectors.toList());

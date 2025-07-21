@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Upgrade to QUDT 3.1.4
+  - Calculation of scalings and factor units now happens in QUDT (see PR [1129](https://github.com/qudt/qudt-public-repo/pull/1129))
+    However, a few things have changed:
+    - rename `qudt:isScalingOf` to `qudt:scalingOf`
+    - rename `qudt:factorUnit/qudt:unit` to `qudt:hasFactorUnit/qudt:hasUnit`
+  - Currency units have changed:
+    - they were moved back into the graph 'http://qudt.org/vocab/unit/'
+    - their localnames have received the prefix `CCY_`
+    - both changes are 'soft', ie, the old way is still available, but deprecated
+    - for example: `http://qudt.org/vocab/currency/EUR` is now `http://qudt.org/vocab/unit/CCY_EUR`.
+    - QUDTLib makes the change now instead of adopting the deprecation, as there are other breaking changes as well, so upgrading will require work anyway.
+    - for QUDTLib constants, this means that the pattern `${CurrencyName}_Currency` is dropped in favor of the QUDT style `CCY_${CurrencyName}`, e.g. `Qudt.Units.EUR_Currency` becomes `Qudt.Units.CCY_EUR`
+  - Many conversion multipliers were changed in QUDT. They now consistently have at most 34 significant digits (ie, BigDecimal's precision of 34). This fixes problems such as the one reported in [Conversion error from MilliSV__PER__HR to MicroSV__PER__HR](https://github.com/qudtlib/qudtlib-java/issues/109).
+  - scalings of `unit:GM` deserve special mention:
+    - in the upcoming QUDT release we have `unit:GM qudt:scalingOf unit:KiloGM`, making `qudt:scalingOf` and `qudt:conversionMultiplier` consistent in all cases
+    - QUDTLib makes the change as well, with the effect that unit factorization does not use `Units.GM` (which probably surprised a few people) for the mass dimension but `Units.KiloGM` (which is what one would expect)
+  - Sorting in `Qudt.derivedUnitListFromFactorUnits` now takes more aspects into account and ordering has changed in some cases.
+  - When creating a Unit instance, its factor units are checked for factors `x^N^M`, where x has no more factors.
+    Such factors are simplified as x^(N*M). The same is applied to newly instantiated `FactorUnits` objects.
+
+### Fixed
+
+- Fixed a sorting bug in `Qudt.derivedUnitListFromFactorUnits` that caused wrong sorting for some very similar units.
+
+### Added
+
+- `Unit.dependents` - the number of units that refer to that unit as one of its factor units or are scaled from that base unit.
+  this value is required to achieve better sorting in `Qudt.derivedUnitListFromFactorUnits`, allowing to prefer
+  more important units (those with more dependents)
+
 ## [6.8.1] - 2025-01-29
 
 ### Fixed
@@ -93,13 +125,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Simplified BEST_MATCH algorithm for obtaining a unit from a set of factor units. Recent additions to the data model (isScalingOf and factorUnit relationships) led to a larger set of candidates and the complexity of the previous algorithm led to very high computation time.
+- Simplified BEST_MATCH algorithm for obtaining a unit from a set of factor units. Recent additions to the data model (scalingOf and factorUnit relationships) led to a larger set of candidates and the complexity of the previous algorithm led to very high computation time.
 - Changed the behaviour of Unit.hasFactorUnits() such that for a FactorUnits object with only one top-level factor unit (such as [N^1]), the method returns false.
 
 ### Fixed
 
 - `unit:MHO`, `unit:MicroMHO`: fix dimension vector and quantity kind
-- `unit:F`: fix `unit:isScalingOf`
+- `unit:F`: fix `unit:scalingOf`
 
 ## [6.1.0] - 2024-01-05
 

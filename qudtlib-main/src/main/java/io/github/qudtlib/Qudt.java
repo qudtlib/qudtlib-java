@@ -191,12 +191,25 @@ public class Qudt {
         return unitRequired(unitIriFromLocalname(localname));
     }
 
+    /**
+     * @deprecated use unitFromLocalnameRequired() instead. (no special handling for currencies any
+     *     more)
+     * @param localname
+     * @return
+     */
+    @Deprecated()
     public static Unit currencyFromLocalnameRequired(String localname) {
-        return unitRequired(currencyIriFromLocalname(localname));
+        return unitRequired(unitIriFromLocalname(localname));
     }
 
+    /**
+     * @deprecated use unitFromLocalname() instead. (no special handling for currencies any more)
+     * @param localname
+     * @return
+     */
+    @Deprecated()
     public static Optional<Unit> currencyFromLocalname(String localname) {
-        return unit(currencyIriFromLocalname(localname));
+        return unit(unitIriFromLocalname(localname));
     }
 
     /**
@@ -290,8 +303,14 @@ public class Qudt {
         return NAMESPACES.unit.makeIriInNamespace(localname);
     }
 
+    /**
+     * @deprecated use unitIriFromLocalname() instead. (no special handling for currencies any more)
+     * @param localname
+     * @return
+     */
+    @Deprecated
     public static String currencyIriFromLocalname(String localname) {
-        return NAMESPACES.currency.makeIriInNamespace(localname);
+        return unitIriFromLocalname(localname);
     }
 
     public static Unit scale(String prefixLabel, String baseUnitLabel) {
@@ -309,6 +328,17 @@ public class Qudt {
                                 u.getScalingOf().get().getLabels().stream()
                                         .anyMatch(labelMatcher::matches))
                 .findFirst()
+                .or(
+                        () -> {
+                            // special case: KiloGM is not a scaling of GM, it's the other way
+                            // around - need
+                            // to handle specifically.
+                            if (prefixLabel.toLowerCase(Locale.ROOT).equals("kilo")
+                                    && baseUnitLabel.toLowerCase(Locale.ROOT).equals("gram")) {
+                                return unitFromLabel("kilogram");
+                            }
+                            return Optional.empty();
+                        })
                 .orElseThrow(
                         () ->
                                 new NotFoundException(
@@ -333,6 +363,15 @@ public class Qudt {
                 .filter(u -> u.getScalingOf().isPresent())
                 .filter(u -> u.getScalingOf().get().equals(baseUnit))
                 .findFirst()
+                .or(
+                        () -> {
+                            if (prefix.getIri().equals(NAMESPACES.prefix.makeIriInNamespace("Kilo"))
+                                    && baseUnit.getIri()
+                                            .equals(NAMESPACES.unit.makeIriInNamespace("GM"))) {
+                                return unitFromLabel("kilogram");
+                            }
+                            return Optional.empty();
+                        })
                 .orElseThrow(
                         () ->
                                 new NotFoundException(
@@ -612,8 +651,7 @@ public class Qudt {
                 .collect(Collectors.toList());
     }
 
-    private static Comparator<Unit> bestMatchForFactorUnitsComparator(
-            FactorUnits requestedFactorUnits) {
+    static Comparator<Unit> bestMatchForFactorUnitsComparator(FactorUnits requestedFactorUnits) {
 
         FactorUnits reqNorm = requestedFactorUnits.normalize();
         FactorUnits reqNum = requestedFactorUnits.numerator();
@@ -627,13 +665,43 @@ public class Qudt {
             public int compare(Unit left, Unit right) {
                 if (left.getFactorUnits().equals(requestedFactorUnits)) {
                     if (!right.getFactorUnits().equals(requestedFactorUnits)) {
-                        return -1;
+                        return -1; // prefer a unit that matches the factors exactly
                     }
                 } else {
                     if (right.getFactorUnits().equals(requestedFactorUnits)) {
                         return 1;
                     }
                 }
+                if (right.isDeprecated()) {
+                    if (!left.isDeprecated()) {
+                        return -1; // prefer a non-deprecated unit
+                    }
+                } else if (left.isDeprecated()) {
+                    return 1; // prefer a non-deprecated unit
+                }
+                if (right.isGenerated()) {
+                    if (!left.isGenerated()) {
+                        return -1; // prefer a unit that was not generated as a missing factor unit
+                    }
+                } else if (left.isGenerated()) {
+                    return 1;
+                }
+                if (right.isDefinedAsOtherUnit()
+                        && left.getFactorUnits().getFactorUnits().size() == 1
+                        && left.getFactorUnits().getFactorUnits().get(0).getUnit().equals(left)
+                        && right.getFactorUnits().getFactorUnits().get(0).getExponent()
+                                == left.getFactorUnits().getFactorUnits().get(0).getExponent()) {
+                    return -1; // if a unit is just another name of another unit with same exponent,
+                    // prefer the other (thus L would be preferred over DeciM)
+                }
+                if (left.isDefinedAsOtherUnit()
+                        && left.getFactorUnits().getFactorUnits().size() == 1
+                        && right.getFactorUnits().getFactorUnits().get(0).getUnit().equals(left)
+                        && right.getFactorUnits().getFactorUnits().get(0).getExponent()
+                                == left.getFactorUnits().getFactorUnits().get(0).getExponent()) {
+                    return 1;
+                }
+
                 if (!left.getIriLocalname().contains("-")) {
                     if (right.getIriLocalname().contains("-")) {
                         return -1; // prefer a derived unit with a new name (such as W, J, N etc.)
@@ -642,55 +710,77 @@ public class Qudt {
                     return 1;
                 }
 
-                FactorUnits leftDen = left.getFactorUnits().denominator();
-                FactorUnits rightDen = right.getFactorUnits().denominator();
-                int leftFactorsDenCnt = leftDen.expand().size();
-                int rightFactorsDenCnt = rightDen.expand().size();
-                int reqFactorsDenCnt = reqDen.expand().size();
-                int diffFactorsCountDen =
-                        Math.abs(reqFactorsDenCnt - leftFactorsDenCnt)
-                                - Math.abs(reqFactorsDenCnt - rightFactorsDenCnt);
+                final int diffFactorsCountDen =
+                        expandedFactorsCountDiff(
+                                left.getFactorUnits().denominator(),
+                                right.getFactorUnits().denominator(),
+                                reqDen);
                 if (diffFactorsCountDen != 0) {
                     return diffFactorsCountDen;
                 }
-
-                FactorUnits leftNum = left.getFactorUnits().numerator();
-                FactorUnits rightNum = right.getFactorUnits().denominator();
-                int leftFactorsNumCnt = leftNum.expand().size();
-                int rightFactorsNumCnt = rightNum.expand().size();
-                int reqFactorsNumCnt = reqNum.expand().size();
-                int diffFactorsCountNum =
-                        Math.abs(reqFactorsNumCnt - leftFactorsNumCnt)
-                                - Math.abs(reqFactorsNumCnt - rightFactorsNumCnt);
+                final int diffFactorsCountNum =
+                        expandedFactorsCountDiff(
+                                left.getFactorUnits().numerator(),
+                                right.getFactorUnits().numerator(),
+                                reqNum);
                 if (diffFactorsCountNum != 0) {
                     return diffFactorsCountNum;
                 }
-                int leftCnt = left.getFactorUnits().expand().size();
-                int rightCnt = right.getFactorUnits().expand().size();
-                int reqCnt = requestedFactorUnits.expand().size();
-                if (leftCnt == reqCnt) {
-                    if (rightCnt != reqCnt) {
+                final int factorCountDiff =
+                        expandedFactorsCountDiff(
+                                left.getFactorUnits(),
+                                right.getFactorUnits(),
+                                requestedFactorUnits);
+                if (factorCountDiff != 0) {
+                    return factorCountDiff;
+                }
+                if (left.getDependents() >= 10
+                        && left.getDependents() > 2 * right.getDependents()) {
+                    return -1; // prefer a unit that has more dependents (other units that refer to
+                    // it as their factor unit or base unit)
+                } else if (right.getDependents() >= 10
+                        && right.getDependents() > 2 * left.getDependents()) {
+                    return 1;
+                }
+                String leftLocalname = left.getIriLocalname();
+                String rightLocalname = right.getIriLocalname();
+                if (reqLocalNamePossibilities.contains(leftLocalname)) {
+                    if (!reqLocalNamePossibilities.contains(rightLocalname)) {
                         return -1;
                     }
+                } else if (reqLocalNamePossibilities.contains(rightLocalname)) {
+                    return 1;
+                }
+                long leftUnderscores = leftLocalname.codePoints().filter(c -> c == '_').count();
+                long rightUnderscores = rightLocalname.codePoints().filter(c -> c == '_').count();
+                if (leftUnderscores < rightUnderscores) {
+                    return -1; // prefer a unit without modifier in one of its components
+                } else if (leftUnderscores > rightUnderscores) {
+                    return 1;
+                }
+                if (left.getFactorUnits().equals(reqNorm)) {
+                    if (!right.getFactorUnits().equals(reqNorm)) {
+                        return -1; // prefer a unit that matches the normalized factors exactly
+                    }
                 } else {
-                    if (rightCnt == reqCnt) {
+                    if (right.getFactorUnits().equals(reqNorm)) {
                         return 1;
                     }
                 }
-                if (reqLocalNamePossibilities.contains(left.getIriLocalname())) {
-                    if (!reqLocalNamePossibilities.contains(right.getIriLocalname())) {
-                        return -1;
-                    }
-                } else if (reqLocalNamePossibilities.contains(right.getIriLocalname())) {
-                    return 1;
-                }
                 return left.getIriLocalname().compareTo(right.getIriLocalname());
             }
-        };
-    }
 
-    private static String getIriLocalName(String iri) {
-        return iri.replaceAll("^.+[/|#]", "");
+            private int expandedFactorsCountDiff(
+                    FactorUnits leftDen, FactorUnits rightDen, FactorUnits target) {
+                int leftFactorsDenCnt = leftDen.expand().size();
+                int rightFactorsDenCnt = rightDen.expand().size();
+                int reqFactorsDenCnt = target.expand().size();
+                int diffFactorsCountDen =
+                        Math.abs(reqFactorsDenCnt - leftFactorsDenCnt)
+                                - Math.abs(reqFactorsDenCnt - rightFactorsDenCnt);
+                return diffFactorsCountDen;
+            }
+        };
     }
 
     /**
@@ -709,7 +799,7 @@ public class Qudt {
                         .orElseThrow(
                                 () ->
                                         new IllegalStateException(
-                                                "Scaled unit has null isScalingOf() unit - that's a bug!"));
+                                                "Scaled unit has null scalingOf() unit - that's a bug!"));
         BigDecimal multiplier = unit.getConversionMultiplier(baseUnit);
         return Map.entry(baseUnit, multiplier);
     }
@@ -1150,7 +1240,7 @@ public class Qudt {
         private final String labelToMatch;
 
         public LabelMatcher(String labelToMatch) {
-            this.labelToMatch = labelToMatch.replaceAll("_", " ").toUpperCase(Locale.US);
+            this.labelToMatch = labelToMatch.replaceAll("_", " ").toUpperCase(Locale.ROOT);
         }
 
         public boolean matches(LangString candidateLabel) {
@@ -1158,7 +1248,7 @@ public class Qudt {
         }
 
         public boolean matches(String candiateLabel) {
-            return candiateLabel.toUpperCase(Locale.US).equals(labelToMatch);
+            return candiateLabel.toUpperCase(Locale.ROOT).equals(labelToMatch);
         }
     }
 

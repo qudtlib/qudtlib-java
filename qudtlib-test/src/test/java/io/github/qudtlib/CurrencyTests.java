@@ -8,7 +8,7 @@ public class CurrencyTests {
 
     @Test
     public void testCurrency() {
-        Unit euro = Qudt.Units.EUR_Currency;
+        Unit euro = Qudt.Units.CCY_EUR;
         Assertions.assertTrue(euro.hasLabel("Euro"));
     }
 }

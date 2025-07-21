@@ -1,7 +1,0 @@
-PREFIX qudt: <http://qudt.org/schema/qudt/>
-PREFIX unit: <http://qudt.org/vocab/unit/>
-prefix quantitykind: <http://qudt.org/vocab/quantitykind/>
-DELETE { ?qk ?b ?c . ?d ?e ?qk }
-WHERE { { ?qk ?b ?c .} union { ?d ?e ?qk }
-    VALUES  ?qk { quantitykind:VaporPermeability }
-}

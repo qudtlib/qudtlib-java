@@ -491,7 +491,10 @@ public class InitializerImpl implements Initializer {
                         getIfPresent(
                                 bs,
                                 "scalingOf",
-                                compose(Value::stringValue, definitions::expectUnitDefinition)));
+                                compose(Value::stringValue, definitions::expectUnitDefinition)))
+                .dependents(
+                        getIfPresent(
+                                bs, "dependents", compose(Value::stringValue, Integer::valueOf)));
     }
 
     private static QuantityKind.Definition makeQuantityKindBuilder(BindingSet bs) {

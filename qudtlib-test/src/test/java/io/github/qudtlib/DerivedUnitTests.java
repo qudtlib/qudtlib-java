@@ -102,7 +102,11 @@ public class DerivedUnitTests {
     @Test
     public void testMatchingModeExact() {
         assertTrue(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3));
+        assertFalse(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.DeciM, -3));
+        assertTrue(Qudt.Units.GM__PER__DeciM3.matches(Qudt.Units.GM, 1, Qudt.Units.DeciM, -3));
         assertFalse(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.GM, 1, Qudt.Units.M, -3));
+        assertFalse(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.DeciM, -3));
+        assertTrue(Qudt.Units.KiloGM__PER__M3.matches(Qudt.Units.KiloGM, 1, Qudt.Units.M, -3));
     }
 
     @Test
@@ -343,6 +347,13 @@ public class DerivedUnitTests {
     }
 
     @Test
+    public void testGM() {
+        assertEquals(
+                FactorUnits.ofFactorUnitSpec(new BigDecimal(0.001), Units.KiloGM, 1),
+                Units.GM.normalize());
+    }
+
+    @Test
     public void testScale_squareInDenominator2() {
         Object[] factors =
                 new Object[] {
@@ -451,11 +462,25 @@ public class DerivedUnitTests {
                 FactorUnits.ofFactorUnitSpec(Qudt.Units.J, 1, Qudt.Units.SEC, -1).getFactorUnits();
         List<Unit> units = Qudt.unitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, wattFactors);
         assertEquals(1, units.size());
-        assertEquals(Qudt.Units.W, units.stream().findFirst().get());
+        Unit bestMatch = units.stream().findFirst().get();
+        assertEquals(
+                Qudt.Units.W,
+                bestMatch,
+                "Expected %s but was %s"
+                        .formatted(formatUnit(Qudt.Units.W), formatUnit(bestMatch)));
         wattFactors = FactorUnits.ofUnit(W).getFactorUnits();
         units = Qudt.unitsFromFactorUnits(DerivedUnitSearchMode.BEST_MATCH, wattFactors);
         assertEquals(1, units.size());
         assertEquals(W, units.stream().findFirst().get());
+    }
+
+    private String formatUnit(Unit unit) {
+        return """
+                %s:
+                dependents: %d
+                %s
+                """
+                .formatted(unit.getIriLocalname(), unit.getDependents(), unit.getFactorUnits());
     }
 
     @ParameterizedTest
