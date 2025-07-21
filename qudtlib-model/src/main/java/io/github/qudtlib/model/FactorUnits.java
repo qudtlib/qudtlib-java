@@ -25,8 +25,33 @@ public class FactorUnits {
         if (iriForSortingFactors != null) {
             factorUnits = sortAccordingToUnitLocalname(iriForSortingFactors, factorUnits);
         }
-        this.factorUnits = factorUnits.stream().collect(Collectors.toUnmodifiableList());
+        this.factorUnits = normalizeSingleUnitFactors(factorUnits);
         this.scaleFactor = Optional.ofNullable(scaleFactor).orElse(BigDecimal.ONE);
+    }
+
+    private static List<FactorUnit> normalizeSingleUnitFactors(List<FactorUnit> factorUnits) {
+        if (factorUnits == null) return List.of();
+        return factorUnits.stream()
+                .map(
+                        fu -> {
+                            Unit u = fu.getUnit();
+                            int exponent = fu.getExponent();
+                            // if both the factor unit (fu) and its only factor have exponent != 1,
+                            // pull them together
+                            // into one factor unit, thus making e.g. (M3=M^3)^-1 -> M^-3
+                            if (exponent != 1
+                                    && u.hasFactorUnits()
+                                    && u.getFactorUnits().getFactorUnits().size() == 1) {
+                                FactorUnit onlyFactor = u.getFactorUnits().getFactorUnits().get(0);
+                                int factorExponent = onlyFactor.getExponent();
+                                if (Math.abs(factorExponent) != 1f) {
+                                    return new FactorUnit(
+                                            onlyFactor.getUnit(), exponent * factorExponent);
+                                }
+                            }
+                            return fu;
+                        })
+                .toList();
     }
 
     public FactorUnits(List<FactorUnit> factorUnits, BigDecimal scaleFactor) {
@@ -259,47 +284,6 @@ public class FactorUnits {
                 && new HashSet<>(factorUnits).equals(new HashSet<>(that.factorUnits));
     }
 
-    public boolean relaxedEquals(FactorUnits o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FactorUnits that = (FactorUnits) o;
-
-        if (isRelativeDifferenceGreaterThan(
-                scaleFactor, that.scaleFactor, BigDec.ONE_MILLIONTH)){
-            return false;
-        }
-        if (this.hasOneFactorUnit() && that.hasOneFactorUnit()){
-            // e.g. this == M^-3, that == M3^-1
-            FactorUnit leftFu = this.getFactorUnits().get(0);
-            FactorUnit rightFu = that.getFactorUnits().get(0);
-            if (leftFu.getUnit().getFactorUnits().hasOneFactorUnit()){
-                if (!rightFu.getUnit().hasFactorUnits()){
-                    FactorUnit leftFuFactor = leftFu.getUnit().getFactorUnits().getFactorUnits().get(0);
-                    if (leftFuFactor.getUnit().equals(rightFu.getUnit())) {
-                        return leftFuFactor.getExponent() * leftFu.getExponent() == rightFu.getExponent();
-                    }
-                }
-            } else if (rightFu.getUnit().getFactorUnits().hasOneFactorUnit()) {
-                if (!leftFu.getUnit().hasFactorUnits()){
-                    FactorUnit rightFuFactor = rightFu.getUnit().getFactorUnits().getFactorUnits().get(0);
-                    if (rightFuFactor.getUnit().equals(leftFu.getUnit())) {
-                        return rightFuFactor.getExponent() * rightFu.getExponent() == leftFu.getExponent();
-                    }
-                }
-            }
-        } else {
-            List<FactorUnit> otherFus = that.factorUnits;
-            for (FactorUnit leftFu: this.factorUnits) {
-                int i = 0;
-                for (FactorUnit otherFu: otherFus){
-
-                }
-            }
-        }
-        return new HashSet<>(factorUnits).equals(new HashSet<>(that.factorUnits));
-                
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(factorUnits, scaleFactor);
@@ -499,9 +483,10 @@ public class FactorUnits {
         FactorUnits myFactors = this.normalize();
         FactorUnits otherFactors = otherFactorUnits.normalize();
         List<FactorUnit> myFactorUnitList = new ArrayList<>(myFactors.normalize().getFactorUnits());
-        List<FactorUnit> otherFactorUnitList = new ArrayList<>(otherFactors.normalize().getFactorUnits());
+        List<FactorUnit> otherFactorUnitList =
+                new ArrayList<>(otherFactors.normalize().getFactorUnits());
         FactorUnit processed = null;
-        if (myFactors.scaleFactor.signum() == 0 || otherFactors.scaleFactor.signum() == 0){
+        if (myFactors.scaleFactor.signum() == 0 || otherFactors.scaleFactor.signum() == 0) {
             return BigDecimal.ZERO;
         }
         BigDecimal factor =
@@ -710,7 +695,8 @@ public class FactorUnits {
                                         fu -> fu,
                                         fu ->
                                                 localName.indexOf(
-                                                        FactorUnits.getLocalname(List.of(fu)))));
+                                                        FactorUnits.getLocalname(List.of(fu))),
+                                        (l, r) -> l));
         return factorUnits.getFactorUnits().stream()
                 .sorted(Comparator.comparing(factorUnit -> orderMap.get(factorUnit)))
                 .collect(Collectors.toList());
