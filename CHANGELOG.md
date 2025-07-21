@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Upgrade to QUDT 3.1.3
+- Upgrade to QUDT 3.1.4
   - Calculation of scalings and factor units now happens in QUDT (see PR [1129](https://github.com/qudt/qudt-public-repo/pull/1129))
     However, a few things have changed:
     - rename `qudt:isScalingOf` to `qudt:scalingOf`
@@ -25,6 +25,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - scalings of `unit:GM` deserve special mention:
     - in the upcoming QUDT release we have `unit:GM qudt:scalingOf unit:KiloGM`, making `qudt:scalingOf` and `qudt:conversionMultiplier` consistent in all cases
     - QUDTLib makes the change as well, with the effect that unit factorization does not use `Units.GM` (which probably surprised a few people) for the mass dimension but `Units.KiloGM` (which is what one would expect)
+  - Sorting in `Qudt.derivedUnitListFromFactorUnits` now takes more aspects into account and ordering has changed in some cases.
+  - When creating a Unit instance, its factor units are checked for factors `x^N^M`, where x has no more factors.
+    Such factors are simplified as x^(N*M). The same is applied to newly instantiated `FactorUnits` objects.
+
+### Fixed
+
+- Fixed a sorting bug in `Qudt.derivedUnitListFromFactorUnits` that caused wrong sorting for some very similar units.
+
+### Added
+
+- `Unit.dependents` - the number of units that refer to that unit as one of its factor units or are scaled from that base unit.
+  this value is required to achieve better sorting in `Qudt.derivedUnitListFromFactorUnits`, allowing to prefer
+  more important units (those with more dependents)
 
 ## [6.8.1] - 2025-01-29
 
