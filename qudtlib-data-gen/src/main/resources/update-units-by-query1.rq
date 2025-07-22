@@ -9,10 +9,7 @@ INSERT {
         WHERE
         {
             {
-                ?other
-                    qudt:hasFactorUnit [
-                        qudt:hasUnit ?unit ;
-                    ] ;
+                ?other ( qudt:hasFactorUnit/qudt:hasUnit )+ ?unit ;
             } UNION {
                  ?other
                         qudt:scalingOf ?unit
