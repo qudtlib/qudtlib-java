@@ -5,7 +5,7 @@
 name: Release and deploy to Sonatype staging repo
 env:
   GITHUB_PAT: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
-  MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+  MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
   MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
   MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 on:
