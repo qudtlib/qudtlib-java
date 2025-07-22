@@ -8,6 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>qudtlib-test</artifactId>
     <packaging>jar</packaging>
+    <name>qudtlib-test</name>
     <dependencies>
         <dependency>
             <groupId>io.github.qudtlib</groupId>

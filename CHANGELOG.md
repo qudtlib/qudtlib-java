@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- when using `qudtlib` as a dependency, you have to add `<type>pom</type>` (see updatede [`README.md`](README.md)). This is due to more rigorous
+  artifact checks by sonatype that prevent jar artifacts without sources.
 - Upgrade to QUDT 3.1.4
   - Calculation of scalings and factor units now happens in QUDT (see PR [1129](https://github.com/qudt/qudt-public-repo/pull/1129))
     However, a few things have changed:

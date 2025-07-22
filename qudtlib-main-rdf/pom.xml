@@ -6,9 +6,9 @@
         <version>6.8.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>qudtlib-main-rdf></name>
     <artifactId>qudtlib-main-rdf</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <dependencies>
         <dependency>

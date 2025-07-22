@@ -9,6 +9,7 @@ Here are the important bits:
 	<groupId>io.github.qudtlib</groupId>
 	<artifactId>qudtlib</artifactId>
 	<version>${project.version}</version> <!-- remember to use the latest version -->
+	<type>pom</type>
 </dependency>
 ```
 

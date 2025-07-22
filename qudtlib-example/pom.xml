@@ -6,14 +6,14 @@
         <version>6.8.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>qudtlib-example</name>
     <artifactId>qudtlib-example</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>io.github.qudtlib</groupId>
             <artifactId>qudtlib</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
     <build>

@@ -8,11 +8,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>qudtlib-hardcoded-model-gen</artifactId>
     <packaging>jar</packaging>
+    <name>qudtlib-hardcoded-model-gen</name>
     <dependencies>
         <dependency>
             <groupId>io.github.qudtlib</groupId>
             <artifactId>qudtlib-main-rdf</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>io.github.qudtlib</groupId>
