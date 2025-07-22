@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0-alpha.5] - 2025-07-22
+
+### Added
+
+- `Unit.dependents` - the number of units that refer to that unit as one of its factor units or are scaled from that base unit.
+  this value is required to achieve better sorting in `Qudt.derivedUnitListFromFactorUnits`, allowing to prefer
+  more important units (those with more dependents)
+
 ### Changed
 
 - when using `qudtlib` as a dependency, you have to add `<type>pom</type>` (see updatede [`README.md`](README.md)). This is due to more rigorous
@@ -34,12 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed a sorting bug in `Qudt.derivedUnitListFromFactorUnits` that caused wrong sorting for some very similar units.
-
-### Added
-
-- `Unit.dependents` - the number of units that refer to that unit as one of its factor units or are scaled from that base unit.
-  this value is required to achieve better sorting in `Qudt.derivedUnitListFromFactorUnits`, allowing to prefer
-  more important units (those with more dependents)
 
 ## [6.8.1] - 2025-01-29
 
@@ -331,7 +333,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.1...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.0-alpha.5...HEAD
+[7.0.0-alpha.5]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.1...v7.0.0-alpha.5
 [6.8.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.0...v6.8.1
 [6.8.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.7.0...v6.8.0
 [6.7.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.5.0...v6.7.0
