@@ -13,6 +13,7 @@
             <groupId>io.github.qudtlib</groupId>
             <artifactId>qudtlib</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
     <build>
