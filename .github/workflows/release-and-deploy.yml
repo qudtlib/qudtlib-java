@@ -19,10 +19,6 @@ on:
         description: 'Next SNAPSHOT version (such as 2.4-SNAPSHOT)'
         required: true
         type: string
-      environment:
-        description: 'Environment to run tests against'
-        type: environment
-        required: true
     secrets:
       QUDTLIB_BOT_GITHUB_TOKEN:
         required: true
@@ -35,8 +31,6 @@ on:
 
 jobs:
   build:
-    # setting the environment on the job is mandatory, otherwise it cannot access environment secrets.
-    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
     steps:
