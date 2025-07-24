@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- in `Unit.convert()` (and therfore, `Qudt.convert()`), use the precision (= number of significant digits) of the input
+  value as the precision of the output value (notable exception: input value `1`, which is interpreted as precision 3).
+
 ## [7.0.0] - 2025-07-22
 
 ### Added

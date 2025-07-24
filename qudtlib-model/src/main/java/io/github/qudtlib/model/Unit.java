@@ -1,6 +1,7 @@
 package io.github.qudtlib.model;
 
 import static io.github.qudtlib.nodedef.Builder.buildSet;
+import static java.math.BigDecimal.ONE;
 
 import io.github.qudtlib.exception.InconvertibleQuantitiesException;
 import io.github.qudtlib.nodedef.Builder;
@@ -395,16 +396,21 @@ public class Unit extends SelfSmuggler {
         }
         BigDecimal fromOffset =
                 ignoreOffset ? BigDecimal.ZERO : this.getConversionOffset().orElse(BigDecimal.ZERO);
-        BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(BigDecimal.ONE);
+        BigDecimal fromMultiplier = this.getConversionMultiplier().orElse(ONE);
         BigDecimal toOffset =
                 ignoreOffset
                         ? BigDecimal.ZERO
                         : toUnit.getConversionOffset().orElse(BigDecimal.ZERO);
-        BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
-        return value.add(fromOffset)
-                .multiply(fromMultiplier, MathContext.DECIMAL128)
-                .divide(toMultiplier, MathContext.DECIMAL128)
-                .subtract(toOffset);
+        BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(ONE);
+        BigDecimal result =
+                value.add(fromOffset)
+                        .multiply(fromMultiplier, MathContext.DECIMAL128)
+                        .divide(toMultiplier, MathContext.DECIMAL128)
+                        .subtract(toOffset);
+        int resultPrecision = Math.min(BigDecimal.ONE.equals(value) ? 3 : value.precision(), 34);
+
+        MathContext resultContext = new MathContext(resultPrecision);
+        return result.round(resultContext);
     }
 
     /**
@@ -417,7 +423,7 @@ public class Unit extends SelfSmuggler {
      */
     public BigDecimal getConversionMultiplier(Unit toUnit) {
         if (this.equals(toUnit)) {
-            return BigDecimal.ONE;
+            return ONE;
         }
         if (this.conversionOffsetDiffers(toUnit)) {
             throw new IllegalArgumentException(
@@ -427,25 +433,31 @@ public class Unit extends SelfSmuggler {
         }
         Optional<BigDecimal> fromMultiplier = this.getConversionMultiplier();
         Optional<BigDecimal> toMultiplier = toUnit.getConversionMultiplier();
-        return fromMultiplier
-                .map(
-                        from ->
-                                toMultiplier
-                                        .map(to -> from.divide(to, MathContext.DECIMAL128))
-                                        .orElse(null))
-                .orElseThrow(
-                        () ->
-                                new InconvertibleQuantitiesException(
-                                        String.format(
-                                                "Cannot convert %s(%s) to %s(%s)",
-                                                this.getIriAbbreviated(),
-                                                this.getConversionMultiplier().isEmpty()
-                                                        ? "no multiplier"
-                                                        : "has multiplier",
-                                                toUnit.getIriAbbreviated(),
-                                                toUnit.getConversionMultiplier().isEmpty()
-                                                        ? "no multiplier"
-                                                        : "has multiplier")));
+        BigDecimal result =
+                fromMultiplier
+                        .map(
+                                from ->
+                                        toMultiplier
+                                                .map(to -> from.divide(to, MathContext.DECIMAL128))
+                                                .orElse(null))
+                        .orElseThrow(
+                                () ->
+                                        new InconvertibleQuantitiesException(
+                                                String.format(
+                                                        "Cannot convert %s(%s) to %s(%s)",
+                                                        this.getIriAbbreviated(),
+                                                        this.getConversionMultiplier().isEmpty()
+                                                                ? "no multiplier"
+                                                                : "has multiplier",
+                                                        toUnit.getIriAbbreviated(),
+                                                        toUnit.getConversionMultiplier().isEmpty()
+                                                                ? "no multiplier"
+                                                                : "has multiplier")));
+        int precision = Math.min(34, result.precision());
+        return result.round(
+                new MathContext(
+                        precision)); // TODO: when units know about their precision we can improve
+        // this
     }
 
     public boolean conversionOffsetDiffers(Unit other) {
