@@ -401,11 +401,16 @@ public class Unit extends SelfSmuggler {
                         ? BigDecimal.ZERO
                         : toUnit.getConversionOffset().orElse(BigDecimal.ZERO);
         BigDecimal toMultiplier = toUnit.getConversionMultiplier().orElse(BigDecimal.ONE);
-        return value.add(fromOffset)
-                .multiply(fromMultiplier, MathContext.DECIMAL128)
-                .divide(toMultiplier, MathContext.DECIMAL128)
-                .subtract(toOffset)
-                .stripTrailingZeros();
+        BigDecimal result =
+                value.add(fromOffset)
+                        .multiply(fromMultiplier, MathContext.DECIMAL128)
+                        .divide(toMultiplier, MathContext.DECIMAL128)
+                        .subtract(toOffset)
+                        .stripTrailingZeros();
+        if (result.scale() < 0) {
+            result = result.setScale(0);
+        }
+        return result;
     }
 
     /**
@@ -448,7 +453,11 @@ public class Unit extends SelfSmuggler {
                                                         toUnit.getConversionMultiplier().isEmpty()
                                                                 ? "no multiplier"
                                                                 : "has multiplier")));
-        return result.stripTrailingZeros();
+        result = result.stripTrailingZeros();
+        if (result.scale() < 0) {
+            result = result.setScale(0);
+        }
+        return result;
     }
 
     public boolean conversionOffsetDiffers(Unit other) {
