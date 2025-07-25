@@ -73,7 +73,7 @@ Converting 38.5° Celsius into Fahrenheit:
 ```java
 Qudt.convert(new BigDecimal("38.5"), Qudt.Units.DEG_C, Qudt.Units.DEG_F));
 -->
-101.3003929999999551224000000000036unit:DEG_F
+101.3 unit:DEG_F
 ```
 
 ### Find unit by factor units
