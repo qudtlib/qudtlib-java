@@ -404,7 +404,8 @@ public class Unit extends SelfSmuggler {
         return value.add(fromOffset)
                 .multiply(fromMultiplier, MathContext.DECIMAL128)
                 .divide(toMultiplier, MathContext.DECIMAL128)
-                .subtract(toOffset);
+                .subtract(toOffset)
+                .stripTrailingZeros();
     }
 
     /**
@@ -427,25 +428,27 @@ public class Unit extends SelfSmuggler {
         }
         Optional<BigDecimal> fromMultiplier = this.getConversionMultiplier();
         Optional<BigDecimal> toMultiplier = toUnit.getConversionMultiplier();
-        return fromMultiplier
-                .map(
-                        from ->
-                                toMultiplier
-                                        .map(to -> from.divide(to, MathContext.DECIMAL128))
-                                        .orElse(null))
-                .orElseThrow(
-                        () ->
-                                new InconvertibleQuantitiesException(
-                                        String.format(
-                                                "Cannot convert %s(%s) to %s(%s)",
-                                                this.getIriAbbreviated(),
-                                                this.getConversionMultiplier().isEmpty()
-                                                        ? "no multiplier"
-                                                        : "has multiplier",
-                                                toUnit.getIriAbbreviated(),
-                                                toUnit.getConversionMultiplier().isEmpty()
-                                                        ? "no multiplier"
-                                                        : "has multiplier")));
+        BigDecimal result =
+                fromMultiplier
+                        .map(
+                                from ->
+                                        toMultiplier
+                                                .map(to -> from.divide(to, MathContext.DECIMAL128))
+                                                .orElse(null))
+                        .orElseThrow(
+                                () ->
+                                        new InconvertibleQuantitiesException(
+                                                String.format(
+                                                        "Cannot convert %s(%s) to %s(%s)",
+                                                        this.getIriAbbreviated(),
+                                                        this.getConversionMultiplier().isEmpty()
+                                                                ? "no multiplier"
+                                                                : "has multiplier",
+                                                        toUnit.getIriAbbreviated(),
+                                                        toUnit.getConversionMultiplier().isEmpty()
+                                                                ? "no multiplier"
+                                                                : "has multiplier")));
+        return result.stripTrailingZeros();
     }
 
     public boolean conversionOffsetDiffers(Unit other) {
