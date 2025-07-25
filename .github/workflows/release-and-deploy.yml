@@ -167,7 +167,7 @@ jobs:
             # Next Steps
             
             Please rebase this PR on top of `main` after publishing the release via the 
-            [Sonatype Repository Manager](https://s01.oss.sonatype.org/). 
+            [Sonatype Repository Manager](https://central.sonatype.com/publishing/deployments). 
 
       # print the summary
       - name: Print summary
