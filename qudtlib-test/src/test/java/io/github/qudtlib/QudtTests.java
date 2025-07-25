@@ -569,10 +569,12 @@ public class QudtTests {
                                                 u.getIriLocalname(),
                                                 u.getConversionMultiplier().get().toString())));
          */
-        MatcherAssert.assertThat(
+        BigDecimal converted =
                 Qudt.convert(
-                        new BigDecimal("15.12"), Units.MilliSV__PER__HR, Units.MicroSV__PER__HR),
-                Matchers.comparesEqualTo(new BigDecimal(15120)));
+                        new BigDecimal("15.12"), Units.MilliSV__PER__HR, Units.MicroSV__PER__HR);
+        MatcherAssert.assertThat(converted, Matchers.comparesEqualTo(new BigDecimal(15120)));
+        BigDecimal expected = new BigDecimal(15120);
+        assertEquals(expected, converted);
     }
 
     @Test

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `Unit.convert()` and `Unit.getConversionMultiplier(Unit)` now strip any trailing fractional zeros and the
+  scale of the result is >= 0.
+
 ## [7.0.0] - 2025-07-22
 
 ### Added
