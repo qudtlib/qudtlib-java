@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.1] - 2025-07-25
+
 ### Fixed
 
 - `Unit.convert()` and `Unit.getConversionMultiplier(Unit)` now strip any trailing fractional zeros and the
@@ -338,7 +340,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.1...HEAD
+[7.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.1...v7.0.0
 [6.8.1]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.0...v6.8.1
 [6.8.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.7.0...v6.8.0
