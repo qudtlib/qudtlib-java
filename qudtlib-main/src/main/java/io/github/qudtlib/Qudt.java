@@ -335,7 +335,7 @@ public class Qudt {
                             // to handle specifically.
                             if (prefixLabel.toLowerCase(Locale.ROOT).equals("kilo")
                                     && baseUnitLabel.toLowerCase(Locale.ROOT).equals("gram")) {
-                                return unitFromLabel("kilogram");
+                                return unitFromLocalname("KiloGM");
                             }
                             return Optional.empty();
                         })

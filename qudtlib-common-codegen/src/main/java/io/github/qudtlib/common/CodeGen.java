@@ -58,9 +58,6 @@ public abstract class CodeGen {
                 typeName.substring(0, 1).toLowerCase()
                         + typeName.substring(1)
                         + "FromLocalnameRequired";
-        if (typeName.equals("Unit") && codeConstantName.endsWith("_Currency")) {
-            valueFactory = "currencyFromLocalnameRequired";
-        }
         return new Constant(
                 codeConstantName, iriLocalName, label, iri, typeName, symbol, valueFactory);
     }
