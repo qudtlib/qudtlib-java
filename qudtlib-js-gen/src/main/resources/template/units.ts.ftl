@@ -68,6 +68,17 @@ export * from "@qudtlib/core";
     ${optStr(unit.currencyCode)},
     ${optNum(unit.currencyNumber)},
     [${unit.unitOfSystems?map(s -> "\""+s.iri+"\"")?join(",")}],
+    ${unit.dependents},
+    <#if unit.isDeprecated()>
+    true,
+    <#else>
+    false,
+    </#if>
+    <#if unit.isGenerated()>
+      true
+    <#else>
+      false
+    </#if>
   );
     <#list unit.labels as label>
   unit.addLabel(new LangString(${q(label.string)}, ${optStr(label.languageTag)}));

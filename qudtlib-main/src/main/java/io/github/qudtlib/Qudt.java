@@ -688,7 +688,7 @@ public class Qudt {
                 }
                 if (right.isDefinedAsOtherUnit()
                         && left.getFactorUnits().getFactorUnits().size() == 1
-                        && left.getFactorUnits().getFactorUnits().get(0).getUnit().equals(left)
+                        && left.getFactorUnits().getFactorUnits().get(0).getUnit().equals(right)
                         && right.getFactorUnits().getFactorUnits().get(0).getExponent()
                                 == left.getFactorUnits().getFactorUnits().get(0).getExponent()) {
                     return -1; // if a unit is just another name of another unit with same exponent,
