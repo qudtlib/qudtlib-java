@@ -7,9 +7,9 @@ DELETE {
     ?s rdfs:label ?label .
 } WHERE {
     ?s rdfs:label ?label .
-    FILTER( LANG(?label) != "" )
+    FILTER( ! (LANG(?label) IN ("en","en-US")))
     FILTER EXISTS {
-        ?s rdfs:label ?other
-        FILTER (LANG (?other) = "" )
+        ?s rdfs:label ?keep
+        FILTER( LANG(?keep) IN ("en","en-US"))
     }
 }
