@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump QUDT version to [3.1.5](https://github.com/qudt/qudt-public-repo/releases/tag/v3.1.5)
+- Exclude all language-specific labels except `en` and `en-US` as their number has increased prohibitively for QUDTLib'
+  current architecture.
+
+### Fixed
+
+- Recently, the packaging of the `qudtlib` artifact was changed to `pom`, which caused its tests not to
+  be run any more. This is now fixed by explicitly binding the execution of `surefire:test` to the `test` phase.
+
 ## [7.0.1] - 2025-07-25
 
 ### Fixed
