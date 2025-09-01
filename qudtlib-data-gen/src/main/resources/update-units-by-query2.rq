@@ -1,0 +1,15 @@
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX quantitykind: <http://qudt.org/vocab/quantitykind/>
+
+DELETE {
+    ?s rdfs:label ?label .
+} WHERE {
+    ?s rdfs:label ?label .
+    FILTER( LANG(?label) != "" )
+    FILTER EXISTS {
+        ?s rdfs:label ?other
+        FILTER (LANG (?other) = "" )
+    }
+}

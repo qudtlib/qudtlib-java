@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed 
+
+- Bump QUDT version to [3.1.5](https://github.com/qudt/qudt-public-repo/releases/tag/v3.1.5)
+- Exclude all language-specific labels as their number has increased prohibitively and QUDTLib is not really aimed 
+  at I18N for clients anyway
+
 ## [7.0.1] - 2025-07-25
 
 ### Fixed
