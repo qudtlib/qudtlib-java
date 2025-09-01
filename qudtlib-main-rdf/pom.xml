@@ -3,7 +3,7 @@
     <parent>
         <artifactId>qudtlib-java</artifactId>
         <groupId>io.github.qudtlib</groupId>
-        <version>7.0.2-SNAPSHOT</version>
+        <version>7.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>qudtlib-main-rdf&gt;</name>
