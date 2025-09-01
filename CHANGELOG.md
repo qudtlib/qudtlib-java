@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump QUDT version to [3.1.5](https://github.com/qudt/qudt-public-repo/releases/tag/v3.1.5)
-- Exclude all language-specific labels except `en` and `en-US` as their number has increased prohibitively for QUDTLib' 
-  current architecture. 
+- Exclude all language-specific labels except `en` and `en-US` as their number has increased prohibitively for QUDTLib'
+  current architecture.
 
 ### Fixed
 
