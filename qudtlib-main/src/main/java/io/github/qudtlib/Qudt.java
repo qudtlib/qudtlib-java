@@ -165,7 +165,7 @@ public class Qudt {
                     .map(LangString::getString)
                     .forEach(
                             s -> {
-                                unitIndex.put(UNIT_INDEX_KEYS.UCUM_CODE + s, u);
+                                unitIndex.put(UNIT_INDEX_KEYS.LABEL + s, u);
                             });
         }
     }
