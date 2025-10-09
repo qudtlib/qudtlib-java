@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.1.1] - 2025-10-09
+
 ## [7.1.0] - 2025-09-01
 
 ### Changed
@@ -353,7 +355,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.1...HEAD
+[7.1.1]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.0...v7.1.1
 [7.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.1...v7.1.0
 [7.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/qudtlib/qudtlib-java/compare/v6.8.1...v7.0.0
