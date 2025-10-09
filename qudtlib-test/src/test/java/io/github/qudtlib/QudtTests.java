@@ -1004,6 +1004,8 @@ public class QudtTests {
 
     public static Stream<Arguments> testParseUnit_specificCases() {
         return Stream.of(
+                Arguments.of("g/Mole", QuantityKinds.MolarMass, Set.of(Units.GM__PER__MOL)),
+                Arguments.of("g/mole", QuantityKinds.MolarMass, Set.of(Units.GM__PER__MOL)),
                 Arguments.of("m", QuantityKinds.Length, Set.of(Units.M)),
                 Arguments.of("/h", QuantityKinds.Frequency, Set.of(Units.PER__HR)),
                 Arguments.of("1/h", QuantityKinds.Frequency, Set.of(Units.PER__HR)),
