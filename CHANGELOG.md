@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix wrong definition of `Quantity`. It used to encapsulate a Set of `QuantityValue`, which never made sense. With
   this change, it encapsulates a `QuantityValue` and a `QuantityKind`, conforming to the definition of the concept in QUDT.
 
+- Upgrade various dependencies.
+
 ## [7.1.1] - 2025-10-09
 
 ## [7.1.0] - 2025-09-01
