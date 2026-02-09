@@ -3,11 +3,13 @@
 # releases the project with specified version
 # deploys it to the sonatype staging repo
 name: Release and deploy to Sonatype staging repo
+
 env:
   GITHUB_PAT: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
   MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
   MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
   MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -32,6 +34,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Check write access to repo
@@ -54,6 +59,7 @@ jobs:
           tag: v${{ inputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
+
       - name: Fail if tag v${{ inputs.release_version }} exists
         if: steps.checkTag.outputs.exists == 'true'
         run: |
@@ -61,9 +67,9 @@ jobs:
           exit 1
 
       # Set up java with maven cache
-      - uses: actions/checkout@v6
-      - name: Set up JDK 21
-        uses: actions/setup-java@v5
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -71,7 +77,7 @@ jobs:
 
       # import the secret key
       - name: Set up Apache Maven Central
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v3
         with: # running setup-java again overwrites the settings.xml
           distribution: 'temurin'
           java-version: '21'
@@ -143,6 +149,11 @@ jobs:
           version: ${{ inputs.release_version }}
           operation: read
 
+      # configure git
+      - name: setup git token
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}@github.com/".insteadOf https://github.com/
+
       # create the pull request
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
@@ -167,7 +178,7 @@ jobs:
             # Next Steps
             
             Please rebase this PR on top of `main` after publishing the release via the 
-            [Sonatype Repository Manager](https://central.sonatype.com/publishing/deployments). 
+            [Sonatype Repository Manager](https://central.sonatype.com/publishing/deployments).
 
       # print the summary
       - name: Print summary
