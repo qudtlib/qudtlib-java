@@ -7,14 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.2.0] - 2026-02-09
+
 ### Added
 
 - Add static factory methods `QuantityValue.of(value, unit)` with various value argument types that can be used to instantiate the
   `BigDecimal` value used internally.
-
 - Add dynamic factory methods in `Unit.quantityValue(value)` with various value argument types that can be used to instantiate the
   `BigDecimal` value used internally.
-
 - Add delegate methods for many `BigDecimal` methods to `QuantityValue` to allow for mathematical operations with
   automatic unit conversion, for example:
 
@@ -28,7 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix wrong definition of `Quantity`. It used to encapsulate a Set of `QuantityValue`, which never made sense. With
   this change, it encapsulates a `QuantityValue` and a `QuantityKind`, conforming to the definition of the concept in QUDT.
-
 - Upgrade various dependencies.
 
 ## [7.1.1] - 2025-10-09
@@ -379,7 +378,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.1...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.2.0...HEAD
+[7.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.1...v7.2.0
 [7.1.1]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.0...v7.1.1
 [7.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.1...v7.1.0
 [7.0.1]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.0...v7.0.1
