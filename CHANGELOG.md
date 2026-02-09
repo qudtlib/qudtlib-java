@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add static factory methods `QuantityValue.of(value, unit)` with various value argument types that can be used to instantiate the
+  `BigDecimal` value used internally.
+
+- Add dynamic factory methods in `Unit.quantityValue(value)` with various value argument types that can be used to instantiate the
+  `BigDecimal` value used internally.
+
+- Add delegate methods for many `BigDecimal` methods to `QuantityValue` to allow for mathematical operations with
+  automatic unit conversion, for example:
+
+  ```
+  QuantityValue mVal = Qudt.Units.M.quantityValue(20);
+  QuantityValue ftVal = Qudt.Units.FT.quantityValue(1);
+  QuantityValue mValResult = mVal.add(ftVal);
+  ```
+
+### Fixed
+
+- Fix wrong definition of `Quantity`. It used to encapsulate a Set of `QuantityValue`, which never made sense. With
+  this change, it encapsulates a `QuantityValue` and a `QuantityKind`, conforming to the definition of the concept in QUDT.
+
+- Upgrade various dependencies.
+
 ## [7.1.1] - 2025-10-09
 
 ## [7.1.0] - 2025-09-01

@@ -7,7 +7,7 @@ Makes all conversions and related functionality defined by the excellent [QUDT o
 
 The library offers
 * 1745 units, such as second, Fahrenheit, or light year
-* 881 quantityKinds, such as width, pressure ratio or currency
+* 881 quantityKinds, such as width, pressure ratio, or currency
 * 29 prefixes, such as mega, kibi, or atto
 
 ...all of which the library converts if possible.
@@ -46,7 +46,7 @@ The main Model classes are:
 * `QuantityValue`: value and unit. Values are always `BigDecimal` (using `MathContext.DECIMAL128`) and there are no convenience methods allowing you
 to provide other numeric types. This is intentiaonal so as not to mask any conversion problems. You'll be fine. (If you need a different `MathContext`, make an issue)
 
-All units, quantityKinds and prefixes are avalable as constants:
+All units, quantityKinds, and prefixes are avalable as constants:
 * `Qudt.Units`: all units, such as `Qudt.Units.KiloM__PER__SEC`
 * `Qudt.QuantityKinds:`: all quantityKinds, such as `Qudt.QuantityKinds.BloodGlucoseLevel`
 * `Qudt.Prefixes`: all prefixes, such as `Qudt.Prefixes.Atto`

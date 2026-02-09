@@ -1,31 +1,31 @@
 package io.github.qudtlib.model;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
- * Represents a QUDT Quantity - a set of {@link QuantityValue}s.
+ * Represents a QUDT Quantity - A QuantityValue with a QuantityKind
  *
  * @author Florian Kleedorfer
  * @version 1.0
  */
 public class Quantity {
-    final Set<QuantityValue> quantityValues;
+    final QuantityValue quantityValue;
 
-    public Quantity(Set<QuantityValue> quantityValues) {
-        this.quantityValues = quantityValues;
+    final QuantityKind quantityKind;
+
+    public Quantity(QuantityValue quantityValue, QuantityKind quantityKind) {
+        this.quantityValue = quantityValue;
+        this.quantityKind = quantityKind;
     }
 
-    public Set<QuantityValue> getQuantityValues() {
-        return Collections.unmodifiableSet(quantityValues);
+    public QuantityValue getQuantityValue() {
+        return quantityValue;
+    }
+
+    public QuantityKind getQuantityKind() {
+        return quantityKind;
     }
 
     @Override
     public String toString() {
-        return "Quantity{"
-                + quantityValues.stream().map(Objects::toString).collect(Collectors.joining(", "))
-                + '}';
+        return quantityKind.toString() + " of " + quantityValue.toString();
     }
 }
