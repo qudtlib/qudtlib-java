@@ -351,6 +351,30 @@ public class Unit extends SelfSmuggler {
         return unit.getIri().equals("http://qudt.org/vocab/unit/UNITLESS");
     }
 
+    public QuantityValue quantityValue(BigDecimal value) {
+        return QuantityValue.of(value, this);
+    }
+
+    public QuantityValue quantityValue(int value) {
+        return QuantityValue.of(value, this);
+    }
+
+    public QuantityValue quantityValue(long value) {
+        return QuantityValue.of(value, this);
+    }
+
+    public QuantityValue quantityValue(float value) {
+        return QuantityValue.of(value, this);
+    }
+
+    public QuantityValue quantityValue(double value) {
+        return QuantityValue.of(value, this);
+    }
+
+    public QuantityValue quantityValue(String value) {
+        return QuantityValue.of(value, this);
+    }
+
     public QuantityValue convertToQuantityValue(BigDecimal value, Unit toUnit) {
         return new QuantityValue(convert(value, toUnit), toUnit);
     }

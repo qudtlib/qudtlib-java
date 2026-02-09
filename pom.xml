@@ -50,7 +50,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <qudt.release.version>3.1.5</qudt.release.version>
-        <spotless.format.version>1.25.0</spotless.format.version>
+        <spotless.format.version>1.33.0</spotless.format.version>
     </properties>
 
     <scm>
@@ -65,7 +65,13 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>5.9.1</version>
+                <version>5.12.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.27.6</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

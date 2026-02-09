@@ -44,6 +44,55 @@ public class DimensionVector {
 
     private String dimensionVectorIri;
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private float[] values = new float[8];
+
+        public Builder() {}
+
+        public Builder amountOfSubstance(float exp) {
+            values[INDEX_AMOUNT_OF_SUBSTANCE] = exp;
+            return this;
+        }
+
+        public Builder electricCurrent(float exp) {
+            values[INDEX_ELECTRIC_CURRENT] = exp;
+            return this;
+        }
+
+        public Builder length(float exp) {
+            values[INDEX_LENGTH] = exp;
+            return this;
+        }
+
+        public Builder luminousIntensity(float exp) {
+            values[INDEX_LUMINOUS_INTENSITY] = exp;
+            return this;
+        }
+
+        public Builder mass(float exp) {
+            values[INDEX_MASS] = exp;
+            return this;
+        }
+
+        public Builder temperature(float exp) {
+            values[INDEX_TEMPERATURE] = exp;
+            return this;
+        }
+
+        public Builder time(float exp) {
+            values[INDEX_TIME] = exp;
+            return this;
+        }
+
+        public DimensionVector build() {
+            return new DimensionVector(values);
+        }
+    }
+
     private final float[] values;
 
     public static Optional<DimensionVector> of(String dimensionVectorIri) {
