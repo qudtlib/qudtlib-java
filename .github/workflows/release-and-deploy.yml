@@ -143,6 +143,11 @@ jobs:
           version: ${{ inputs.release_version }}
           operation: read
 
+      - name: Unset git extraheader (prevent duplicate Authorization)
+        run: |
+          git config --global --unset http.https://github.com/.extraheader || true
+          git config --local --unset http.https://github.com/.extraheader || true
+
       # create the pull request
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
