@@ -21,34 +21,21 @@ on:
         description: 'Next SNAPSHOT version (such as 2.4-SNAPSHOT)'
         required: true
         type: string
+    secrets:
+      QUDTLIB_BOT_GITHUB_TOKEN:
+        required: true
+      MAVEN_USERNAME:
+        required: true
+      MAVEN_CENTRAL_TOKEN:
+        required: true
+      MAVEN_GPG_PASSPHRASE:
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}
-          fetch-depth: 0
-          persist-credentials: true
-
-      # Critical fix for "could not read Username" and duplicate header issues
-      - name: Configure Git credentials (insteadOf)
-        run: |
-          git config --global url."https://${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-
-      # Extra safety - remove any conflicting extraheader
-      - name: Fix git authentication headers
-        run: |
-          git config --global --unset http.https://github.com/.extraheader || true
-          git config --local --unset http.https://github.com/.extraheader || true
-
-      # Check write access to repo
       - name: Check write access to repo
         run: |
           token_login=$(curl -H "Authorization: Bearer ${token}" https://api.github.com/user | jq -r '.login')
@@ -86,7 +73,7 @@ jobs:
 
       # import the secret key
       - name: Set up Apache Maven Central
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v3
         with: # running setup-java again overwrites the settings.xml
           distribution: 'temurin'
           java-version: '21'
