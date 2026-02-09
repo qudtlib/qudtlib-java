@@ -63,9 +63,10 @@ jobs:
           echo Tag v${{ inputs.release_version }} already exists, release aborted >> $GITHUB_STEP_SUMMARY
           exit 1
 
-      # Set up Java + Maven
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      # Set up java with maven cache
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
