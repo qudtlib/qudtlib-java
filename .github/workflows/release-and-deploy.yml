@@ -34,6 +34,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Check write access to repo
@@ -145,6 +148,11 @@ jobs:
           path-to-changelog: CHANGELOG.md
           version: ${{ inputs.release_version }}
           operation: read
+
+      # configure git
+      - name: setup git token
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.QUDTLIB_BOT_GITHUB_TOKEN }}@github.com/".insteadOf https://github.com/
 
       # create the pull request
       - name: Create Pull Request
