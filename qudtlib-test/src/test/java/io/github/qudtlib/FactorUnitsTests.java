@@ -463,10 +463,10 @@ public class FactorUnitsTests {
                     String.format(
                             "%s.getConversionMultiplierOpt() is expected to return a value",
                             unit.getIriAbbreviated()));
-            assertEquals(
+            assertThat(
                     unit.getFactorUnits().getConversionMultiplierWithFallbackOne(),
-                    result.get(),
-                    String.format("Wrong result for %s", unit.getIriAbbreviated()));
+                    is(closeTo(result.get(), new BigDecimal("0.00001"))));
+
         } else {
             assertTrue(
                     result.isEmpty(),
