@@ -301,7 +301,9 @@ public class FactorUnits {
         }
         return new FactorUnits(
                 this.factorUnits.stream().map(fu -> fu.pow(exponent)).collect(toList()),
-                this.scaleFactor.pow(exponent, MathContext.DECIMAL128));
+                this.scaleFactor.compareTo(BigDecimal.ZERO) != 0
+                        ? this.scaleFactor.pow(exponent, MathContext.DECIMAL128)
+                        : BigDecimal.ZERO);
     }
 
     public FactorUnits combineWith(FactorUnits other) {
@@ -773,13 +775,17 @@ public class FactorUnits {
         if (reduced.hasFactorUnits()) {
             return reduced.factorUnits.stream()
                     .map(
-                            fu ->
-                                    fu.unit
-                                            .getFactorUnits()
-                                            .getConversionMultiplierWithFallbackOne()
-                                            .pow(fu.getExponent(), MathContext.DECIMAL128))
+                            fu -> {
+                                BigDecimal cm =
+                                        fu.unit
+                                                .getFactorUnits()
+                                                .getConversionMultiplierWithFallbackOne();
+                                return (cm.compareTo(BigDecimal.ZERO) == 0)
+                                        ? BigDecimal.ZERO
+                                        : cm.pow(fu.getExponent(), MathContext.DECIMAL128);
+                            })
                     .reduce((l, r) -> l.multiply(r, MathContext.DECIMAL128))
-                    .get()
+                    .orElse(BigDecimal.ONE)
                     .multiply(reduced.getScaleFactor(), MathContext.DECIMAL128);
         } else {
             if (reduced.factorUnits.isEmpty()) {
@@ -802,19 +808,33 @@ public class FactorUnits {
                                             .getConversionMultiplierOpt()
                                             .map(
                                                     cm ->
-                                                            cm.pow(
-                                                                    fu.getExponent(),
-                                                                    MathContext.DECIMAL128)))
+                                                            cm.compareTo(BigDecimal.ZERO) == 0
+                                                                    ? BigDecimal.ZERO
+                                                                    : cm.pow(
+                                                                            fu.getExponent(),
+                                                                            MathContext
+                                                                                    .DECIMAL128)))
                     .reduce(
                             (leftOpt, rightOpt) ->
                                     leftOpt.map(
                                             left ->
                                                     rightOpt.map(
                                                                     right ->
-                                                                            left.multiply(
-                                                                                    right,
-                                                                                    MathContext
-                                                                                            .DECIMAL128))
+                                                                            (left.compareTo(
+                                                                                                            BigDecimal
+                                                                                                                    .ZERO)
+                                                                                                    == 0
+                                                                                            || right
+                                                                                                            .compareTo(
+                                                                                                                    BigDecimal
+                                                                                                                            .ZERO)
+                                                                                                    == 0)
+                                                                                    ? BigDecimal
+                                                                                            .ZERO
+                                                                                    : left.multiply(
+                                                                                            right,
+                                                                                            MathContext
+                                                                                                    .DECIMAL128))
                                                             .orElse(null)))
                     .get()
                     .map(cm -> cm.multiply(reduced.getScaleFactor(), MathContext.DECIMAL128));
