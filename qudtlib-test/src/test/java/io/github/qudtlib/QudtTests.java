@@ -60,7 +60,7 @@ public class QudtTests {
     @Test
     public void testQuantityKind() {
         QuantityKind length = Qudt.QuantityKinds.Length;
-        Assertions.assertTrue(length.hasLabel("length"));
+        Assertions.assertTrue(length.hasLabel("Length"));
         Assertions.assertEquals(Qudt.quantityKindRequired(length.getIri()), length);
         Assertions.assertEquals(Qudt.quantityKindRequired(length.getIri()), length);
     }
@@ -857,7 +857,6 @@ public class QudtTests {
 
     public static Stream<Arguments> testExactMatches() {
         return Stream.of(
-                Arguments.of(S__PER__M, KiloGM__PER__M2__PA__SEC),
                 Arguments.of(KiloGM__PER__M2__SEC, KiloGM__PER__SEC__M2),
                 Arguments.of(KiloTONNE, KiloTON_Metric),
                 Arguments.of(LB_F__PER__IN2, PSI),
@@ -1004,6 +1003,8 @@ public class QudtTests {
 
     public static Stream<Arguments> testParseUnit_specificCases() {
         return Stream.of(
+                Arguments.of("lbm/psi", QuantityKinds.Unknown, Set.of(Units.LB__PER__PSI)),
+                Arguments.of("%/1000", QuantityKinds.Unknown, Set.of(Units.PERCENT__PER__THOUSAND)),
                 Arguments.of("g/Mole", QuantityKinds.MolarMass, Set.of(Units.GM__PER__MOL)),
                 Arguments.of("g/mole", QuantityKinds.MolarMass, Set.of(Units.GM__PER__MOL)),
                 Arguments.of("m", QuantityKinds.Length, Set.of(Units.M)),

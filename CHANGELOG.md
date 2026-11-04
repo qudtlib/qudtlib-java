@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed 
+
+- Bump QUDT version to [3.5.3](https://github.com/qudt/qudt-public-repo/releases/tag/v3.5.3)
+  Fix affected unit tests
+- Report all candidate units when in unit parsing when the provided quantity kind is `qk:Unknown`
+
 ## [7.2.0] - 2026-02-11
 
 ### Added

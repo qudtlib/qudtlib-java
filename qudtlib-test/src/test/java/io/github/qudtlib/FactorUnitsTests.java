@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import io.github.qudtlib.model.*;
 import java.math.BigDecimal;
@@ -456,6 +457,10 @@ public class FactorUnitsTests {
     @ParameterizedTest
     @MethodSource
     public void testConversionMultiplierOpt(Unit unit) {
+        // TODO: Re-enable MeV/c on the next QUDT upgrade; its multipliers are fixed on QUDT main.
+        assumeFalse(
+                unit.equals(MegaEV__PER__SpeedOfLight),
+                "QUDT 3.5.3 has zero conversion multipliers for SpeedOfLight and MeV/c");
         Optional<BigDecimal> result = unit.getFactorUnits().getConversionMultiplierOpt();
         if (hasNoFactorUnitsWithoutConversionMultiplier(unit)) {
             assertTrue(

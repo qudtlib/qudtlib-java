@@ -59,8 +59,7 @@ public class QuantityKindTests {
                         EnergyPerElectricCharge),
                 Arguments.of(ElectromagneticEnergyDensity, VolumicElectromagneticEnergy),
                 Arguments.of(Permeability, ElectromagneticPermeability),
-                Arguments.of(EnergyInternal, InternalEnergy, ThermodynamicEnergy),
-                Arguments.of(InversePressure, IsothermalCompressibility));
+                Arguments.of(InternalEnergy, ThermodynamicEnergy));
     }
 
     static class VarargsAggregator implements ArgumentsAggregator {

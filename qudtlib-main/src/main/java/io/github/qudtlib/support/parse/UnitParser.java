@@ -100,7 +100,16 @@ public class UnitParser {
                 if (!results.isEmpty()) {
                     if (this.quantityKind != null) {
                         Set<Unit> intermediateResults = new HashSet<>(results);
-                        intermediateResults.retainAll(this.quantityKind.getApplicableUnits());
+                        if (this.quantityKind.equals(Qudt.QuantityKinds.Unknown)) {
+                            // Unknown has no applicable units; use the units' own classifications.
+                            intermediateResults.removeIf(
+                                    u ->
+                                            u.isDeprecated()
+                                                    || !u.getQuantityKinds()
+                                                            .contains(this.quantityKind));
+                        } else {
+                            intermediateResults.retainAll(this.quantityKind.getApplicableUnits());
+                        }
                         //                        System.out.println("intermediateResults: " +
                         // intermediateResults);
                         if (intermediateResults.isEmpty()) {
