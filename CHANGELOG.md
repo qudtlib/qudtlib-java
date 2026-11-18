@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.3.0] - 2026-11-18
+
 ### Changed
 
 - Bump QUDT version to [3.5.3](https://github.com/qudt/qudt-public-repo/releases/tag/v3.5.3)
@@ -384,7 +386,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.2.0...HEAD
+[Unreleased]: https://github.com/qudtlib/qudtlib-java/compare/v7.3.0...HEAD
+[7.3.0]: https://github.com/qudtlib/qudtlib-java/compare/v7.2.0...v7.3.0
 [7.2.0]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.1...v7.2.0
 [7.1.1]: https://github.com/qudtlib/qudtlib-java/compare/v7.1.0...v7.1.1
 [7.1.0]: https://github.com/qudtlib/qudtlib-java/compare/v7.0.1...v7.1.0
