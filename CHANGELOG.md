@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed 
+### Changed
 
 - Bump QUDT version to [3.5.3](https://github.com/qudt/qudt-public-repo/releases/tag/v3.5.3)
   Fix affected unit tests
